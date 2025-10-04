@@ -48,7 +48,7 @@ export default function BlogCreate() {
     e.preventDefault();
     setLoading(true);
     try {
-      const userFDRaw = localStorage.getItem("userFD");
+      const userFDRaw = localStorage.getItem("session");
       if (!userFDRaw) {
         toast("Error", { description: "No logged in user found." });
         setLoading(false);

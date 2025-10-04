@@ -9,7 +9,7 @@ interface BlogPostPageProps {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-
+  console.log(slug)
   return (
     <ShaderBackground>
       <Header />
