@@ -106,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       })
       .then((res) => {
         setDatas(res.data || null);
-        localStorage.setItem("userFD", JSON.stringify(res.data));
+        localStorage.setItem("session", JSON.stringify(res.data));
         setLoaded(true);
         setError(null);
       })

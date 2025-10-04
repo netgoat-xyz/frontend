@@ -63,7 +63,7 @@ export default function DashboardHomePage() {
       })
       .then((res) => {
         setData(res.data || null);
-        localStorage.setItem("userFD", JSON.stringify(res.data));
+        localStorage.setItem("session", JSON.stringify(res.data));
         setLoaded(true);
         setError(null);
       })
