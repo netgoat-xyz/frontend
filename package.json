@@ -50,6 +50,8 @@
     "@types/canvas-confetti": "^1.9.0",
     "@types/chroma-js": "^3.1.1",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "axios": "^1.12.2",
     "canvas-confetti": "^1.9.3",
     "chroma-js": "^3.1.2",

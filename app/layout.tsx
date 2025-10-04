@@ -1,5 +1,7 @@
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   title: "Netgoat.xyz - Main Page",
@@ -13,6 +15,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className}>
+      <SpeedInsights/>
+      <Analytics/>
       <body className="dark transition-all duration-300 antialiased">
         {children}
       </body>

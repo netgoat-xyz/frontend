@@ -3,6 +3,8 @@ import { Metadata } from "next";
 import { ReactNode } from "react";
 import DashboardClientWrapper from "../layoutClient";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export async function generateMetadata({
   params,
@@ -27,6 +29,8 @@ export default function SlugLayout({
 }) {
   return (
     <DashboardClientWrapper params={params}>
+            <SpeedInsights/>
+      <Analytics/>
       {children}
       <Toaster />
     </DashboardClientWrapper>
