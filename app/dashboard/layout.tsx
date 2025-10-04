@@ -1,5 +1,5 @@
 "use client";
-
+import "../globals.css";
 import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 

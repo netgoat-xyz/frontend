@@ -1,5 +1,5 @@
-import "./globals.css";
 import { GeistSans } from "geist/font/sans";
+import "./globals.css";
 
 export const metadata = {
   title: "Netgoat.xyz - Main Page",
