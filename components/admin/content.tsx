@@ -53,6 +53,14 @@ export function AdminContent({
     return <BlogEdit slug={editSlug} />;
   }
 
+  if (activeTab === "settings" && activeSection === "general") {
+    const SettingsGeneral = dynamic(
+      () => import("./content/settings/general").then((mod) => mod.default),
+      { ssr: false },
+    );
+    return <SettingsGeneral />;
+  }
+
   return (
     <div className="p-6 text-center py-12">
       <h2 className="text-xl font-semibold mb-2">

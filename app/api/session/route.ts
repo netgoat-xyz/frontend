@@ -1,19 +1,18 @@
 import { verifySession } from "@/lib/session";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const session = searchParams.get("session");
-  console.log(session);
-  if (!session) {
-    return new Response("Session token is required", { status: 400 });
+  const authHeader = request.headers.get("Authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return new Response("Authorization header is required", { status: 400 });
   }
 
+  const session = authHeader.split(" ")[1];
   try {
     const payload = await verifySession(session);
-    console.log(payload);
     if (!payload) {
       return new Response("Invalid session token", { status: 401 });
     }
+
     return new Response(JSON.stringify(payload), {
       headers: { "Content-Type": "application/json" },
     });

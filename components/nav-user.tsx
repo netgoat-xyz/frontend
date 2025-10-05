@@ -51,7 +51,6 @@ export function NavUser({ user }: { user: User }) {
 
   useEffect(() => {
     const sess = JSON.parse(localStorage.getItem("session") ?? "null");
-    console.log(sess.username);
     setSession(sess);
   }, []);
 
@@ -108,7 +107,7 @@ export function NavUser({ user }: { user: User }) {
                     }
                   </span>
                   <span className="text-muted-foreground truncate text-xs">
-                    session?.email
+                    {session?.email}
                   </span>
                 </div>
               </div>

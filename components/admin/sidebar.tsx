@@ -13,22 +13,16 @@ interface AdminSidebarProps {
 
 const sidebarSections = [
   { id: "general", label: "General" },
-  { id: "build-deployment", label: "Build and Deployment" },
-  { id: "domains", label: "Domains" },
-  { id: "environments", label: "Environments" },
-  { id: "environment-variables", label: "Environment Variables" },
+  { id: "ai", label: "AI Features" },
+  { id: "system", label: "System Status" },
   { id: "git", label: "Git" },
   { id: "integrations", label: "Integrations" },
-  { id: "deployment-protection", label: "Deployment Protection" },
-  { id: "functions", label: "Functions" },
   { id: "data-cache", label: "Data Cache" },
   { id: "cron-jobs", label: "Cron Jobs" },
-  { id: "microfrontends", label: "Microfrontends" },
-  { id: "project-members", label: "Project Members" },
   { id: "webhooks", label: "Webhooks" },
-  { id: "log-drains", label: "Log Drains" },
+  // { id: "log-drains", label: "Log Drains" },
   { id: "security", label: "Security" },
-  { id: "secure-compute", label: "Secure Compute" },
+  // { id: "secure-compute", label: "Secure Compute" },
   { id: "advanced", label: "Advanced" },
 ];
 
@@ -37,7 +31,7 @@ export function AdminSidebar({
   onSectionChange,
 }: AdminSidebarProps) {
   return (
-    <aside className="w-64 border-r border-border bg-card">
+    <aside className="w-64 border-r border-border bg-sidebar">
       <div className="p-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

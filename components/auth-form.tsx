@@ -56,8 +56,6 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
       if (res.data.jwt) {
         localStorage.setItem("jwt", res.data.jwt);
 
-        let session = localStorage.getItem("session");
-        if (!session) {
           try {
             const ress = await fetch("/api/session", {
               method: "GET",
@@ -71,8 +69,6 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
           } catch (err) {
             console.error("Session fetch failed", err);
           }
-        }
-
         onSuccess(); // always happens
       } else if (res.data.requires2FA) {
         setError("2FA required. Please complete 2FA flow.");

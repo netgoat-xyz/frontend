@@ -22,7 +22,7 @@ export default function DashboardClientWrapper({
       router.replace("/auth");
       return;
     }
-    fetch("/api/session?session=" + jwt)
+    fetch("/api/session", { headers: { Authorization: `Bearer ${jwt}` } })
       .then((res) => res.json())
       .then((data) => {
         localStorage.setItem("session", JSON.stringify(data));

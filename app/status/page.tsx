@@ -29,7 +29,7 @@ const Index = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:1933/api/history");
+      const res = await fetch(process.env.NEXT_PUBLIC_CENTRALMONSERVER+"/api/history");
       const data = await res.json();
 
       const healthPings = data.history.filter(

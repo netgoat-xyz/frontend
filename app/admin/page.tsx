@@ -16,7 +16,7 @@ export default function AdminPanel() {
       <AdminNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="flex">
-        {/* activeTab === "settings" && <AdminSidebar activeSection={activeSection} onSectionChange={setActiveSection} /> */}
+        { activeTab === "settings" && <AdminSidebar activeSection={activeSection} onSectionChange={setActiveSection} /> }
 
         <main className="flex-1">
           <AdminContent
