@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Download, RefreshCw, Trash2, Lock, Unlock, Award } from "lucide-react";
+import { PageTitle } from "@/components/SiteTitle";
 
 const mockCerts = [
   {
@@ -112,9 +113,10 @@ export default function CertsPage({
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-6 p-6 md:p-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              Certificates
-            </h2>
+        <PageTitle
+          title="SSL Certificiates"
+          subtitle="The SSL Certificates generated for your reverse proxies and dns records"
+          actions={
             <Tabs
               defaultValue={filter}
               onValueChange={setFilter}
@@ -128,6 +130,8 @@ export default function CertsPage({
                 <TabsTrigger value="selfsigned">Self-Signed</TabsTrigger>
               </TabsList>
             </Tabs>
+          }
+          />
           </div>
           <motion.div
             layout

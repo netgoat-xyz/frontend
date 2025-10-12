@@ -6,6 +6,17 @@ import React, { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/home-sidebar";
 import SiteHeader from "@/components/site-header";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Globe } from "lucide-react";
+import { ArrowUpRightIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Domain = {
   group: string;
@@ -48,12 +59,13 @@ export default function DashboardHomePage() {
       setError("Session data corrupted. Please log in again.");
       return;
     }
-    const id = lsd.userId;
+    const id = lsd._id;
     if (!id) {
       setLoaded(true);
       setError("Session missing user ID. Please log in again.");
       return;
     }
+
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKENDAPI}/api/${id}`, {
         withCredentials: true,
@@ -63,7 +75,7 @@ export default function DashboardHomePage() {
       })
       .then((res) => {
         setData(res.data || null);
-        localStorage.setItem("session", JSON.stringify(res.data));
+        //localStorage.setItem("session", JSON.stringify(res.data));
         setLoaded(true);
         setError(null);
       })
@@ -123,7 +135,24 @@ export default function DashboardHomePage() {
                   !error &&
                   (!data || !data.domains || data.domains.length === 0) ? (
                     <div className="text-center text-muted-foreground py-8 text-lg">
-                      No domains found. Add a domain to get started.
+                      <Empty>
+                        <EmptyHeader>
+                          <EmptyMedia variant="icon">
+                            <Globe />
+                          </EmptyMedia>
+                          <EmptyTitle>No Domains Yet</EmptyTitle>
+                          <EmptyDescription>
+                            You haven&apos;t created any Domains yet. Get
+                            started by creating your first Domains.
+                          </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
+                          <div className="flex gap-2">
+                            <Button>Create Domain</Button>
+                            <Button variant="outline">Import Domain</Button>
+                          </div>
+                        </EmptyContent>
+                      </Empty>
                     </div>
                   ) : null}
                   {/* Show table if data exists */}

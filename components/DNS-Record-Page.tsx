@@ -11,6 +11,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PageTitle } from "./SiteTitle";
 
 export default function DNSPageContent({
   slug,
@@ -25,15 +26,10 @@ export default function DNSPageContent({
 
   return (
     <div className="flex flex-1 flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
-      {/* Info / Zone overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle>DNS</CardTitle>
-          <CardDescription>
-            Configure DNS records and review proxy status for your hostnames.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <PageTitle
+        title="DNS"
+        subtitle="Configure DNS records and review proxy status for your hostnames."
+      />
 
       {/* Recommended steps */}
       <Card>

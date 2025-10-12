@@ -41,8 +41,8 @@ export default function SettingsGeneral() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10">
       <PageTitle
-        title="General Settings"
-        subtitle="Manage your Netgoat instance's configuration, personalization, and preferences."
+        title="AI Settings"
+        subtitle="Manage what AI to use and how it integrates with Netgoat."
       />
 
     </div>

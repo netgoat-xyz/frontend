@@ -15,7 +15,7 @@ const sidebarSections = [
   { id: "general", label: "General" },
   { id: "ai", label: "AI Features" },
   { id: "system", label: "System Status" },
-  { id: "git", label: "Git" },
+  // { id: "git", label: "Git" },
   { id: "integrations", label: "Integrations" },
   { id: "data-cache", label: "Data Cache" },
   { id: "cron-jobs", label: "Cron Jobs" },

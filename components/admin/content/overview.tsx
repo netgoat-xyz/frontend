@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PageTitle } from "../SiteTitle";
+import { PageTitle } from "../../SiteTitle";
 
 export function OverviewContent() {
   return (

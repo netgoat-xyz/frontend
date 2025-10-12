@@ -41,8 +41,8 @@ export default function SettingsGeneral() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10">
       <PageTitle
-        title="General Settings"
-        subtitle="Manage your Netgoat instance's configuration, personalization, and preferences."
+        title="Cronjobs"
+        subtitle="Control cronjobs that run in the background"
       />
 
     </div>

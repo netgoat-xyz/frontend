@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableHead,
@@ -13,7 +13,13 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe, Edit, Trash2, RefreshCw, Lock, Unlock } from "lucide-react";
+import {
+  Edit,
+  Trash2,
+  RefreshCw,
+  Lock,
+  Unlock,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,12 +32,18 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from "@/components/ui/empty";
+import { IconWorld } from "@tabler/icons-react";
+import { PageTitle } from "@/components/SiteTitle";
 
-export default function Page({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default function Page({ params }: { params: Promise<{ slug: string }> }) {
   const [filter, setFilter] = useState("all");
   const [proxies, setProxies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,28 +51,38 @@ export default function Page({
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     slug: "",
+    blockCommonExploits: false,
+    ssl: false,
+    letsEncncryptEmail: "",
+    webSocketSupport: false,
+    customWAFRules: [""],
+    ACL: [""],
+    customErrorPages: [],
     target: "",
     port: 80,
-    ssl: false,
   });
+  
 
   const fetchProxies = async () => {
     setLoading(true);
+        const param = await params
+
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/domains/${(await params).slug}`,
+        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/domains/${param.slug}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("jwt")}`,
           },
-        },
+        }
       );
       if (!res.ok) return setProxies([]);
       const data = await res.json();
       setProxies(data.proxied || []);
     } catch {
+      toast.error("Failed to load proxies");
       setProxies([]);
     } finally {
       setLoading(false);
@@ -68,11 +90,9 @@ export default function Page({
   };
 
   useEffect(() => {
-    const load = async () => {
-      await fetchProxies();
-    };
-    load();
-  }, [params]);
+    fetchProxies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async () => {
     if (!form.slug || !form.target) {
@@ -80,22 +100,35 @@ export default function Page({
       return;
     }
     setSaving(true);
+
+    const param = await params
     try {
       await fetch(
-        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/manage-proxy?domain=${(await params).slug}`,
+        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/manage-proxy?domain=${param.slug}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             slug: form.slug,
-            domain: (await params).slug,
+            domain: param.slug,
             ip: form.target,
             port: form.port,
             SSL: form.ssl,
           }),
-        },
+        }
       );
-      setForm({ slug: "", target: "", port: 80, ssl: false });
+      setForm({
+        slug: "",
+        target: "",
+        port: 80,
+        ssl: false,
+        blockCommonExploits: false,
+        letsEncncryptEmail: "",
+        webSocketSupport: false,
+        customWAFRules: [""],
+        ACL: [""],
+        customErrorPages: [],
+      });
       setModalOpen(false);
       fetchProxies();
       toast.success("Proxy created successfully!");
@@ -125,189 +158,203 @@ export default function Page({
   };
 
   return (
-    <>
-      <div className="flex flex-1 flex-col p-6 md:p-10 gap-6">
-        {/* Sticky header */}
-        <div className="sticky top-0 bg-background z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            Reverse Proxies
-          </h2>
+    <div className="flex flex-1 flex-col p-6 md:p-10 gap-6">
+      <div className="sticky top-0 bg-background z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2">
+        <PageTitle
+          title="Reverse Proxies"
+          subtitle="Reverse proxies your server:ip to a domain."
+          actions={
+            <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+              <DialogTrigger asChild>
+                <Button>Add Reverse Proxy</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Add Reverse Proxy</DialogTitle>
+                </DialogHeader>
 
-          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-            <DialogTrigger asChild>
-              <Button>Add Reverse Proxy</Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Add Reverse Proxy</DialogTitle>
-              </DialogHeader>
-
-              <div className="space-y-4 mt-4">
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <Label>Slug</Label>
-                    <Input
-                      placeholder="e.g. app"
-                      value={form.slug}
-                      onChange={(e) =>
-                        setForm({ ...form, slug: e.target.value })
-                      }
-                    />
+                <div className="space-y-4 mt-4">
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <Label>Slug</Label>
+                      <Input
+                        placeholder="e.g. app"
+                        value={form.slug}
+                        onChange={(e) =>
+                          setForm({ ...form, slug: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Label>Target</Label>
+                      <Input
+                        placeholder="e.g. 192.168.1.10"
+                        value={form.target}
+                        onChange={(e) =>
+                          setForm({ ...form, target: e.target.value })
+                        }
+                      />
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <Label>Target</Label>
-                    <Input
-                      placeholder="e.g. 192.168.1.10"
-                      value={form.target}
-                      onChange={(e) =>
-                        setForm({ ...form, target: e.target.value })
-                      }
-                    />
+
+                  <div className="flex gap-4 items-center">
+                    <div className="flex-1">
+                      <Label>Port</Label>
+                      <Input
+                        type="number"
+                        value={form.port}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            port: Number(e.target.value),
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Label>SSL</Label>
+                      <Switch
+                        checked={form.ssl}
+                        onCheckedChange={(checked) =>
+                          setForm({ ...form, ssl: checked })
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="flex gap-4 items-center">
-                  <div className="flex-1">
-                    <Label>Port</Label>
-                    <Input
-                      type="number"
-                      value={form.port}
-                      onChange={(e) =>
-                        setForm({ ...form, port: Number(e.target.value) })
-                      }
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label>SSL</Label>
-                    <Switch
-                      checked={form.ssl}
-                      onCheckedChange={(checked) =>
-                        setForm({ ...form, ssl: checked })
-                      }
-                    />
-                  </div>
+
+                <div className="flex justify-end mt-6">
+                  <Button onClick={handleSubmit} disabled={saving}>
+                    {saving && (
+                      <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                    )}
+                    Save
+                  </Button>
                 </div>
-              </div>
-
-              <div className="flex justify-end mt-6">
-                <Button onClick={handleSubmit} disabled={saving}>
-                  {saving && (
-                    <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                  )}
-                  Save
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* Filters */}
-        <Tabs defaultValue={filter} onValueChange={setFilter} className="w-fit">
-          <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="down">Down</TabsTrigger>
-            <TabsTrigger value="error">Error</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        {/* Table / Empty / Loading */}
-        <motion.div
-          layout
-          transition={{
-            layout: { duration: 0.35, type: "spring", bounce: 0.12 },
-          }}
-          className="overflow-x-auto rounded-lg border bg-background"
-        >
-          {loading ? (
-            <div className="p-6 space-y-3">
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-10 w-full rounded" />
-              ))}
-            </div>
-          ) : filteredProxies.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-12 text-center space-y-3">
-              <Globe className="w-10 h-10 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                No reverse proxies found.
-              </p>
-              <Button onClick={() => setModalOpen(true)}>Add Proxy</Button>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="pl-6">Name</TableHead>
-                  <TableHead>Target</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>SSL</TableHead>
-                  <TableHead>Last Check</TableHead>
-                  <TableHead className="pr-6 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <AnimatePresence initial={false}>
-                  {filteredProxies.map((proxy) => (
-                    <motion.tr
-                      key={proxy.slug}
-                      layout
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="border-b"
-                    >
-                      <TableCell className="pl-6">{proxy.slug}</TableCell>
-                      <TableCell className="font-mono">{proxy.ip}</TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                            statusColors[
-                              proxy.status as keyof typeof statusColors
-                            ] || "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {proxy.status || "unknown"}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        {proxy.SSL ? (
-                          <span className="inline-flex items-center gap-1 text-cyan-600 dark:text-cyan-400">
-                            <Lock className="w-4 h-4" /> Enabled
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-muted-foreground">
-                            <Unlock className="w-4 h-4" /> Disabled
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {proxy.lastCheck
-                          ? new Date(proxy.lastCheck).toLocaleString()
-                          : "-"}
-                      </TableCell>
-                      <TableCell className="pr-6 text-right flex gap-2 justify-end">
-                        <Button size="icon" variant="ghost">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost">
-                          <RefreshCw className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleDelete(proxy.slug)}
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
-                      </TableCell>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
-              </TableBody>
-            </Table>
-          )}
-        </motion.div>
+              </DialogContent>
+            </Dialog>
+          }
+        />
       </div>
-    </>
+
+      <Tabs defaultValue={filter} onValueChange={setFilter} className="w-fit">
+        <TabsList>
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="active">Active</TabsTrigger>
+          <TabsTrigger value="down">Down</TabsTrigger>
+          <TabsTrigger value="error">Error</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      <motion.div
+        layout
+        transition={{
+          layout: { duration: 0.35, type: "spring", bounce: 0.12 },
+        }}
+        className="overflow-x-auto rounded-lg border bg-background"
+      >
+        {loading ? (
+          <div className="p-6 space-y-3">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full rounded" />
+            ))}
+          </div>
+        ) : filteredProxies.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-12 text-center space-y-3">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <IconWorld />
+                </EmptyMedia>
+                <EmptyTitle>No Proxy Records Yet</EmptyTitle>
+                <EmptyDescription>
+                  You haven&apos;t created any proxies yet. Get started by
+                  creating your first proxy.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <div className="flex gap-2">
+                  <Button>Create Proxy</Button>
+                  <Button variant="outline">Import Proxies</Button>
+                </div>
+              </EmptyContent>
+            </Empty>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="pl-6">Name</TableHead>
+                <TableHead>Target</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>SSL</TableHead>
+                <TableHead>Last Check</TableHead>
+                <TableHead className="pr-6 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <AnimatePresence initial={false}>
+                {filteredProxies.map((proxy) => (
+                  <motion.tr
+                    key={proxy.slug}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="border-b"
+                  >
+                    <TableCell className="pl-6">{proxy.slug}</TableCell>
+                    <TableCell className="font-mono">{proxy.ip}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          statusColors[
+                            proxy.status as keyof typeof statusColors
+                          ] || "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {proxy.status || "unknown"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {proxy.SSL ? (
+                        <span className="inline-flex items-center gap-1 text-cyan-600 dark:text-cyan-400">
+                          <Lock className="w-4 h-4" /> Enabled
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-muted-foreground">
+                          <Unlock className="w-4 h-4" /> Disabled
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {proxy.lastCheck
+                        ? new Date(proxy.lastCheck).toLocaleString()
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="pr-6 text-right flex gap-2 justify-end">
+                      <Button size="icon" variant="ghost">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost">
+                        <RefreshCw className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleDelete(proxy.slug)}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </TableCell>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </TableBody>
+          </Table>
+        )}
+      </motion.div>
+    </div>
   );
 }
