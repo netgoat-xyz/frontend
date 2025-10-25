@@ -59,7 +59,7 @@ export default function DashboardHomePage() {
       setError("Session data corrupted. Please log in again.");
       return;
     }
-    const id = lsd._id;
+    const id = lsd._id || lsd.userId;
     if (!id) {
       setLoaded(true);
       setError("Session missing user ID. Please log in again.");

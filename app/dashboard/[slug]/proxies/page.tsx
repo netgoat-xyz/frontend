@@ -13,13 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Edit,
-  Trash2,
-  RefreshCw,
-  Lock,
-  Unlock,
-} from "lucide-react";
+import { Edit, Trash2, RefreshCw, Lock, Unlock } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -43,7 +37,11 @@ import {
 import { IconWorld } from "@tabler/icons-react";
 import { PageTitle } from "@/components/SiteTitle";
 
-export default function Page({ params }: { params: Promise<{ slug: string }> }) {
+export default function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const [filter, setFilter] = useState("all");
   const [proxies, setProxies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,11 +59,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     target: "",
     port: 80,
   });
-  
 
   const fetchProxies = async () => {
     setLoading(true);
-        const param = await params
+    const param = await params;
 
     try {
       const res = await fetch(
@@ -101,13 +98,16 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     }
     setSaving(true);
 
-    const param = await params
+    const param = await params;
     try {
       await fetch(
         `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/manage-proxy?domain=${param.slug}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+          },
           body: JSON.stringify({
             slug: form.slug,
             domain: param.slug,
@@ -139,11 +139,36 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     }
   };
 
-  const handleDelete = async (slug: string) => {
-    toast(`Deleting ${slug}...`);
-    await new Promise((r) => setTimeout(r, 500));
-    setProxies((prev) => prev.filter((p) => p.slug !== slug));
-    toast.success(`${slug} removed.`);
+  const handleDelete = async (_id: string, name: string) => {
+    toast(`Deleting ${name}...`);
+    await new Promise((r) => setTimeout(r, 300));
+
+    const param = await params;
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/manage-proxy?domain=${param.slug}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+          },
+          body: JSON.stringify({
+            action: "delete",
+            proxyId: _id, // trim to match backend
+          }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || "Failed");
+
+      setProxies((prev) => prev.filter((p) => p._id !== _id));
+      toast.success(`${name} deleted.`);
+    } catch (err: any) {
+      toast.error(`Failed to delete ${name}: ${err.message}`);
+    }
   };
 
   const filteredProxies =
@@ -274,7 +299,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
               </EmptyHeader>
               <EmptyContent>
                 <div className="flex gap-2">
-                  <Button>Create Proxy</Button>
+                  <Button onClick={() => {setModalOpen(true)}}>Create Proxy</Button>
                   <Button variant="outline">Import Proxies</Button>
                 </div>
               </EmptyContent>
@@ -343,7 +368,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                       <Button
                         size="icon"
                         variant="ghost"
-                        onClick={() => handleDelete(proxy.slug)}
+                        onClick={() => handleDelete(proxy._id, proxy.slug)}
                       >
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </Button>
