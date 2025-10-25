@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 
 export default function Header() {
+  const router = useRouter();
+
   return (
     <header className="relative z-20 flex items-center justify-between p-6">
       {/* Logo */}
@@ -12,32 +16,26 @@ export default function Header() {
         </h1>
       </Link>
       {/* Navigation */}
-      <nav className="flex items-center space-x-2">
-        <Link
-          href="#"
-          className="text-white/80 hover:text-white text-xs font-light px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
-        >
-          Features
-        </Link>
-        <Link
-          href="/blog"
-          className="text-white/80 hover:text-white text-xs font-light px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
-        >
-          Blogs
-        </Link>
-        <Link
-          href="#"
-          className="text-white/80 hover:text-white text-xs font-light px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
-        >
-          Pricing
-        </Link>
-        <Link
-          href="#"
-          className="text-white/80 hover:text-white text-xs font-light px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
-        >
-          Docs
-        </Link>
-      </nav>
+<nav className="relative flex items-center  rounded-full before:absolute before:inset-0">
+   <Link href="/" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-full bg-white/10 transition-all duration-200">
+    Home
+  </Link>
+     <div className="mx-1 w-[1px] h-6 relative z-10"></div> 
+
+  <Link href="/blog" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-l-full bg-white/10 transition-all duration-200">
+    Blogs
+  </Link>
+  <Link href="https://docs.netgoat.xyz" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-r-full bg-white/10 transition-all duration-200">
+    Docs
+  </Link>
+   <div className="mx-1 w-[1px] h-6 relative z-10"></div> 
+  <Link href="https://discord.gg/3aJ7MdJsZV" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-l-full bg-white/10 transition-all duration-200">
+    Discord
+  </Link>
+  <Link href="https://github.com/netgoat-xyz/netgoat" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-r-full bg-white/10 transition-all duration-200">
+    Source Code
+  </Link>
+</nav>
 
       {/* Login Button Group with Arrow */}
       <div
@@ -45,7 +43,7 @@ export default function Header() {
         className="relative flex items-center group"
         style={{ filter: "url(#gooey-filter)" }}
       >
-        <button className="absolute right-0 px-2.5 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center justify-center -translate-x-10 group-hover:-translate-x-19 z-0">
+        <button onClick={() => { router.push('/auth') }} className="absolute right-0 px-2.5 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center justify-center -translate-x-10 group-hover:-translate-x-19 z-0">
           <svg
             className="w-3 h-3"
             fill="none"
@@ -60,7 +58,7 @@ export default function Header() {
             />
           </svg>
         </button>
-        <button className="px-6 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center z-10">
+        <button onClick={() => { router.push('/auth') }} className="px-6 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center z-10">
           Login
         </button>
       </div>
