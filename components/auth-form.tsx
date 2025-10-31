@@ -118,6 +118,7 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
       {...props}
     >
       <Card className="overflow-hidden p-0 w-full max-w-[420px] min-w-[320px] mx-auto flex items-center justify-center">
+    
         <CardContent className="flex flex-col p-0 min-h-0 w-full items-center justify-center">
           <div className="p-8 flex flex-col justify-center w-full items-center">
             <div className="flex flex-col gap-10 w-full items-center">

@@ -12,7 +12,7 @@ export default function HeroContent() {
         >
           <div className="absolute top-0 left-1 right-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full" />
           <span className="text-white/90 text-xs font-light relative z-10">
-            ✨ Public Beta - Released{" "}
+            ✨ Public Beta - Coming Soon...
           </span>
         </div>
 

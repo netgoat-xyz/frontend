@@ -4,12 +4,12 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { WebVitals } from "./_components/web-vitals";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 
 export const metadata = {
   title: "Netgoat.xyz - Main Page",
   description: "Welcome to Cloudable",
 };
-
 export default function RootLayout({
   children,
 }: {
