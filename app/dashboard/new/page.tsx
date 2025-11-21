@@ -14,6 +14,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Globe, Shield, Zap, Upload, FileText, Wrench } from "lucide-react";
+import { AppSidebar } from "@/components/home-sidebar";
+import SiteHeader from "@/components/site-header";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { PageTitle } from "@/components/SiteTitle";
 
 function BotBlockCard({
   value,
@@ -33,7 +37,7 @@ function BotBlockCard({
         "group relative cursor-pointer select-none rounded-lg border-2 p-4 transition-all duration-200 hover:shadow-md",
         checked
           ? "border-primary shadow-sm ring-1 ring-primary/20"
-          : "border-border bg-card hover:border-border/80 hover:bg-accent/50",
+          : "border-border bg-card hover:border-border/80 hover:bg-accent/50"
       )}
     >
       <div className="flex items-center justify-between">
@@ -43,7 +47,7 @@ function BotBlockCard({
             "h-4 w-4 rounded-full border-2 transition-colors",
             checked
               ? "border-primary bg-primary"
-              : "border-muted-foreground group-hover:border-foreground/60",
+              : "border-muted-foreground group-hover:border-foreground/60"
           )}
         >
           {checked && (
@@ -73,7 +77,7 @@ function DNSOrRev({
         "group relative cursor-pointer select-none rounded-lg border-2 p-4 transition-all duration-200 hover:shadow-md",
         checked
           ? "border-primary shadow-sm ring-1 ring-primary/20"
-          : "border-border bg-card hover:border-border/80 hover:bg-accent/50",
+          : "border-border bg-card hover:border-border/80 hover:bg-accent/50"
       )}
     >
       <div className="flex items-center justify-between">
@@ -83,7 +87,7 @@ function DNSOrRev({
             "h-4 w-4 rounded-full border-2 transition-colors",
             checked
               ? "border-primary bg-primary"
-              : "border-muted-foreground group-hover:border-foreground/60",
+              : "border-muted-foreground group-hover:border-foreground/60"
           )}
         >
           {checked && (
@@ -126,174 +130,194 @@ export default function NewDomainPage() {
     }
   };
 
+  const [dnsMethod, setDnsMethod] = useState("quick-scan");
+
   return (
-    <div className="space-y-6 p-5">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Add New Domain
-        </h1>
-        <p className="text-muted-foreground">
-          Configure your domain settings and DNS records
-        </p>
-      </div>
+    <SidebarProvider>
+      <AppSidebar variant="inset" id="AppSidebar" />
+      <SidebarInset id="SidebarInset">
+        <SiteHeader title="Manage domains" id="SiteHeader" />
 
-      <div className="space-y-6">
-        {/* Domain Configuration Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5 text-primary" />
-              Domain Configuration
-            </CardTitle>
-            <CardDescription>
-              Enter your domain name and choose how to configure DNS records
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="domain-name" className="text-sm font-medium">
-                Domain Name
-              </Label>
-              <Input
-                id="domain-name"
-                placeholder="example.com"
-                className="h-11"
-              />
-            </div>
+        <div className="space-y-6 p-5">
+          <PageTitle title="Create a domain" subtitle="Create a domain to be hosted by Netgoat" />
 
-            <div className="space-y-4">
-              <Label className="text-sm font-medium">
-                DNS Configuration Method
-              </Label>
-
-              <Label className="group flex cursor-pointer items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
-                <Checkbox
-                  id="quick-scan"
-                  defaultChecked
-                  className="mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                />
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-primary" />
-                    <span className="font-medium text-foreground">
-                      Automatically scan for DNS Records
-                    </span>
-                    <Badge variant="secondary" className="text-xs">
-                      Recommended
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    NetGoat will automatically scan for DNS records and add them
-                    to your domain.
-                  </p>
+          <div className="space-y-6">
+            {/* Domain Configuration Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-primary" />
+                  Domain Configuration
+                </CardTitle>
+                <CardDescription>
+                  Enter your domain name and choose how to configure DNS records
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="domain-name" className="text-sm font-medium">
+                    Domain Name
+                  </Label>
+                  <Input
+                    id="domain-name"
+                    placeholder="example.com"
+                    className="h-11"
+                  />
                 </div>
-              </Label>
 
-              <Label className="group flex cursor-pointer items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
-                <Checkbox
-                  id="manual"
-                  className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                />
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium text-foreground">
-                  Manually input records
-                </span>
-              </Label>
+                <div className="space-y-4">
+                  <Label className="text-sm font-medium">
+                    DNS Configuration Method
+                  </Label>
 
-              <Label className="group flex cursor-pointer items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
-                <Checkbox
-                  id="upload-zone"
-                  className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                />
-                <Upload className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium text-foreground">
-                  Upload a DNS zone file
-                </span>
-              </Label>
-            </div>
-          </CardContent>
-        </Card>
+                  <Label className="group flex cursor-pointer items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
+                    <Checkbox
+                      id="quick-scan"
+                      defaultChecked
+                                            checked={dnsMethod === "quick-scan"}
+                      onCheckedChange={() => setDnsMethod("quick-scan")}
 
-        {/* Mode Select */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wrench className="h-5 w-5 text-primary" />
-              DNS or Reverse Proxy
-            </CardTitle>
-            <CardDescription>
-              Configure how AI bots and crawlers interact with your website
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                { label: "DNS Only", value: "DNSOnly" },
-                { label: "Reverse proxy Only", value: "RevOnly" },
-                {
-                  label: "Both DNS And Reverse Proxy",
-                  value: "BothDNSnReverse",
-                },
-              ].map((opt) => (
-                <DNSOrRev
-                  key={opt.value}
-                  value={opt.value}
-                  label={opt.label}
-                  checked={Mode === opt.value}
-                  onChange={handleModeChange}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                      className="mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-4 w-4 text-primary" />
+                        <span className="font-medium text-foreground">
+                          Automatically scan for DNS Records
+                        </span>
+                        <Badge variant="secondary" className="text-xs">
+                          Recommended
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        NetGoat will automatically scan for DNS records and add
+                        them to your domain.
+                      </p>
+                    </div>
+                  </Label>
 
-        {/* AI Bot Control Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              AI Bot & Crawler Control
-            </CardTitle>
-            <CardDescription>
-              Configure how AI bots and crawlers interact with your website
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                { label: "Block on all pages", value: "all" },
-                { label: "Block only on hostnames with ads", value: "ads" },
-                { label: "Do not block (off)", value: "off" },
-              ].map((opt) => (
-                <BotBlockCard
-                  key={opt.value}
-                  value={opt.value}
-                  label={opt.label}
-                  checked={blockMode === opt.value}
-                  onChange={handleBlockChange}
-                />
-              ))}
-            </div>
+                  <Label className="group flex cursor-pointer items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
+                    <Checkbox
+                      id="manual"
+                                            checked={dnsMethod === "manual"}
+                      onCheckedChange={() => setDnsMethod("manual")}
 
-            <Label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
-              <Checkbox
-                id="manage-robots"
-                defaultChecked
-                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-              />
-              <span className="font-medium text-foreground">
-                Manage AI bot traffic with robots.txt
-              </span>
-            </Label>
-          </CardContent>
-        </Card>
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium text-foreground">
+                      Manually input records
+                    </span>
+                  </Label>
 
-        <div className="flex justify-start">
-          <Button size="lg" className="min-w-32">
-            Continue
-          </Button>
+                  <Label className="group flex cursor-pointer items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
+                    <Checkbox
+                      id="upload-zone"
+                      checked={dnsMethod === "upload-zone"}
+                      onCheckedChange={() => setDnsMethod("upload-zone")}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <Upload className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium text-foreground">
+                      Upload a DNS zone file
+                    </span>
+                  </Label>
+                  {dnsMethod === "upload-zone" && (
+                    <div className="rounded-lg border border-border p-4 bg-accent/50 transition-all duration-300 animate-in fade-in-50 slide-in-from-bottom-2">
+                      <Label htmlFor="zonefile">Zone file</Label>
+                      <Input
+                        id="zonefile"
+                        type="file"
+                        accept=".txt,.zone"
+                        className="mt-2"
+                      />
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Mode Select */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Wrench className="h-5 w-5 text-primary" />
+                  DNS or Reverse Proxy
+                </CardTitle>
+                <CardDescription>
+                  Configure how AI bots and crawlers interact with your website
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    { label: "DNS Only", value: "DNSOnly" },
+                    { label: "Reverse proxy Only", value: "RevOnly" },
+                    {
+                      label: "Both DNS And Reverse Proxy",
+                      value: "BothDNSnReverse",
+                    },
+                  ].map((opt) => (
+                    <DNSOrRev
+                      key={opt.value}
+                      value={opt.value}
+                      label={opt.label}
+                      checked={Mode === opt.value}
+                      onChange={handleModeChange}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* AI Bot Control Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  AI Bot & Crawler Control
+                </CardTitle>
+                <CardDescription>
+                  Configure how AI bots and crawlers interact with your website
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    { label: "Block on all pages", value: "all" },
+                    { label: "Block only on hostnames with ads", value: "ads" },
+                    { label: "Do not block (off)", value: "off" },
+                  ].map((opt) => (
+                    <BotBlockCard
+                      key={opt.value}
+                      value={opt.value}
+                      label={opt.label}
+                      checked={blockMode === opt.value}
+                      onChange={handleBlockChange}
+                    />
+                  ))}
+                </div>
+
+                <Label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
+                  <Checkbox
+                    id="manage-robots"
+                    defaultChecked
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <span className="font-medium text-foreground">
+                    Manage AI bot traffic with robots.txt
+                  </span>
+                </Label>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="sticky bottom-2 rounded-lg shadow shadow-accent transition-all duration-150 z-10 m-2 bg-sidebar-accent/65 backdrop-blur p-3">
+            <Button size="lg" className="min-w-32 ">
+              Continue
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

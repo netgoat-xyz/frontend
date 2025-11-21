@@ -21,6 +21,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 const data = {
   user: {
@@ -31,27 +32,22 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard,
     },
     {
       title: "Edge Status",
-      url: "#",
+      url: "https://status.netgoat.xyz",
       icon: IconListDetails,
     },
     {
-      title: "Global Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
       title: "Blogs",
-      url: "#",
+      url: "https://netgoat.xyz/blogs",
       icon: IconFolder,
     },
     {
       title: "Zero Trust",
-      url: "#",
+      url: "/dashboard/zero-trust",
       icon: IconUsers,
     },
   ],
@@ -67,10 +63,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link href="https://netgoat.xyz" target="_blank" rel="noreferrer" className="flex items-center gap-2">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">NetGoat.</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

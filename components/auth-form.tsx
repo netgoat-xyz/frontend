@@ -16,7 +16,9 @@ interface AuthFormProps extends React.ComponentProps<"div"> {
 }
 
 export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<
+    "login" | "register" | "forgot" | "2fa" | "emailcheck"
+  >("login");
   const [direction, setDirection] = useState<1 | -1>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +34,9 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
   }, []);
 
   // Helper to switch mode and set direction
-  const switchMode = (target: "login" | "register") => {
+  const switchMode = (
+    target: "login" | "register" | "forgot" | "2fa" | "emailcheck"
+  ) => {
     if (target === mode) return;
     setDirection(target === "register" ? 1 : -1);
     setMode(target);
@@ -49,26 +53,29 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
     const password = (form.elements.namedItem("password") as HTMLInputElement)
       ?.value;
     try {
-      const res = await axios.post(process.env.NEXT_PUBLIC_BACKENDAPI + "/api/auth/login", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        process.env.NEXT_PUBLIC_BACKENDAPI + "/api/auth/login",
+        {
+          email,
+          password,
+        }
+      );
       if (res.data.jwt) {
         localStorage.setItem("jwt", res.data.jwt);
 
-          try {
-            const ress = await fetch("/api/session", {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${res.data.jwt}`,
-              },
-            });
-            const data = await ress.json();
-            localStorage.setItem("session", JSON.stringify(data));
-          } catch (err) {
-            console.error("Session fetch failed", err);
-          }
+        try {
+          const ress = await fetch("/api/session", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${res.data.jwt}`,
+            },
+          });
+          const data = await ress.json();
+          localStorage.setItem("session", JSON.stringify(data));
+        } catch (err) {
+          console.error("Session fetch failed", err);
+        }
         onSuccess(); // always happens
       } else if (res.data.requires2FA) {
         setError("2FA required. Please complete 2FA flow.");
@@ -94,11 +101,14 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
     const password = (form.elements.namedItem("password") as HTMLInputElement)
       ?.value;
     try {
-      await axios.post(process.env.NEXT_PUBLIC_BACKENDAPI + "/api/auth/register", {
-        username,
-        email,
-        password,
-      });
+      await axios.post(
+        process.env.NEXT_PUBLIC_BACKENDAPI + "/api/auth/register",
+        {
+          username,
+          email,
+          password,
+        }
+      );
       setMode("login");
 
       setDirection(-1);
@@ -113,12 +123,11 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
     <div
       className={cn(
         "flex flex-col w-full gap-6 items-center justify-center min-h-screen",
-        className,
+        className
       )}
       {...props}
     >
       <Card className="overflow-hidden p-0 w-full max-w-[420px] min-w-[320px] mx-auto flex items-center justify-center">
-    
         <CardContent className="flex flex-col p-0 min-h-0 w-full items-center justify-center">
           <div className="p-8 flex flex-col justify-center w-full items-center">
             <div className="flex flex-col gap-10 w-full items-center">
@@ -132,7 +141,11 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     className="text-2xl font-bold"
                   >
-                    {mode === "login" ? "Welcome back" : "Create your account"}
+                    {mode === "login" && "Welcome back"}
+                    {mode == "register" && "Create your account"}
+                    {mode == "forgot" && "Forgot your password?"}
+                    {mode == "2fa" && "2FA Verification"}
+                    {mode == "emailcheck" && "Verify your email"}
                   </motion.h1>
                   <motion.p
                     key={mode + "-desc"}
@@ -147,9 +160,11 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
                     }}
                     className="text-muted-foreground text-balance text-base px-2"
                   >
-                    {mode === "login"
-                      ? "Login to your NetGoat account"
-                      : "Sign up for an NetGoat account"}
+                    {mode === "login" && "Login to your NetGoat account"}
+                    {mode == "register" && "Sign up for an NetGoat account"}
+                    {mode == "forgot" && "Reset your password here"}
+                    {mode == "2fa" && "Enter your 2FA code"}
+                    {mode == "emailcheck" && "Verify your email address"}
                   </motion.p>
                 </AnimatePresence>
                 {error && (
@@ -158,7 +173,7 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
               </div>
               <div className="relative flex items-center w-full justify-center">
                 <AnimatePresence mode="wait" initial={false}>
-                  {mode === "login" ? (
+                  {mode === "login" && (
                     <motion.form
                       key="login"
                       initial={{ x: direction === 1 ? -64 : 64, opacity: 0 }}
@@ -185,12 +200,12 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
                       <div className="grid gap-2 w-full">
                         <div className="flex items-center">
                           <Label htmlFor="password">Password</Label>
-                          <a
-                            href="#"
+                          <button
+                            onClick={() => switchMode("forgot")}
                             className="ml-auto text-sm underline-offset-2 hover:underline"
                           >
                             Forgot your password?
-                          </a>
+                          </button>
                         </div>
                         <Input
                           id="password"
@@ -217,7 +232,8 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
                         </button>
                       </div>
                     </motion.form>
-                  ) : (
+                  )}{" "}
+                  {mode === "register" && (
                     <motion.form
                       key="register"
                       initial={{ x: direction === 1 ? 64 : -64, opacity: 0 }}
@@ -269,6 +285,55 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
                       </Button>
                       <div className="text-center text-sm mt-2">
                         Already have an account?{" "}
+                        <button
+                          type="button"
+                          className="underline underline-offset-4"
+                          onClick={() => switchMode("login")}
+                        >
+                          Sign in
+                        </button>
+                      </div>
+                    </motion.form>
+                  )}
+                  {mode === "forgot" && (
+                    <motion.form
+                      key="forgot"
+                      initial={{ x: direction === 1 ? 64 : -64, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: direction === 1 ? -64 : 64, opacity: 0 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                      className="flex flex-col gap-7 w-full items-center"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        // Handle forgot password logic here
+                        alert(
+                          "Password reset link sent (not really, this is a placeholder)."
+                        );
+                        switchMode("login");
+                      }}
+                    >
+                      <div className="grid gap-2 w-full">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="aaa"
+                        ></Input>
+                      </div>
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={loading}
+                      >
+                        {loading ? "Sending..." : "Send reset link"}
+                      </Button>
+                      <div className="text-center text-sm mt-2">
+                        Remembered your password?{" "}
                         <button
                           type="button"
                           className="underline underline-offset-4"

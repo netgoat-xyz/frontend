@@ -17,6 +17,7 @@ import {
 import { Globe } from "lucide-react";
 import { ArrowUpRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 type Domain = {
   group: string;
@@ -43,6 +44,8 @@ export default function DashboardHomePage() {
   const [data, setData] = useState<Data | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     const sessionStr = localStorage.getItem("session");
@@ -148,7 +151,11 @@ export default function DashboardHomePage() {
                         </EmptyHeader>
                         <EmptyContent>
                           <div className="flex gap-2">
-                            <Button>Create Domain</Button>
+                            <Button
+                              onClick={() => router.push("/dashboard/new")}
+                            >
+                              Create Domain
+                            </Button>
                             <Button variant="outline">Import Domain</Button>
                           </div>
                         </EmptyContent>

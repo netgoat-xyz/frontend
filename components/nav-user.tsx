@@ -7,7 +7,6 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -24,26 +23,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export const dynamic = "force-dynamic";
 
-export function signOut() {
-  const router = useRouter();
-
-  return () => {
-    localStorage.removeItem("jwt");
-    localStorage.removeItem("session");
-    router.replace("/");
-  };
-}
-
 type User = { name: string; email: string; avatar: string };
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
   const [session, setSession] = useState<{
     username: string;
     email: string;
@@ -53,6 +42,12 @@ export function NavUser({ user }: { user: User }) {
     const sess = JSON.parse(localStorage.getItem("session") ?? "null");
     setSession(sess);
   }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("session");
+    router.replace("/");
+  };
 
   return (
     <SidebarMenu>
@@ -102,9 +97,7 @@ export function NavUser({ user }: { user: User }) {
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {
-                      session?.username
-                    }
+                    {session?.username}
                   </span>
                   <span className="text-muted-foreground truncate text-xs">
                     {session?.email}
@@ -128,11 +121,7 @@ export function NavUser({ user }: { user: User }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                signOut();
-              }}
-            >
+            <DropdownMenuItem onClick={handleSignOut}>
               <IconLogout />
               Log out
             </DropdownMenuItem>
