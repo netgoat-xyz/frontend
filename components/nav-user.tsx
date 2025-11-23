@@ -35,6 +35,7 @@ export function NavUser({ user }: { user: User }) {
   const router = useRouter();
   const [session, setSession] = useState<{
     username: string;
+    avatar: string;
     email: string;
   } | null>(null);
 
@@ -43,6 +44,10 @@ export function NavUser({ user }: { user: User }) {
     setSession(sess);
   }, []);
 
+  const avatar =
+    `${process.env.NEXT_PUBLIC_BACKENDAPI}/avatars${session?.avatar}` ||
+    `https://www.tapback.co/api/avatar/${session?.username || "unknown"}`;
+  
   const handleSignOut = () => {
     localStorage.removeItem("jwt");
     localStorage.removeItem("session");
@@ -61,7 +66,7 @@ export function NavUser({ user }: { user: User }) {
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 {session && (
                   <AvatarImage
-                    src={`https://www.tapback.co/api/avatar/${session.username}`}
+                    src={avatar}
                     alt={session.username}
                   />
                 )}
@@ -89,7 +94,7 @@ export function NavUser({ user }: { user: User }) {
                 <Avatar className="h-8 w-8 rounded-lg">
                   {session && (
                     <AvatarImage
-                      src={`https://www.tapback.co/api/avatar/${session.username}`}
+                      src={avatar}
                       alt={session.username}
                     />
                   )}

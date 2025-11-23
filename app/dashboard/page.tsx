@@ -47,47 +47,27 @@ export default function DashboardHomePage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const sessionStr = localStorage.getItem("session");
-    if (!sessionStr) {
-      setLoaded(true);
-      setError("No session found. Please log in again.");
-      return;
-    }
-    let lsd: any = {};
-    try {
-      lsd = JSON.parse(sessionStr || "{}");
-    } catch (e) {
-      setLoaded(true);
-      setError("Session data corrupted. Please log in again.");
-      return;
-    }
-    const id = lsd._id || lsd.userId;
-    if (!id) {
-      setLoaded(true);
-      setError("Session missing user ID. Please log in again.");
-      return;
-    }
+useEffect(() => {
+  setLoaded(false)
+  setError(null)
 
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKENDAPI}/api/${id}`, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-        },
-      })
-      .then((res) => {
-        setData(res.data || null);
-        //localStorage.setItem("session", JSON.stringify(res.data));
-        setLoaded(true);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("Domain fetch failed", err);
-        setLoaded(true);
-        setError("Failed to fetch domains. Please try again.");
-      });
-  }, []);
+  axios
+    .get(`/api/session`, {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      },
+    })
+    .then((res) => {
+      setData(res.data || null)
+      localStorage.setItem("session", JSON.stringify(res.data || {}))
+      setLoaded(true)
+    })
+    .catch(() => {
+      setLoaded(true)
+      setError("Failed to load session. Please log in again.")
+    })
+}, [])
 
   // Interactive loading/error overlay (hidden after loaded)
   const LoadingOverlay = (

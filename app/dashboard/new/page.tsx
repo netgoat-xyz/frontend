@@ -116,6 +116,23 @@ export default function NewDomainPage() {
     return "all";
   });
 
+  // Controlled state for DNS method and domain name
+  const [dnsMethod, setDnsMethod] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const saved = window.localStorage.getItem("dnsMethod");
+      if (saved) return saved;
+    }
+    return "quick-scan";
+  });
+
+  const [domainName, setDomainName] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const saved = window.localStorage.getItem("lastDomainName");
+      if (saved) return saved;
+    }
+    return "";
+  });
+
   const handleBlockChange = (value: string) => {
     setBlockMode(value);
     if (typeof window !== "undefined") {
@@ -130,8 +147,28 @@ export default function NewDomainPage() {
     }
   };
 
-  const [dnsMethod, setDnsMethod] = useState("quick-scan");
+  // Save current configuration and provide simple validation
+  const handleContinue = () => {
+    if (!domainName || !domainName.trim()) {
+      // lightweight validation; replace with a nicer UI notification if needed
+      alert("Please enter a domain name before continuing.");
+      return;
+    }
 
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("lastDomainName", domainName.trim());
+      window.localStorage.setItem("dnsMethod", dnsMethod);
+      window.localStorage.setItem("aiBotBlockMode", blockMode);
+      window.localStorage.setItem("modeChange", Mode);
+    }
+
+    console.log("Domain configuration saved:", {
+      domainName: domainName.trim(),
+      dnsMethod,
+      blockMode,
+      Mode,
+    });
+  };
   return (
     <SidebarProvider>
       <AppSidebar variant="inset" id="AppSidebar" />
@@ -162,6 +199,8 @@ export default function NewDomainPage() {
                     id="domain-name"
                     placeholder="example.com"
                     className="h-11"
+                    value={domainName}
+                    onChange={(e) => setDomainName((e.target as HTMLInputElement).value)}
                   />
                 </div>
 
@@ -173,10 +212,8 @@ export default function NewDomainPage() {
                   <Label className="group flex cursor-pointer items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
                     <Checkbox
                       id="quick-scan"
-                      defaultChecked
-                                            checked={dnsMethod === "quick-scan"}
+                      checked={dnsMethod === "quick-scan"}
                       onCheckedChange={() => setDnsMethod("quick-scan")}
-
                       className="mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                     <div className="flex-1 space-y-1">
@@ -199,9 +236,8 @@ export default function NewDomainPage() {
                   <Label className="group flex cursor-pointer items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50">
                     <Checkbox
                       id="manual"
-                                            checked={dnsMethod === "manual"}
+                      checked={dnsMethod === "manual"}
                       onCheckedChange={() => setDnsMethod("manual")}
-
                       className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                     <FileText className="h-4 w-4 text-muted-foreground" />
@@ -222,15 +258,11 @@ export default function NewDomainPage() {
                       Upload a DNS zone file
                     </span>
                   </Label>
+
                   {dnsMethod === "upload-zone" && (
                     <div className="rounded-lg border border-border p-4 bg-accent/50 transition-all duration-300 animate-in fade-in-50 slide-in-from-bottom-2">
                       <Label htmlFor="zonefile">Zone file</Label>
-                      <Input
-                        id="zonefile"
-                        type="file"
-                        accept=".txt,.zone"
-                        className="mt-2"
-                      />
+                      <Input id="zonefile" />
                     </div>
                   )}
                 </div>
@@ -312,7 +344,7 @@ export default function NewDomainPage() {
             </Card>
           </div>
           <div className="sticky bottom-2 rounded-lg shadow shadow-accent transition-all duration-150 z-10 m-2 bg-sidebar-accent/65 backdrop-blur p-3">
-            <Button size="lg" className="min-w-32 ">
+            <Button size="lg" className="min-w-32 " onClick={handleContinue}>
               Continue
             </Button>
           </div>
