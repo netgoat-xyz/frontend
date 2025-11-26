@@ -1,15 +1,16 @@
+import mongoose from "mongoose";
+
 import { verifySession } from "@/lib/session";
 import User from "@/models/User";
 
 // Ensure MongoDB connection
 async function connectDB() {
-  if ((global as any).mongoose?.connection?.readyState === 1) {
-    return;
-  }
-  const mongoose = require("mongoose");
+  if ((global as any).mongoose?.connection?.readyState === 1) return;
+
   if (!process.env.MONGODB_URI) {
     throw new Error("MONGODB_URI environment variable is not set");
   }
+
   await mongoose.connect(process.env.MONGODB_URI);
 }
 

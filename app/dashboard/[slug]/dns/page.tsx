@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/prefer-as-const
-
+// eslint-disable-next-line 
 import dynamic from "next/dynamic";
 
 const DNSPageContent = dynamic(() => import("@/components/DNS-Record-Page"));

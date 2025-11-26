@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function Avatar() {
   const [src, setSrc] = useState("");
@@ -23,7 +24,7 @@ export default function Avatar() {
     if (!src) return null; // don’t render until ready
 
   return (
-    <img
+    <Image
       alt="AAAAA"
       width={96}
       height={96}

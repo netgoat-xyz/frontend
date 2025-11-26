@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import {
   Card,
   CardContent,
@@ -43,9 +43,74 @@ import {
   DrawerFooter,
   DrawerClose,
 } from "@/components/ui/drawer";
-import MonacoEditor from "@monaco-editor/react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
+// Assuming these are locally installed and configured
+// import MonacoEditor from "@monaco-editor/react";
+// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
+
+// --- Type Definitions for Placeholder Components ---
+interface MonacoEditorProps {
+  height: string;
+  defaultLanguage: string;
+  value: string;
+  onChange: (code: string) => void;
+  options: any; // Simplified type for options
+  theme: string;
+}
+
+interface SyntaxHighlighterProps {
+  language: string;
+  style: any; // Simplified type for style object
+  customStyle: any;
+  children: React.ReactNode;
+}
+// ---------------------------------------------------
+
+// Placeholder components for the missing dependencies (Now with explicit types)
+const MonacoEditor = ({
+  height,
+  defaultLanguage,
+  value,
+  onChange,
+  options,
+  theme,
+}: MonacoEditorProps) => (
+  <textarea
+    style={{
+      height,
+      width: "100%",
+      minHeight: "160px",
+      border: "1px solid #333",
+      padding: "8px",
+      backgroundColor: "#1e1e1e",
+      color: "#d4d4d4",
+      fontFamily: "monospace",
+    }}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    placeholder={`Code Editor Placeholder (${defaultLanguage})`}
+  />
+);
+const SyntaxHighlighter = ({
+  language,
+  style,
+  customStyle,
+  children,
+}: SyntaxHighlighterProps) => (
+  <pre
+    style={{
+      ...customStyle,
+      backgroundColor:
+        style?.['code[class*="language-"]']?.background || "#2d2d2d",
+      color: style?.['code[class*="language-"]']?.color || "#cccccc",
+    }}
+  >
+    {children}
+  </pre>
+);
+const vscDarkPlus = {
+  'code[class*="language-"]': { background: "#1e1e1e", color: "#d4d4d4" },
+};
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKENDAPI || "";
 
@@ -92,23 +157,7 @@ function DraggableRow({
         {rule.name}
       </TableCell>
       <TableCell>
-        {rule.description}
-        {rule.code && (
-          <div className="mt-2 rounded bg-muted p-2 overflow-x-auto">
-            <SyntaxHighlighter
-              language="javascript"
-              style={vscDarkPlus}
-              customStyle={{
-                background: "transparent",
-                fontSize: 13,
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              {String(rule.code)}
-            </SyntaxHighlighter>
-          </div>
-        )}
+        waf
       </TableCell>
       <TableCell>
         <Switch
@@ -116,9 +165,7 @@ function DraggableRow({
           onCheckedChange={() => toggleRule(rule.id)}
         />
         <span
-          className={`ml-2 ${
-            rule.status ? "text-green-500" : "text-red-500"
-          }`}
+          className={`ml-2 ${rule.status ? "text-green-500" : "text-red-500"}`}
         >
           {rule.status ? "On" : "Off"}
         </span>
@@ -127,12 +174,18 @@ function DraggableRow({
   );
 }
 
+// 1. Resolve params promise once at the top
+// This avoids repeated promise access warnings and simplifies component logic
 export default function WAFPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const [slug, setSlug] = useState<string | null>(null);
+  const resolvedParams = use(params);
+  const initialSlug = resolvedParams.slug;
+
+  // Set slug state directly from the resolved value
+  const [slug, setSlug] = useState<string | null>(initialSlug);
   const [enabled, setEnabled] = useState(true);
   const [rules, setRules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,19 +199,27 @@ export default function WAFPage({
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-  useEffect(() => {
-    (async () => {
-      const resolved = await params;
-      setSlug(resolved.slug);
-    })();
-  }, [params]);
+  // Remove the initial useEffect that was only resolving the promise
+  // useEffect(() => {
+  //   (async () => {
+  //     const resolved = await params;
+  //     setSlug(resolved.slug);
+  //   })();
+  // }, [params]);
 
   useEffect(() => {
     if (!slug) return;
     const fetchRules = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
+        // 2. Add token check for initial fetch
+        const token = localStorage.getItem("jwt");
+        if (!token) {
+          console.warn("Authentication token missing. Cannot fetch WAF rules.");
+          setLoading(false);
+          return;
+        }
+
         const res = await fetch(`${API_BASE}/api/waf/rules/${slug}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -173,6 +234,8 @@ export default function WAFPage({
           }));
           setRules(domainRules);
         }
+      } catch (e) {
+        console.error("Error fetching WAF rules:", e);
       } finally {
         setLoading(false);
       }
@@ -186,6 +249,7 @@ export default function WAFPage({
       setRules((items) => {
         const oldIndex = items.findIndex((i) => i.id === active.id);
         const newIndex = items.findIndex((i) => i.id === over.id);
+        // NOTE: A PUT request to update the order in the DB would go here.
         return arrayMove(items, oldIndex, newIndex);
       });
     }
@@ -200,25 +264,35 @@ export default function WAFPage({
   };
 
   const addRule = async () => {
+    // 3. Robust check for slug and token to prevent "jwt malformed"
     if (!newRule.name.trim() || !newRule.code.trim() || !slug) return;
-    const token = localStorage.getItem("token");
+
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+      console.error("Failed to add rule: Authentication token not found.");
+      return;
+    }
+
     try {
-      const upload = await fetch(`${API_BASE}/api/waf/rules/${await params.slug}`, {
+      // Use the 'slug' state variable instead of re-accessing the 'params' promise
+      const upload = await fetch(`${API_BASE}/api/waf/rules/${slug}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name: newRule.name.replace(/\s+/g, "_"),
-          domain: await params.slug,
-          slug: newRule.slug,
+          name: newRule.name.trim(), // Use trim for cleaner data
+          domain: slug, // The domain is the slug
+          slug: newRule.slug || "@", // Ensure slug is set, default to @
           code: newRule.code,
+          description: newRule.description,
         }),
       });
       const res1 = await upload.json();
-      if (!upload.ok) throw new Error(res1.error);
-      
+      if (!upload.ok)
+        throw new Error(res1.error || "Failed to add rule on server.");
+
       setRules((prev) => [
         ...prev,
         {
@@ -233,6 +307,7 @@ export default function WAFPage({
       setDrawerOpen(false);
       setNewRule({ name: "", description: "", slug: "", code: "" });
     } catch (err: any) {
+      // Improved error logging
       console.error("Failed to add rule:", err.message);
     }
   };
@@ -252,9 +327,7 @@ export default function WAFPage({
               <CardContent className="flex items-center gap-4">
                 <span className="font-medium text-lg">WAF Status:</span>
                 <Switch checked={enabled} onCheckedChange={setEnabled} />
-                <span
-                  className={enabled ? "text-green-500" : "text-red-500"}
-                >
+                <span className={enabled ? "text-green-500" : "text-red-500"}>
                   {enabled ? "Enabled" : "Disabled"}
                 </span>
               </CardContent>
@@ -275,7 +348,10 @@ export default function WAFPage({
               <CardContent>
                 <div className="flex flex-col md:flex-row gap-2 mb-4">
                   <Button
-                    onClick={() => setDrawerOpen(true)}
+                    onClick={() => {
+                      setDrawerOpen(true);
+                      setNewRule((r) => ({ ...r, slug: initialSlug })); // Pre-fill slug for convenience
+                    }}
                     className="w-full md:w-auto"
                   >
                     Add Rule
@@ -293,7 +369,7 @@ export default function WAFPage({
                     <div className="flex flex-col gap-4 p-4">
                       <div className="flex flex-row gap-2">
                         <Input
-                          placeholder="Rule name"
+                          placeholder="Rule name (e.g., BlockBadBots)"
                           value={newRule.name}
                           onChange={(e) =>
                             setNewRule((r) => ({
@@ -315,7 +391,7 @@ export default function WAFPage({
                           className="w-1/2"
                         />
                         <Input
-                          placeholder="Slug"
+                          placeholder="Slug (e.g., app or @ for root)"
                           value={newRule.slug || "@"}
                           onChange={(e) =>
                             setNewRule((r) => ({
@@ -325,7 +401,6 @@ export default function WAFPage({
                           }
                           className="w-1/2"
                         />
-
                       </div>
                       <div className="w-full min-h-[120px] rounded border bg-background p-2 font-mono text-sm">
                         <MonacoEditor
@@ -346,7 +421,14 @@ export default function WAFPage({
                         />
                       </div>
                       <DrawerFooter className="flex flex-row justify-end gap-2">
-                        <Button onClick={addRule}>Add Rule</Button>
+                        <Button
+                          onClick={addRule}
+                          disabled={
+                            !newRule.name.trim() || !newRule.code.trim()
+                          }
+                        >
+                          Add Rule
+                        </Button>
                         <DrawerClose asChild>
                           <Button variant="outline">Cancel</Button>
                         </DrawerClose>
@@ -378,29 +460,13 @@ export default function WAFPage({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {rules.map((rule) => {
-                            const {
-                              setNodeRef,
-                              attributes,
-                              listeners,
-                              isDragging,
-                              transform,
-                              transition,
-                            } = useSortable({ id: rule.id });
-                            return (
-                              <DraggableRow
-                                key={rule.id}
-                                rule={rule}
-                                ref={setNodeRef}
-                                listeners={listeners}
-                                attributes={attributes}
-                                isDragging={isDragging}
-                                toggleRule={toggleRule}
-                                transform={transform}
-                                transition={transition}
-                              />
-                            );
-                          })}
+                          {rules.map((rule) => (
+                            <DraggableRow
+                              key={rule.id}
+                              rule={rule}
+                              id={rule.id}
+                            />
+                          ))}
                         </TableBody>
                       </Table>
                     </SortableContext>

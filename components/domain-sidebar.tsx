@@ -75,37 +75,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const sessionStr = localStorage.getItem("session");
-    if (!sessionStr) {
-      setLoaded(true);
-      setError("No session found. Please log in again.");
-      return;
-    }
-
-    let lsd: any = {};
-    try {
-      lsd = JSON.parse(sessionStr || "{}");
-    } catch (e) {
-      setLoaded(true);
-      setError("Session data corrupted. Please log in again.");
-      return;
-    }
-
-    const id = lsd.userId;
-    if (!id) {
-      setLoaded(true);
-      setError("Session missing user ID. Please log in again.");
-      return;
-    }
+    console.log("1. UseEffect started");
 
     axios
-      .get(`${process.env.NEXT_PUBLIC_BACKENDAPI}/api/${id}`, {
+      .get(`/api/session`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("jwt")}`,
         },
       })
       .then((res) => {
-        setDatas(res.data || null);
+        setDatas(res.data);
         localStorage.setItem("session", JSON.stringify(res.data));
         setLoaded(true);
         setError(null);

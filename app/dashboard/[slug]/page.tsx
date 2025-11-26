@@ -1,3 +1,4 @@
+
 "use client";
 
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
