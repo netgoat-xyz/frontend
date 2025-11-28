@@ -5,6 +5,7 @@ import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SectionCards } from "@/components/section-cards";
+import config from "../../../public/config.json";
 
 interface DashboardPageProps {
   params: Promise<{ domain: string; slug: string }>;
@@ -69,7 +70,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
         }
 
         // Use environment variable with fallback
-        const logdbUrl = process.env.NEXT_PUBLIC_LOGDB || "http://localhost:3001";
+        const logdbUrl = config.logdb || "http://localhost:3001";
 
         const res = await axios.get<{ time: string; userAgent: string }[]>(
           `${logdbUrl}/api/${slug}/analytics?timeframe=${timeRange}`,

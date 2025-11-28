@@ -10,6 +10,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { verifySession } from "@/lib/session";
 import { useRouter } from "next/navigation";
+import config from "../public/config.json";
 
 interface AuthFormProps extends React.ComponentProps<"div"> {
   onSuccess: () => void;
@@ -54,7 +55,7 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
       ?.value;
     try {
       const res = await axios.post(
-        process.env.NEXT_PUBLIC_BACKENDAPI + "/api/auth/login",
+        config.backend + "/api/auth/login",
         {
           email,
           password,
@@ -102,7 +103,7 @@ export function AuthForm({ onSuccess, className, ...props }: AuthFormProps) {
       ?.value;
     try {
       await axios.post(
-        process.env.NEXT_PUBLIC_BACKENDAPI + "/api/auth/register",
+        config.backend + "/api/auth/register",
         {
           username,
           email,

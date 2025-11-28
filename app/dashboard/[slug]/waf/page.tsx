@@ -43,6 +43,8 @@ import {
   DrawerFooter,
   DrawerClose,
 } from "@/components/ui/drawer";
+import config from "../../../../public/config.json";
+
 // Assuming these are locally installed and configured
 // import MonacoEditor from "@monaco-editor/react";
 // import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -112,7 +114,7 @@ const vscDarkPlus = {
   'code[class*="language-"]': { background: "#1e1e1e", color: "#d4d4d4" },
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_BACKENDAPI || "";
+const API_BASE = config.backend || "";
 
 function DraggableRow({
   rule,

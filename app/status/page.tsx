@@ -10,6 +10,7 @@ import { Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import ShaderBackground from "@/components/homescreen/shader-background";
 import Header from "@/components/homescreen/header";
+import config from "../../public/config.json";
 
 interface Service {
   id: string;
@@ -29,7 +30,7 @@ const Index = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_CENTRALMONSERVER+"/api/history");
+      const res = await fetch(config.central+"/api/history");
       const data = await res.json();
 
       const healthPings = data.history.filter(

@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/empty";
 import { IconWorld } from "@tabler/icons-react";
 import { PageTitle } from "@/components/SiteTitle";
+import config from "../../../../public/config.json";
 
 export default function Page({
   params,
@@ -66,7 +67,7 @@ export default function Page({
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/domains/${param.slug}`,
+        `${config.backend}/api/domains/${param.slug}`,
         {
           method: "GET",
           headers: {
@@ -101,7 +102,7 @@ export default function Page({
     const param = await params;
     try {
       await fetch(
-        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/manage-proxy?domain=${param.slug}`,
+        `${config.backend}/api/manage-proxy?domain=${param.slug}`,
         {
           method: "POST",
           headers: {
@@ -147,7 +148,7 @@ export default function Page({
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/manage-proxy?domain=${param.slug}`,
+        `${config.backend}/api/manage-proxy?domain=${param.slug}`,
         {
           method: "POST",
           headers: {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import config from "../../public/config.json";
 
 export default function Avatar() {
   const [src, setSrc] = useState("");
@@ -10,7 +11,7 @@ export default function Avatar() {
     const session = JSON.parse(localStorage.getItem("session") || "null");
     if (!session) return;
 
-    const avatar = `${process.env.NEXT_PUBLIC_BACKENDAPI}/avatars${session.avatar}`;
+    const avatar = `${config.backend}/avatars${session.avatar}`;
     const user = session.username;
 
     console.log(localStorage.getItem("session"));

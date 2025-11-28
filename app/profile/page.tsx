@@ -18,6 +18,7 @@ import {
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import Avatar from "@/components/utils/Avatar";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import config from "../../public/config.json";
 
 const secondaryNavigation = [
   { name: "Account", href: "#", current: true },
@@ -75,7 +76,7 @@ export default function ProfilePage() {
       formData.append("avatar", file);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/profile/avatar`,
+        `${config.backend}/api/profile/avatar`,
         {
           method: "POST",
           headers: {
@@ -109,7 +110,7 @@ export default function ProfilePage() {
     try {
       const jwtkey = typeof window !== "undefined" ? window.localStorage.getItem("jwt") : null;
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKENDAPI}/api/profile/update`,
+        `${config.backend}/api/profile/update`,
         {
           method: "POST",
           headers: {

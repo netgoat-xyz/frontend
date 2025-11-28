@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import config from "../public/config.json";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export function NavUser({ user }: { user: User }) {
   }, []);
 
   const avatar =
-    `${process.env.NEXT_PUBLIC_BACKENDAPI}/avatars${session?.avatar}` ||
+    `${config.backend}/avatars${session?.avatar}` ||
     `https://www.tapback.co/api/avatar/${session?.username || "unknown"}`;
   
   const handleSignOut = () => {
