@@ -1,0 +1,15 @@
+{
+  "HomePage": {
+    "calm": "Ruhig",
+    "networking": "Netzwerk",
+    "sub_header": "Mit dem Internet",
+    "detailed": "Verwalten, überwachen und sichern Sie Ihre Webanwendungen mühelos. Unsere intuitive Plattform bietet Echtzeit-Einblicke und starke Sicherheitsfunktionen, um Ihre Online-Präsenz sicher und effizient zu halten.",
+    "pricing_button": "Preise",
+    "get_started_button": "Loslegen",
+    "home": "Startseite",
+    "blogs": "Blogs",
+    "docs": "Dokumentation",
+    "source_code": "Quellcode",
+    "login": "Anmelden"
+  }
+}

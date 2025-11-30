@@ -1,11 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 
 export default function Header() {
   const router = useRouter();
+    const t = useTranslations('HomePage');
 
   return (
     <header className="relative z-20 flex items-center justify-between p-6">
@@ -18,22 +20,22 @@ export default function Header() {
       {/* Navigation */}
 <nav className="relative flex items-center  rounded-full before:absolute before:inset-0">
    <Link href="/" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-full bg-white/10 transition-all duration-200">
-    Home
+    {t('home')}
   </Link>
      <div className="mx-1 w-[1px] h-6 relative z-10"></div> 
 
   <Link href="/blog" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-l-full bg-white/10 transition-all duration-200">
-    Blogs
+    {t('blogs')}
   </Link>
   <Link href="https://docs.netgoat.xyz" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-r-full bg-white/10 transition-all duration-200">
-    Docs
+    {t('docs')}
   </Link>
    <div className="mx-1 w-[1px] h-6 relative z-10"></div> 
   <Link href="https://discord.gg/3aJ7MdJsZV" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-l-full bg-white/10 transition-all duration-200">
     Discord
   </Link>
   <Link href="https://github.com/netgoat-xyz/netgoat" className="relative z-10 text-white/80 hover:text-white hover:px-6 hover:bg-white/15 hover:delay-100 hover:duration-300 text-xs font-light px-3 py-2 rounded-r-full bg-white/10 transition-all duration-200">
-    Source Code
+    {t('source_code')}
   </Link>
 </nav>
 
@@ -59,7 +61,7 @@ export default function Header() {
           </svg>
         </button>
         <button onClick={() => { router.push('/auth') }} className="px-6 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center z-10">
-          Login
+          {t('login')}
         </button>
       </div>
     </header>

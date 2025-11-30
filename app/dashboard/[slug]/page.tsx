@@ -1,4 +1,3 @@
-
 "use client";
 
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
@@ -38,12 +37,9 @@ export default function DashboardPage({ params }: DashboardPageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
 
-  // Set client-side flag - this runs only on client
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => setIsClient(true), []);
 
-  // Handle async params
+  // Resolve async params
   useEffect(() => {
     const resolveParams = async () => {
       const resolvedParams = await params;
@@ -52,42 +48,32 @@ export default function DashboardPage({ params }: DashboardPageProps) {
     resolveParams();
   }, [params]);
 
+  // Fetch live logs from LogDB
   useEffect(() => {
-    // Don't run on server side
     if (!isClient || !slug) return;
 
-    const fetchData = async () => {
+    const fetchLogs = async () => {
       try {
         setIsLoading(true);
-        
-        // Now we're sure we're on client side
+
         const jwt = localStorage.getItem("jwt");
+        if (!jwt) throw new Error("JWT missing");
 
-        if (!jwt) {
-          console.error("No JWT token found");
-          setIsLoading(false);
-          return;
-        }
+        const backendUrl = config.backend || "http://localhost:3001";
 
-        // Use environment variable with fallback
-        const logdbUrl = config.logdb || "http://localhost:3001";
+        const res = await axios.get(`${backendUrl}/api/v1/logs?domain=semecom.com`, {
+          headers: { Authorization: `Bearer ${jwt}` },
+        });
 
-        const res = await axios.get<{ time: string; userAgent: string }[]>(
-          `${logdbUrl}/api/${slug}/analytics?timeframe=${timeRange}`,
-          {
-            headers: {
-              Authorization: `Bearer ${jwt}`,
-            },
-          },
-        );
+        const rawLogs = res.data.logs;
 
-        const logs = res.data;
         const dailyCounts: Record<string, { mobile: number; desktop: number }> = {};
 
-        for (const log of logs) {
-          const date = new Date(log.time).toISOString().slice(0, 10);
+        for (const log of rawLogs) {
+          if (!log.timestamp) continue;
+          const date = new Date(log.timestamp).toISOString().slice(0, 10);
           if (!dailyCounts[date]) dailyCounts[date] = { mobile: 0, desktop: 0 };
-          isMobile(log.userAgent)
+          isMobile(log.userAgent || "")
             ? dailyCounts[date].mobile++
             : dailyCounts[date].desktop++;
         }
@@ -99,20 +85,14 @@ export default function DashboardPage({ params }: DashboardPageProps) {
 
         setClients(finalData);
       } catch (err) {
-        console.error("Failed to fetch analytics:", err);
+        console.error("Failed to fetch logs from LogDB:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchLogs();
   }, [slug, timeRange, isClient]);
-
-  const cacheConfig = {
-    cache: { label: "cache" },
-    hit: { label: "Cache Hits", color: "var(--primary)" },
-    miss: { label: "Cache Miss", color: "var(--primary)" },
-  };
 
   const visitorConfig = {
     visitors: { label: "Visitors" },
@@ -120,7 +100,12 @@ export default function DashboardPage({ params }: DashboardPageProps) {
     mobile: { label: "Mobile", color: "var(--primary)" },
   };
 
-  // Show loading state while slug is being resolved or on server
+  const cacheConfig = {
+    cache: { label: "Cache" },
+    hit: { label: "Cache Hits", color: "var(--primary)" },
+    miss: { label: "Cache Miss", color: "var(--primary)" },
+  };
+
   if (!isClient || !slug || isLoading) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center">
@@ -141,16 +126,8 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               cc={visitorConfig}
               chartData={clients}
               areaKeys={[
-                {
-                  key: "mobile",
-                  color: "var(--color-mobile)",
-                  gradient: "fillMobile",
-                },
-                {
-                  key: "desktop",
-                  color: "var(--color-desktop)",
-                  gradient: "fillDesktop",
-                },
+                { key: "mobile", color: "var(--color-mobile)", gradient: "fillMobile" },
+                { key: "desktop", color: "var(--color-desktop)", gradient: "fillDesktop" },
               ]}
               timeRange={timeRange}
               setTimeRange={setTimeRange}
@@ -164,11 +141,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               chartData={cacheData}
               areaKeys={[
                 { key: "hit", color: "var(--color-hit)", gradient: "fillHit" },
-                {
-                  key: "miss",
-                  color: "var(--color-miss)",
-                  gradient: "fillMiss",
-                },
+                { key: "miss", color: "var(--color-miss)", gradient: "fillMiss" },
               ]}
               timeRange="3mo"
               setTimeRange={() => {}}

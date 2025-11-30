@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div>
+    <div className="bg-background">
       <SpeedInsights />
       <Analytics />
       {children}

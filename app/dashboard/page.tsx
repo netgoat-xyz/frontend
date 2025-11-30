@@ -18,6 +18,7 @@ import { Globe } from "lucide-react";
 import { ArrowUpRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { PageTitle } from "@/components/SiteTitle";
 
 type Domain = {
   group: string;
@@ -47,27 +48,52 @@ export default function DashboardHomePage() {
 
   const router = useRouter();
 
-useEffect(() => {
-  setLoaded(false)
-  setError(null)
+  useEffect(() => {
+    setLoaded(false);
+    setError(null);
 
-  axios
-    .get(`/api/session`, {
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-      },
-    })
-    .then((res) => {
-      setData(res.data || null)
-      localStorage.setItem("session", JSON.stringify(res.data || {}))
-      setLoaded(true)
-    })
-    .catch(() => {
-      setLoaded(true)
-      setError("Failed to load session. Please log in again.")
-    })
-}, [])
+    axios
+      .get(`/api/session`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+        },
+      })
+      .then((res) => {
+        setData(res.data || null);
+        localStorage.setItem("session", JSON.stringify(res.data || {}));
+        setLoaded(true);
+      })
+      .catch(() => {
+        setLoaded(true);
+        setError("Oops, session lost in the fog. Log in to reconnect!");
+      });
+  }, []);
+
+  const sessionStr = localStorage.getItem("session");
+  const username =
+    sessionStr && JSON.parse(sessionStr)?.username
+      ? (JSON.parse(sessionStr).username as string)
+      : "User";
+
+  const capitalized = username.charAt(0).toUpperCase() + username.slice(1);
+
+  const funnySubtitles = [
+    "Counting hits 👀",
+    "Counting clicks… and cookies 🍪",
+    "Your domains are chilling 😎",
+    "Loading the magic… ✨",
+    "Domains in the wild 🌴",
+    "Never fear, Netgoat's here! 🐐",
+    "Making sense of your digital chaos 🤯",
+    "Cash and Cache, same thing, right? 💸",
+    "<strike>Spying</strike> Watching over your domains 🕵️‍♂️",
+  ];
+
+  function getRandomSubtitle() {
+    const index = Math.floor(Math.random() * funnySubtitles.length);
+    return funnySubtitles[index];
+  }
 
   // Interactive loading/error overlay (hidden after loaded)
   const LoadingOverlay = (
@@ -98,7 +124,7 @@ useEffect(() => {
         {error ? "Retry" : "Still loading? Click to retry"}
       </button>
       <div className="mt-4 text-muted-foreground text-sm">
-        {error ? error : "Fetching your domains..."}
+        {error ? error : "Spying on your domains… almost there!"}
       </div>
     </div>
   );
@@ -113,6 +139,7 @@ useEffect(() => {
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                 <div className="px-4 lg:px-6">
+                  <PageTitle title={`Hi, ${capitalized} 👋`} subtitle={getRandomSubtitle()} />
                   {/* Show error message if loaded but no data */}
                   {loaded &&
                   !error &&
@@ -123,7 +150,7 @@ useEffect(() => {
                           <EmptyMedia variant="icon">
                             <Globe />
                           </EmptyMedia>
-                          <EmptyTitle>No Domains Yet</EmptyTitle>
+                          <EmptyTitle>No Domains, No Users.</EmptyTitle>
                           <EmptyDescription>
                             You haven&apos;t created any Domains yet. Get
                             started by creating your first Domains.

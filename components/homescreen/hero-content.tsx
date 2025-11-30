@@ -1,6 +1,9 @@
 "use client";
 
+import {useTranslations} from 'next-intl';
+
 export default function HeroContent() {
+    const t = useTranslations('HomePage');
   return (
     <main className="absolute bottom-8 left-8 z-20 max-w-lg">
       <div className="text-left">
@@ -18,27 +21,25 @@ export default function HeroContent() {
 
         {/* Main Heading */}
         <h1 className="text-5xl md:text-6xl md:leading-16 tracking-tight w-full font-light text-white mb-4">
-          <span className="font-medium italic instrument">Calm</span> Networking
+          <span className="font-medium italic instrument">{t('calm')}</span> {t('networking')}
           <br />
           <span className="font-light tracking-tight text-white">
-            With the internet
+            {t('sub_header')}
           </span>
         </h1>
 
         {/* Description */}
         <p className="text-xs font-light text-white/70 mb-4 leading-relaxed">
-          Manage, monitor, and secure your web applications with ease. Our
-          intuitive platform provides real-time insights and robust security
-          features to keep your online presence safe and efficient.
+          { t('detailed') }
         </p>
 
         {/* Buttons */}
         <div className="flex items-center gap-4 flex-wrap">
           <button className="px-8 py-3 rounded-full bg-transparent border border-white/30 text-white font-normal text-xs transition-all duration-200 hover:bg-white/10 hover:border-white/50 cursor-pointer">
-            Pricing
+            { t('pricing_button') }
           </button>
           <button className="px-8 py-3 rounded-full bg-white text-black font-normal text-xs transition-all duration-200 hover:bg-white/90 cursor-pointer">
-            Get Started
+            { t('get_started_button') }
           </button>
         </div>
       </div>

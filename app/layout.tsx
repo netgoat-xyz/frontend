@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { WebVitals } from "./_components/web-vitals";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import {NextIntlClientProvider} from 'next-intl';
 import Script from "next/script";
 
 export const metadata = {
@@ -23,7 +24,9 @@ export default function RootLayout({
       <Analytics />
       <WebVitals />
       <body className="dark transition-all duration-300 antialiased">
-        {children}
+        <NextIntlClientProvider> 
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

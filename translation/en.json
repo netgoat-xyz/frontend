@@ -1,0 +1,15 @@
+{
+  "HomePage": {
+    "calm": "Calm",
+    "networking": "Networking",
+    "sub_header": "With the internet",
+    "detailed": "Manage, monitor, and secure your web applications with ease. Our intuitive platform provides real-time insights and robust security features to keep your online presence safe and efficient.",
+    "pricing_button": "Pricing",
+    "get_started_button": "Get Started",
+    "home": "Home",
+    "blogs": "Blogs",
+    "docs": "Docs",
+    "source_code": "Source Code",
+    "login": "Login"
+  }
+}
