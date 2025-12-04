@@ -30,12 +30,19 @@ const cacheData: CacheData[] = [
 
 const isMobile = (ua: string) => /iPhone|iPad|iPod|Android|Mobile/i.test(ua);
 
+const parseTimestamp = (t: string) => {
+  if (!t) return null;
+  const [d, time] = t.split(" ");
+  return new Date(`${d}T${time}`);
+};
+
 export default function DashboardPage({ params }: DashboardPageProps) {
   const [slug, setSlug] = useState<string>("");
   const [clients, setClients] = useState<ClientData[]>([]);
   const [timeRange, setTimeRange] = useState<string>("3mo");
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
+  const [analyticals, setAnalyticals] = useState<any>(null); 
 
   useEffect(() => setIsClient(true), []);
 
@@ -51,41 +58,57 @@ export default function DashboardPage({ params }: DashboardPageProps) {
   // Fetch live logs from LogDB
   useEffect(() => {
     if (!isClient || !slug) return;
+  })
+  useEffect(() => setIsClient(true), []);
+
+  useEffect(() => {
+    const resolveParams = async () => {
+      const p = await params;
+      setSlug(p.slug);
+    };
+    resolveParams();
+  }, [params]);
+
+  useEffect(() => {
+    if (!isClient || !slug) return;
 
     const fetchLogs = async () => {
       try {
         setIsLoading(true);
-
         const jwt = localStorage.getItem("jwt");
         if (!jwt) throw new Error("JWT missing");
 
         const backendUrl = config.backend || "http://localhost:3001";
 
-        const res = await axios.get(`${backendUrl}/api/v1/logs?domain=semecom.com`, {
-          headers: { Authorization: `Bearer ${jwt}` },
-        });
+        const res = await axios.get(
+          `${backendUrl}/api/v1/logs?domain=${slug}`,
+          { headers: { Authorization: `Bearer ${jwt}` } }
+        );
 
-        const rawLogs = res.data.logs;
+        const logs = res.data.logs;
+        const daily: Record<string, { mobile: number; desktop: number }> = {};
 
-        const dailyCounts: Record<string, { mobile: number; desktop: number }> = {};
-
-        for (const log of rawLogs) {
-          if (!log.timestamp) continue;
-          const date = new Date(log.timestamp).toISOString().slice(0, 10);
-          if (!dailyCounts[date]) dailyCounts[date] = { mobile: 0, desktop: 0 };
+        for (const log of logs) {
+          const dt = parseTimestamp(log.timestamp);
+          if (!dt) continue;
+          const key = dt.toISOString().slice(0, 10);
+          if (!daily[key]) daily[key] = { mobile: 0, desktop: 0 };
           isMobile(log.userAgent || "")
-            ? dailyCounts[date].mobile++
-            : dailyCounts[date].desktop++;
+            ? daily[key].mobile++
+            : daily[key].desktop++;
         }
 
-        const finalData = Object.entries(dailyCounts).map(([date, counts]) => ({
+        const out = Object.entries(daily).map(([date, counts]) => ({
           date,
           ...counts,
         }));
 
-        setClients(finalData);
+        out.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        setAnalyticals(res)
+        setClients(out);
       } catch (err) {
-        console.error("Failed to fetch logs from LogDB:", err);
+        console.error("Failed to fetch logs:", err);
       } finally {
         setIsLoading(false);
       }
@@ -126,8 +149,16 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               cc={visitorConfig}
               chartData={clients}
               areaKeys={[
-                { key: "mobile", color: "var(--color-mobile)", gradient: "fillMobile" },
-                { key: "desktop", color: "var(--color-desktop)", gradient: "fillDesktop" },
+                {
+                  key: "mobile",
+                  color: "var(--color-mobile)",
+                  gradient: "fillMobile",
+                },
+                {
+                  key: "desktop",
+                  color: "var(--color-desktop)",
+                  gradient: "fillDesktop",
+                },
               ]}
               timeRange={timeRange}
               setTimeRange={setTimeRange}
@@ -141,7 +172,11 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               chartData={cacheData}
               areaKeys={[
                 { key: "hit", color: "var(--color-hit)", gradient: "fillHit" },
-                { key: "miss", color: "var(--color-miss)", gradient: "fillMiss" },
+                {
+                  key: "miss",
+                  color: "var(--color-miss)",
+                  gradient: "fillMiss",
+                },
               ]}
               timeRange="3mo"
               setTimeRange={() => {}}
