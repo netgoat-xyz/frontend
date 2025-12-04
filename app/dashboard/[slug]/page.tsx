@@ -103,7 +103,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
           ...counts,
         }));
 
-        out.sort((a, b) => new Date(a.date) - new Date(b.date));
+        out.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         
         setAnalyticals(res)
         setClients(out);
