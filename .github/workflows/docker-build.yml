@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, DE, Nuremburg]
+    runs-on: [self-hosted, Linux, X64, DE, Nuremburg]
 
     steps:
       - name: Checkout repository
