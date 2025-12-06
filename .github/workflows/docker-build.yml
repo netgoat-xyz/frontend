@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: [self-hosted, DE, Nuremburg]
 
     steps:
       - name: Checkout repository
