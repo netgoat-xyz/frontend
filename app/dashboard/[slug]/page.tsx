@@ -39,10 +39,10 @@ const parseTimestamp = (t: string) => {
 export default function DashboardPage({ params }: DashboardPageProps) {
   const [slug, setSlug] = useState<string>("");
   const [clients, setClients] = useState<ClientData[]>([]);
-  const [timeRange, setTimeRange] = useState<string>("3mo");
+  const [timeRange, setTimeRange] = useState<string>("90d");
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
-  const [analyticals, setAnalyticals] = useState<any>(null); 
+  const [analyticals, setAnalyticals] = useState<any>(null);
 
   useEffect(() => setIsClient(true), []);
 
@@ -58,7 +58,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
   // Fetch live logs from LogDB
   useEffect(() => {
     if (!isClient || !slug) return;
-  })
+  });
   useEffect(() => setIsClient(true), []);
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
         const backendUrl = config.backend || "http://localhost:3001";
 
         const res = await axios.get(
-          `${backendUrl}/api/v1/logs?domain=${slug}`,
+          `${backendUrl}/api/v1/logs?domain=${slug}&range=${timeRange}`,
           { headers: { Authorization: `Bearer ${jwt}` } }
         );
 
@@ -90,12 +90,19 @@ export default function DashboardPage({ params }: DashboardPageProps) {
 
         for (const log of logs) {
           const dt = parseTimestamp(log.timestamp);
-          if (!dt) continue;
+          if (!dt) continue; // Only skip invalid timestamps, not filtering by time
+
           const key = dt.toISOString().slice(0, 10);
-          if (!daily[key]) daily[key] = { mobile: 0, desktop: 0 };
-          isMobile(log.userAgent || "")
-            ? daily[key].mobile++
-            : daily[key].desktop++;
+
+          if (!daily[key]) {
+            daily[key] = { mobile: 0, desktop: 0 };
+          }
+
+          if (isMobile(log.userAgent || "")) {
+            daily[key].mobile++;
+          } else {
+            daily[key].desktop++;
+          }
         }
 
         const out = Object.entries(daily).map(([date, counts]) => ({
@@ -103,9 +110,12 @@ export default function DashboardPage({ params }: DashboardPageProps) {
           ...counts,
         }));
 
-        out.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        
-        setAnalyticals(res)
+        // charts need chronological order
+        out.sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+
+        setAnalyticals(res);
         setClients(out);
       } catch (err) {
         console.error("Failed to fetch logs:", err);

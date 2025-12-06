@@ -99,6 +99,9 @@ export function ChartAreaInteractive({
               <SelectItem value="7d" className="rounded-lg">
                 Last 7 days
               </SelectItem>
+              <SelectItem value="24h" className="rounded-lg">
+                Current 24 hours
+              </SelectItem>
             </SelectContent>
           </Select>
         </CardAction>
