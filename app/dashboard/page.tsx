@@ -45,7 +45,30 @@ export default function DashboardHomePage() {
   const [data, setData] = useState<Data | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>("");
+  const [subtitle, setSubtitle] = useState("");
 
+  const funnySubtitles = [
+    "Counting hits 👀",
+    "Counting clicks… and cookies 🍪",
+    "Your domains are chilling 😎",
+    "Loading the magic… ✨",
+    "Domains in the wild 🌴",
+    "Never fear, Netgoat's here! 🐐",
+    "Making sense of your digital chaos 🤯",
+    "Cash and Cache, same thing, right? 💸",
+    "<strike>Spying</strike> Watching over your domains 🕵️‍♂️",
+  ];
+
+  function getRandomSubtitle() {
+    const index = Math.floor(Math.random() * funnySubtitles.length);
+    return funnySubtitles[index];
+  }
+
+  useEffect(() => {
+    setSubtitle(getRandomSubtitle());
+  }, []);
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -70,30 +93,18 @@ export default function DashboardHomePage() {
       });
   }, []);
 
-  const sessionStr = localStorage.getItem("session");
-  const username =
-    sessionStr && JSON.parse(sessionStr)?.username
-      ? (JSON.parse(sessionStr).username as string)
-      : "User";
-
+  useEffect(() => {
+    const sessionStr = window.localStorage.getItem("session");
+    if (sessionStr) {
+      try {
+        const parsed = JSON.parse(sessionStr);
+        if (parsed?.username) setUsername(parsed.username);
+      } catch {}
+    }
+  }, []);
   const capitalized = username.charAt(0).toUpperCase() + username.slice(1);
 
-  const funnySubtitles = [
-    "Counting hits 👀",
-    "Counting clicks… and cookies 🍪",
-    "Your domains are chilling 😎",
-    "Loading the magic… ✨",
-    "Domains in the wild 🌴",
-    "Never fear, Netgoat's here! 🐐",
-    "Making sense of your digital chaos 🤯",
-    "Cash and Cache, same thing, right? 💸",
-    "<strike>Spying</strike> Watching over your domains 🕵️‍♂️",
-  ];
 
-  function getRandomSubtitle() {
-    const index = Math.floor(Math.random() * funnySubtitles.length);
-    return funnySubtitles[index];
-  }
 
   // Interactive loading/error overlay (hidden after loaded)
   const LoadingOverlay = (
@@ -139,7 +150,10 @@ export default function DashboardHomePage() {
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                 <div className="px-4 lg:px-6">
-                  <PageTitle title={`Hi, ${capitalized} 👋`} subtitle={getRandomSubtitle()} />
+                  <PageTitle
+                    title={`Hi, ${capitalized} 👋`}
+                    subtitle={subtitle}
+                  />
                   {/* Show error message if loaded but no data */}
                   {loaded &&
                   !error &&
