@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Modal from "./Modal";
+import Avatar from "./Avatar";
 
 // The Up/Down selector arrows
 function SelectorIcon() {
@@ -50,21 +51,37 @@ function SearchIcon() {
   );
 }
 
-export default function NavigationTop({ children }: { children: React.ReactNode }) {
+export default function NavigationTop({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
-  const [ isFeedbackModalOpen, setIsFeedbackModalOpen ] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
-  // Parse pathname to detect dashboard and optional domain slug
+  // Parse pathname to detect dashboard and optional domain slug.
+  // Treat known top-level tab slugs as NOT being domain slugs (e.g. /dashboard/integrations).
   const segments = (pathname || "").split("/").filter(Boolean);
   const isDashboard = segments[0] === "dashboard";
-  const domainName = isDashboard && segments.length >= 2 ? segments[1] : null;
+  const second = segments[1] ?? null;
+  const topLevelSlugs = [
+    "overview",
+    "integrations",
+    "teams",
+    "activity",
+    "settings",
+  ];
+  const domainName =
+    isDashboard && second && !topLevelSlugs.includes(second.toLowerCase())
+      ? second
+      : null;
 
   const basePath = domainName ? `/dashboard/${domainName}` : "/dashboard";
 
   // Choose tabs depending on whether a domain slug is present
   const tabs = domainName
     ? [
-        { title: "Overview", href: `${basePath}` },
+        { title: "Overview", href: `${basePath}/overview` },
         { title: "Analytics", href: `${basePath}/analytics` },
         { title: "Pages", href: `${basePath}/pages` },
         { title: "Visitors", href: `${basePath}/visitors` },
@@ -79,8 +96,13 @@ export default function NavigationTop({ children }: { children: React.ReactNode 
         { title: "Settings", href: "/dashboard/settings" },
       ];
 
-  // Determine active tab (prefix match) and its title for breadcrumb
-  const activeTab = tabs.find((t) => (pathname || "").startsWith(t.href)) || tabs[0];
+  // Determine active tab (pick the most specific matching href)
+  const pathnameStr = pathname || "";
+  const matches = tabs.filter((t) => pathnameStr.startsWith(t.href));
+  const activeTab =
+    matches.length > 0
+      ? matches.reduce((a, b) => (a.href.length >= b.href.length ? a : b))
+      : tabs[0];
   const activeTitle = activeTab?.title ?? (domainName ? "" : "Overview");
 
   return (
@@ -89,7 +111,7 @@ export default function NavigationTop({ children }: { children: React.ReactNode 
         {/* Top Header Bar */}
         <div className="bg-neutral-900 border-b border-neutral-800 w-full h-16 px-4 md:px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" aria-label="Vercel Logo">
+            <Link href="/" aria-label="Netgoat Logo">
               <Image
                 src="/branding/logo.png"
                 alt="Profile"
@@ -118,7 +140,9 @@ export default function NavigationTop({ children }: { children: React.ReactNode 
                 <>
                   <SlashSeparator />
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{decodeURIComponent(domainName)}</span>
+                    <span className="text-sm font-medium">
+                      {decodeURIComponent(domainName)}
+                    </span>
                   </div>
                   <SlashSeparator />
                   <div className="flex items-center gap-2">
@@ -149,7 +173,11 @@ export default function NavigationTop({ children }: { children: React.ReactNode 
               </kbd>
             </div>
 
-            <motion.button layoutId="FeedbackButtonID" onClick={() => setIsFeedbackModalOpen(true)} className="hidden sm:block text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded hover:bg-neutral-300 transition-colors">
+            <motion.button
+              layoutId="FeedbackButtonID"
+              onClick={() => setIsFeedbackModalOpen(true)}
+              className="hidden sm:block text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded hover:bg-neutral-300 transition-colors"
+            >
               Feedback
             </motion.button>
 
@@ -157,15 +185,11 @@ export default function NavigationTop({ children }: { children: React.ReactNode 
               <BellIcon />
             </button>
 
-            <button className="ml-1">
-              <Image
-                src="/branding/logo.png"
-                alt="Profile"
-                width={28}
-                height={28}
-                className="rounded-full border border-neutral-700 hover:border-neutral-500 transition-colors"
-              />
-            </button>
+              <Avatar
+                username="Ducky" 
+                showDropdown={true}
+                className="ml-1"
+              ></Avatar>
           </div>
         </div>
 
@@ -183,13 +207,17 @@ export default function NavigationTop({ children }: { children: React.ReactNode 
                   }`}
                 >
                   {tab.title}
-                  
+
                   {/* Sliding Underline Animation */}
                   {isActive && (
                     <motion.div
                       layoutId="activeTab"
                       className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </Link>
@@ -209,7 +237,12 @@ export default function NavigationTop({ children }: { children: React.ReactNode 
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="flex-1 w-full p-6 bg-neutral-950 max-w-7xl mx-auto"
         >
-          <Modal layoutId="FeedbackModalID" isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} title="Submit Feedback">
+          <Modal
+            layoutId="FeedbackModalID"
+            isOpen={isFeedbackModalOpen}
+            onClose={() => setIsFeedbackModalOpen(false)}
+            title="Submit Feedback"
+          >
             aaa
           </Modal>
           {children}
