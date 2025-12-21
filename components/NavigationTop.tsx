@@ -188,7 +188,7 @@ export default function NavigationTop({ children }: { children: React.ReactNode 
                   {isActive && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-white"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
