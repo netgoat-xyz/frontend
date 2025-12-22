@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.className} bg-neutral-950 h-screen text-white antialiased transform-gpu transition-all duration-200 min-h-full min-w-full h-full w-full`}
+        className={`${inter.className} bg-neutral-950 text-white antialiased transform-gpu transition-all duration-200 min-h-full min-w-full h-full w-full`}
       >
         <NavigationTop />
         <main className="p-6">{children}</main>

@@ -1,7 +1,7 @@
-import UsageCard from "@/components/interface/dashboard-home/usageCard";
-import AlertsCard from "@/components/interface/dashboard-home/alertsCard";
-import ProjectToolbar from "@/components/interface/dashboard-home/projectToolbar";
-import DomainsSection from "@/components/interface/dashboard-home/domainsCard";
+import UsageCard from "@/components/interface/dashboard/home/usageCard";
+import AlertsCard from "@/components/interface/dashboard/home/alertsCard";
+import ProjectToolbar from "@/components/interface/dashboard/home/projectToolbar";
+import DomainsSection from "@/components/interface/dashboard/home/domainsCard";
 
 export default function DashboardHome() {
   return (
