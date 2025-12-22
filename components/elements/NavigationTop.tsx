@@ -10,53 +10,52 @@ import Avatar from "./Avatar";
 import SlashSeparator from "./Seperator";
 
 export default function NavigationTop() {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
-  // Parse pathname to detect dashboard and optional domain slug.
-  // Treat known top-level tab slugs as NOT being domain slugs (e.g. /dashboard/integrations).
-  const segments = (pathname || "").split("/").filter(Boolean);
+  // 1. Parse Segments: /dashboard/[teamName]/[domainName]
+  const segments = pathname.split("/").filter(Boolean);
   const isDashboard = segments[0] === "dashboard";
-  const second = segments[1] ?? null;
-  const topLevelSlugs = [
-    "overview",
-    "integrations",
-    "teams",
-    "activity",
-    "settings",
-  ];
-  const domainName =
-    isDashboard && second && !topLevelSlugs.includes(second.toLowerCase())
-      ? second
-      : null;
+  
+  // Team name is always the segment after "dashboard"
+  const teamName = isDashboard ? segments[1] : null;
 
-  const basePath = domainName ? `/dashboard/${domainName}` : "/dashboard";
+  // Known top-level slugs that are NOT domain names
+  const topLevelSlugs = ["integrations", "teams", "activity", "settings", "overview"];
+  
+  // Domain name is the segment after team name, IF it's not a reserved tab name
+  const thirdSegment = segments[2] ?? null;
+  const domainName = (teamName && thirdSegment && !topLevelSlugs.includes(thirdSegment.toLowerCase())) 
+    ? thirdSegment 
+    : null;
 
-  const tabs = domainName
+  // 2. Define Base Paths for Links
+  // Base for Team: /dashboard/my-team
+  // Base for Project: /dashboard/my-team/my-project
+  const teamPath = `/dashboard/${teamName}`;
+  const projectPath = domainName ? `${teamPath}/${domainName}` : null;
+
+  const tabs = projectPath
     ? [
-        { title: "Overview", href: `${basePath}/overview` },
-        { title: "Analytics", href: `${basePath}/analytics` },
-        { title: "Pages", href: `${basePath}/pages` },
-        { title: "Visitors", href: `${basePath}/visitors` },
-        { title: "Events", href: `${basePath}/events` },
-        { title: "Settings", href: `${basePath}/settings` },
+        { title: "Overview", href: `${projectPath}` },
+        { title: "Analytics", href: `${projectPath}/analytics` },
+        { title: "Pages", href: `${projectPath}/pages` },
+        { title: "Settings", href: `${projectPath}/settings` },
       ]
     : [
-        { title: "Overview", href: "/dashboard" },
-        { title: "Integrations", href: "/dashboard/integrations" },
-        { title: "Teams", href: "/dashboard/teams" },
-        { title: "Activity", href: "/dashboard/activity" },
-        { title: "Settings", href: "/dashboard/settings" },
+        { title: "Overview", href: teamPath },
+        { title: "Integrations", href: `${teamPath}/integrations` },
+        { title: "Teams", href: `${teamPath}/teams` },
+        { title: "Activity", href: `${teamPath}/activity` },
+        { title: "Settings", href: `${teamPath}/settings` },
       ];
 
-  // Determine active tab (pick the most specific matching href)
-  const pathnameStr = pathname || "";
-  const matches = tabs.filter((t) => pathnameStr.startsWith(t.href));
-  const activeTab =
-    matches.length > 0
-      ? matches.reduce((a, b) => (a.href.length >= b.href.length ? a : b))
-      : tabs[0];
-  const activeTitle = activeTab?.title ?? (domainName ? "" : "Overview");
+  // 3. Active Tab Logic
+  const activeTab = tabs.reduce((prev, curr) => {
+    return pathname.startsWith(curr.href) && curr.href.length > prev.href.length ? curr : prev;
+  }, tabs[0]);
+  
+  const activeTitle = activeTab?.title || "Overview";
 
   return (
     <div className="flex flex-col bg-neutral-950 text-white">
@@ -65,115 +64,77 @@ export default function NavigationTop() {
         <div className="bg-neutral-900 border-b border-neutral-800 w-full h-16 px-4 md:px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" aria-label="Netgoat Logo">
-              <Image
-                src="/branding/logo.png"
-                alt="Profile"
-                width={28}
-                height={28}
-                className="rounded-full border border-neutral-700 hover:border-neutral-500 transition-colors"
-              />
+              <Image src="/branding/logo.png" alt="Logo" width={28} height={28} className="rounded-full border border-neutral-700" />
             </Link>
+            
             <SlashSeparator />
 
             <div className="flex items-center gap-2">
+              {/* Team Selector / Breadcrumb */}
               <div className="flex items-center gap-2 group cursor-pointer">
-                <Image
-                  src="/branding/logo.png"
-                  alt="Account"
-                  width={20}
-                  height={20}
-                  className="rounded-full border border-neutral-800"
-                />
-                <span className="text-sm font-medium">Personal Account</span>
+                <div className="w-5 h-5 bg-blue-600 rounded text-[10px] flex items-center justify-center font-bold">
+                  {teamName ? teamName[0].toUpperCase() : "P"}
+                </div>
+                <span className="text-sm font-medium">
+                   {teamName ? decodeURIComponent(teamName) : "Personal Account"}
+                </span>
                 <SelectorIcon />
               </div>
 
-              {/* Breadcrumb: Personal Account / [domain?] / activeTab */}
-              {domainName ? (
+              {domainName && (
                 <>
                   <SlashSeparator />
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">
-                      {decodeURIComponent(domainName)}
-                    </span>
-                  </div>
-                  <SlashSeparator />
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{activeTitle}</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <SlashSeparator />
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{activeTitle}</span>
-                  </div>
+                  <span className="text-sm font-medium">{decodeURIComponent(domainName)}</span>
                 </>
               )}
+              
+              <SlashSeparator />
+              <span className="text-sm font-medium text-neutral-400">{activeTitle}</span>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center bg-neutral-900 border border-neutral-800 rounded-full px-3 py-1.5 w-64 text-neutral-400 focus-within:border-neutral-500 focus-within:text-neutral-200 transition-colors">
+            {/* Search, Feedback, Bell, Avatar */}
+            <div className="hidden md:flex items-center bg-neutral-800/50 border border-neutral-800 rounded-full px-3 py-1.5 w-64 text-neutral-400">
               <SearchIcon />
-              <input
-                type="text"
-                placeholder="Find..."
-                className="bg-transparent border-none outline-none text-sm ml-2 w-full placeholder:text-neutral-600"
-              />
-              <kbd className="hidden lg:inline-block border border-neutral-700 rounded px-1.5 text-[10px] font-mono text-neutral-500">
-                F
-              </kbd>
+              <input type="text" placeholder="Search..." className="bg-transparent border-none outline-none text-sm ml-2 w-full" />
             </div>
 
             <motion.button
               layoutId="FeedbackButtonID"
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="hidden sm:block text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded-md hover:bg-neutral-300 transition-colors"
+              className="text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded-md hover:bg-neutral-300 transition-colors"
             >
               Feedback
             </motion.button>
 
-            <button className="p-2 text-neutral-400 hover:text-white transition-colors">
-              <BellIcon />
-            </button>
-
-            <Avatar
-              username="Ducky"
-              showDropdown={true}
-              className="ml-1"
-            ></Avatar>
+            <Avatar username="Ducky" showDropdown={true} className="ml-1" />
           </div>
         </div>
 
         {/* Animated Tabs Row */}
-        <div className="bg-neutral-900 border-b border-neutral-800 w-full px-4 md:px-6">
+        <div className="bg-neutral-900 border-b border-neutral-800 w-full px-4 md:px-6 overflow-x-auto no-scrollbar">
           <div className="h-12 flex items-center gap-6 text-sm text-neutral-400 relative">
             {tabs.map((tab) => {
-              const isActive =
-                tab.href === "/dashboard"
-                  ? pathname === "/dashboard" || pathname === "/dashboard/"
-                  : pathnameStr.startsWith(tab.href);
+              // Precise matching for the base tab vs sub-routes
+              const isActive = tab.href === teamPath || tab.href === projectPath
+                ? pathname === tab.href
+                : pathname.startsWith(tab.href);
+
               return (
                 <Link
                   key={tab.title}
                   href={tab.href}
-                  className={`relative h-full flex items-center px-1 transition-colors duration-200 ${
+                  className={`relative h-full flex items-center px-1 transition-colors ${
                     isActive ? "text-white" : "hover:text-neutral-200"
                   }`}
                 >
                   {tab.title}
-
-                  {/* Sliding Underline Animation */}
                   {isActive && (
                     <motion.div
                       layoutId="activeTab"
                       className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
-                      transition={{
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 30,
-                      }}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
                 </Link>
@@ -182,13 +143,14 @@ export default function NavigationTop() {
           </div>
         </div>
       </nav>
-      <Modal
-        layoutId="FeedbackModalID"
-        isOpen={isFeedbackModalOpen}
-        onClose={() => setIsFeedbackModalOpen(false)}
+      
+      <Modal 
+        layoutId="FeedbackModalID" 
+        isOpen={isFeedbackModalOpen} 
+        onClose={() => setIsFeedbackModalOpen(false)} 
         title="Submit Feedback"
       >
-        aaa
+        <div className="p-4 text-neutral-400 text-sm italic">Feedback form goes here...</div>
       </Modal>
     </div>
   );
