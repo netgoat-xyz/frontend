@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Modal from "./Modal";
 import Avatar from "./Avatar";
+import SlashSeparator from "./Seperator";
 
 // The Up/Down selector arrows
 function SelectorIcon() {
@@ -51,11 +52,7 @@ function SearchIcon() {
   );
 }
 
-export default function NavigationTop({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function NavigationTop() {
   const pathname = usePathname();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
@@ -106,7 +103,7 @@ export default function NavigationTop({
   const activeTitle = activeTab?.title ?? (domainName ? "" : "Overview");
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-950 text-white">
+    <div className="flex flex-col bg-neutral-950 text-white">
       <nav className="sticky top-0 z-50 w-full flex-none flex flex-col">
         {/* Top Header Bar */}
         <div className="bg-neutral-900 border-b border-neutral-800 w-full h-16 px-4 md:px-6 flex items-center justify-between">
@@ -226,17 +223,6 @@ export default function NavigationTop({
           </div>
         </div>
       </nav>
-
-      {/* Animated Content Area */}
-      <AnimatePresence mode="wait">
-        <motion.main
-          key={pathname} // Re-animates whenever the route changes
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-          className="flex-1 w-full p-6 bg-neutral-950 max-w-7xl mx-auto"
-        >
           <Modal
             layoutId="FeedbackModalID"
             isOpen={isFeedbackModalOpen}
@@ -245,28 +231,7 @@ export default function NavigationTop({
           >
             aaa
           </Modal>
-          {children}
-        </motion.main>
-      </AnimatePresence>
     </div>
   );
 }
 
-function SlashSeparator() {
-  return (
-    <svg
-      dat-testid="geist-icon"
-      fill="currentColor"
-      className="text-neutral-700"
-      height="16"
-      width="16"
-      viewBox="0 0 16 16"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M4.01526 15.3939L4.3107 14.7046L10.3107 0.704556L10.6061 0.0151978L11.9849 0.606077L11.6894 1.29544L5.68942 15.2954L5.39398 15.9848L4.01526 15.3939Z"
-      />
-    </svg>
-  );
-}

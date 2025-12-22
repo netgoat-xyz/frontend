@@ -1,4 +1,4 @@
-import NavigationTop from '@/components/NavigationTop';
+import NavigationTop from '@/components/elements/NavigationTop';
 
 export default function DashboardHome() {
   return (
