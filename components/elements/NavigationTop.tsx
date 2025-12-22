@@ -3,58 +3,88 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import Modal from "./Modal";
 import Avatar from "./Avatar";
 import SlashSeparator from "./Seperator";
+import { UserIcon } from "@heroicons/react/24/outline";
+import useLastTeamName from "@/hooks/lastTeam";
 
 export default function NavigationTop() {
   const pathname = usePathname() || "";
+  const teamNameConfusion = useLastTeamName();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
-  // 1. Parse Segments: /dashboard/[teamName]/[domainName]
+  // 1. PARSE URL SEGMENTS
   const segments = pathname.split("/").filter(Boolean);
   const isDashboard = segments[0] === "dashboard";
-  
-  // Team name is always the segment after "dashboard"
-  const teamName = isDashboard ? segments[1] : null;
 
-  // Known top-level slugs that are NOT domain names
-  const topLevelSlugs = ["integrations", "teams", "activity", "settings", "overview"];
-  
-  // Domain name is the segment after team name, IF it's not a reserved tab name
-  const thirdSegment = segments[2] ?? null;
-  const domainName = (teamName && thirdSegment && !topLevelSlugs.includes(thirdSegment.toLowerCase())) 
-    ? thirdSegment 
+  // Check if the URL follows the /dashboard/teams/... pattern
+  const isGlobalTeamsPath = isDashboard && segments[1] === "teams";
+
+  // teamName extraction based on path depth
+  const teamName = isGlobalTeamsPath ? segments[2] : segments[1];
+
+  const topLevelSlugs = [
+    "integrations",
+    "teams",
+    "activity",
+    "settings",
+    "overview",
+  ];
+
+  // Domain detection (only active if not in a management path)
+  const domainName =
+    !isGlobalTeamsPath &&
+    teamName &&
+    segments[2] &&
+    !topLevelSlugs.includes(segments[2].toLowerCase())
+      ? segments[2]
+      : null;
+
+  // 2. DEFINE PATHS & TABS
+  // Maintain the current path style for the 'home' of the tabs
+  const teamPath = isGlobalTeamsPath
+    ? `/dashboard/teams/${teamName}`
+    : `/dashboard/${teamName}`;
+
+  const projectPath = domainName
+    ? `/dashboard/${teamName}/${domainName}`
     : null;
 
-  // 2. Define Base Paths for Links
-  // Base for Team: /dashboard/my-team
-  // Base for Project: /dashboard/my-team/my-project
-  const teamPath = `/dashboard/${teamName}`;
-  const projectPath = domainName ? `${teamPath}/${domainName}` : null;
+  let tabs = [];
 
-  const tabs = projectPath
-    ? [
-        { title: "Overview", href: `${projectPath}` },
-        { title: "Analytics", href: `${projectPath}/analytics` },
-        { title: "Pages", href: `${projectPath}/pages` },
-        { title: "Settings", href: `${projectPath}/settings` },
-      ]
-    : [
-        { title: "Overview", href: teamPath },
-        { title: "Integrations", href: `${teamPath}/integrations` },
-        { title: "Teams", href: `${teamPath}/teams` },
-        { title: "Activity", href: `${teamPath}/activity` },
-        { title: "Settings", href: `${teamPath}/settings` },
-      ];
+  if (projectPath) {
+    // Project Specific Tabs
+    tabs = [
+      { title: "Overview", href: projectPath },
+      { title: "Analytics", href: `${projectPath}/analytics` },
+      { title: "Settings", href: `${projectPath}/settings` },
+    ];
+  } else {
+    // Unified Team Tabs (Used for both standard and /teams/ paths)
+    // We use the 'teamPath' variable so the "Overview" tab points to the correct current URL
+    tabs = [
+      { title: "Overview", href: `/dashboard/${teamNameConfusion}` },
+      {
+        title: "Integrations",
+        href: `/dashboard/${teamNameConfusion}/integrations`,
+      },
+      { title: "Teams", href: "/dashboard/teams" },
+      { title: "Settings", href: `/dashboard/${teamNameConfusion}/settings` },
+    ];
+  }
 
-  // 3. Active Tab Logic
-  const activeTab = tabs.reduce((prev, curr) => {
-    return pathname.startsWith(curr.href) && curr.href.length > prev.href.length ? curr : prev;
-  }, tabs[0]);
-  
+  // 3. ACTIVE TAB LOGIC
+  const activeTab =
+    tabs.find((tab) => {
+      if (tab.href === teamPath || tab.href === projectPath) {
+        return pathname === tab.href;
+      }
+      return pathname.startsWith(tab.href);
+    }) || tabs[0];
+
   const activeTitle = activeTab?.title || "Overview";
 
   return (
@@ -63,47 +93,79 @@ export default function NavigationTop() {
         {/* Top Header Bar */}
         <div className="bg-neutral-900 border-b border-neutral-800 w-full h-16 px-4 md:px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" aria-label="Netgoat Logo">
-              <Image src="/branding/logo.png" alt="Logo" width={28} height={28} className="rounded-full border border-neutral-700" />
+            <Link href="/dashboard" aria-label="Home">
+              <Image
+                src="/branding/logo.png"
+                alt="Logo"
+                width={28}
+                height={28}
+                className="rounded-full border border-neutral-700 hover:border-neutral-500 transition-colors"
+              />
             </Link>
-            
+
             <SlashSeparator />
 
+            {/* BREADCRUMBS */}
             <div className="flex items-center gap-2">
-              {/* Team Selector / Breadcrumb */}
-              <div className="flex items-center gap-2 group cursor-pointer">
-                <div className="w-5 h-5 bg-blue-600 rounded text-[10px] flex items-center justify-center font-bold">
-                  {teamName ? teamName[0].toUpperCase() : "P"}
-                </div>
-                <span className="text-sm font-medium">
-                   {teamName ? decodeURIComponent(teamName) : "Personal Account"}
-                </span>
-                <SelectorIcon />
-              </div>
+              {/* Only show "Teams" link if in the global teams path */}
+              {isGlobalTeamsPath && (
+                <>
+                  <Link
+                    className="text-sm font-medium text-neutral-400 hover:text-neutral-300 transition-all"
+                    href={`/dashboard/teams`}
+                  >
+                    Teams
+                  </Link>
+                  {teamName && <SlashSeparator />}
+                </>
+              )}
 
+              {/* Dynamic Team Name */}
+              {teamName && (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center text-[10px] font-bold">
+                    {teamName[0].toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium">
+                    {decodeURIComponent(teamName)}
+                  </span>
+                </div>
+              )}
+
+              {/* Project Segment */}
               {domainName && (
                 <>
                   <SlashSeparator />
-                  <span className="text-sm font-medium">{decodeURIComponent(domainName)}</span>
+                  <span className="text-sm font-medium">
+                    {decodeURIComponent(domainName)}
+                  </span>
                 </>
               )}
-              
-              <SlashSeparator />
-              <span className="text-sm font-medium text-neutral-400">{activeTitle}</span>
+
+              {/* Active Page Title (Excluding "Teams" when redundant) */}
+              {teamName && <SlashSeparator />}
+              {activeTitle !== "Teams" && (
+                <span className="text-sm font-medium text-neutral-400">
+                  {activeTitle}
+                </span>
+              )}
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Search, Feedback, Bell, Avatar */}
-            <div className="hidden md:flex items-center bg-neutral-800/50 border border-neutral-800 rounded-full px-3 py-1.5 w-64 text-neutral-400">
+            <div className="hidden md:flex items-center bg-neutral-900 border border-neutral-800 rounded-full px-3 py-1.5 w-64 text-neutral-400 focus-within:border-neutral-500 transition-colors">
               <SearchIcon />
-              <input type="text" placeholder="Search..." className="bg-transparent border-none outline-none text-sm ml-2 w-full" />
+              <input
+                type="text"
+                placeholder="Find..."
+                className="bg-transparent border-none outline-none text-sm ml-2 w-full placeholder:text-neutral-600"
+              />
             </div>
 
             <motion.button
               layoutId="FeedbackButtonID"
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded-md hover:bg-neutral-300 transition-colors"
+              className="hidden sm:block text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded-md hover:bg-neutral-300 transition-colors"
             >
               Feedback
             </motion.button>
@@ -112,20 +174,20 @@ export default function NavigationTop() {
           </div>
         </div>
 
-        {/* Animated Tabs Row */}
+        {/* BOTTOM TABS */}
         <div className="bg-neutral-900 border-b border-neutral-800 w-full px-4 md:px-6 overflow-x-auto no-scrollbar">
           <div className="h-12 flex items-center gap-6 text-sm text-neutral-400 relative">
             {tabs.map((tab) => {
-              // Precise matching for the base tab vs sub-routes
-              const isActive = tab.href === teamPath || tab.href === projectPath
-                ? pathname === tab.href
-                : pathname.startsWith(tab.href);
+              const isActive =
+                tab.href === teamPath || tab.href === projectPath
+                  ? pathname === tab.href
+                  : pathname.startsWith(tab.href);
 
               return (
                 <Link
                   key={tab.title}
                   href={tab.href}
-                  className={`relative h-full flex items-center px-1 transition-colors ${
+                  className={`relative h-full flex items-center px-1 transition-colors duration-200 ${
                     isActive ? "text-white" : "hover:text-neutral-200"
                   }`}
                 >
@@ -134,7 +196,11 @@ export default function NavigationTop() {
                     <motion.div
                       layoutId="activeTab"
                       className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </Link>
@@ -143,50 +209,21 @@ export default function NavigationTop() {
           </div>
         </div>
       </nav>
-      
-      <Modal 
-        layoutId="FeedbackModalID" 
-        isOpen={isFeedbackModalOpen} 
-        onClose={() => setIsFeedbackModalOpen(false)} 
+
+      <Modal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
         title="Submit Feedback"
       >
-        <div className="p-4 text-neutral-400 text-sm italic">Feedback form goes here...</div>
+        <div className="p-4 text-neutral-400 text-sm">
+          Feedback form content here...
+        </div>
       </Modal>
     </div>
   );
 }
 
-// The Up/Down selector arrows
-function SelectorIcon() {
-  return (
-    <svg
-      height="16"
-      width="16"
-      viewBox="0 0 16 16"
-      className="text-neutral-500"
-    >
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M8.7071 2.39644C8.31658 2.00592 7.68341 2.00592 7.29289 2.39644L4.46966 5.21966L3.93933 5.74999L4.99999 6.81065L5.53032 6.28032L7.99999 3.81065L10.4697 6.28032L11 6.81065L12.0607 5.74999L11.5303 5.21966L8.7071 2.39644ZM5.53032 9.71966L4.99999 9.18933L3.93933 10.25L4.46966 10.7803L7.29289 13.6035C7.68341 13.9941 8.31658 13.9941 8.7071 13.6035L11.5303 10.7803L12.0607 10.25L11 9.18933L10.4697 9.71966L7.99999 12.1893L5.53032 9.71966Z"
-      ></path>
-    </svg>
-  );
-}
-
-function BellIcon() {
-  return (
-    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M7.9925 0C4.95079 0 2.485 2.46579 2.485 5.5075V8.22669C2.485 8.77318 2.21321 9.28388 1.75992 9.58912L1.33108 9.8779L1 10.1009V10.5V11.25V12H1.75H14.25H15V11.25V10.5V10.0986L14.666 9.87596L14.2306 9.58565C13.7741 9.28137 13.5 8.76913 13.5 8.22059V5.5075C13.5 2.46579 11.0342 0 7.9925 0ZM3.985 5.5075C3.985 3.29422 5.77922 1.5 7.9925 1.5C10.2058 1.5 12 3.29422 12 5.5075V8.22059C12 9.09029 12.36 9.91233 12.9801 10.5H3.01224C3.62799 9.91235 3.985 9.09303 3.985 8.22669V5.5075ZM10.7486 13.5H9.16778L9.16337 13.5133C9.09591 13.716 8.94546 13.9098 8.72067 14.0501C8.52343 14.1732 8.27577 14.25 8.00002 14.25C7.72426 14.25 7.47661 14.1732 7.27936 14.0501C7.05458 13.9098 6.90412 13.716 6.83666 13.5133L6.83225 13.5H5.25143L5.41335 13.9867C5.60126 14.5516 5.99263 15.0152 6.48523 15.3226C6.92164 15.5949 7.44461 15.75 8.00002 15.75C8.55542 15.75 9.07839 15.5949 9.5148 15.3226C10.0074 15.0152 10.3988 14.5516 10.5867 13.9867L10.7486 13.5Z"
-      ></path>
-    </svg>
-  );
-}
-
+// Icons
 function SearchIcon() {
   return (
     <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">

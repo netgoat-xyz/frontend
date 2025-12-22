@@ -9,10 +9,9 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  layoutId: string; // The key to the "origin" animation
 }
 
-const Modal = ({ isOpen, onClose, title, children, layoutId }: ModalProps) => {
+const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   
   // Close on Escape
   useEffect(() => {
@@ -49,7 +48,6 @@ const Modal = ({ isOpen, onClose, title, children, layoutId }: ModalProps) => {
 
           {/* Modal Content - The "Origin" Animation */}
           <motion.div 
-            layoutId={layoutId} // Must match the button's layoutId
             className="relative bg-neutral-900 border border-neutral-800 w-full max-w-lg rounded-xl shadow-2xl flex flex-col overflow-hidden"
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
