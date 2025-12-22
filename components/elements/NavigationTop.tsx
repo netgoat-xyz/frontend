@@ -173,7 +173,7 @@ export default function NavigationTop() {
             <motion.button
               layoutId="FeedbackButtonID"
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="hidden sm:block text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded hover:bg-neutral-300 transition-colors"
+              className="hidden sm:block text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded-md hover:bg-neutral-300 transition-colors"
             >
               Feedback
             </motion.button>

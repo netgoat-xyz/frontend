@@ -1,6 +1,7 @@
 import UsageCard from "@/components/interface/dashboard-home/usageCard";
 import AlertsCard from "@/components/interface/dashboard-home/alertsCard";
 import ProjectToolbar from "@/components/interface/dashboard-home/projectToolbar";
+import DomainsSection from "@/components/interface/dashboard-home/domainsCard";
 
 export default function DashboardHome() {
   return (
@@ -21,10 +22,12 @@ export default function DashboardHome() {
         </div>
 
         <div className="w-full md:w-[70%]">
-          <div className="my-6 text-neutral-100 text-sm">Domains</div>
+          <div className="flex justify-between items-center my-6">
+            <h2 className="text-neutral-100 text-sm font-medium">Domains</h2>
+          </div>
+          <DomainsSection />
         </div>
       </div>
     </div>
-
   );
 }
