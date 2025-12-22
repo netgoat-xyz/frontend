@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Dropdown from "./Dropdown";
+import {Dropdown, DropdownItem} from "./Dropdown";
 
 interface AvatarProps {
   src?: string;
@@ -51,29 +51,10 @@ export default function Avatar({ src, username = "User", showDropdown = false, c
             <DropdownItem label="Dashboard" href="/dashboard" />
             <DropdownItem label="Settings" href="/dashboard/settings" />
             <div className="h-px bg-neutral-800 my-1" />
-            <DropdownItem label="Sign out" href="/logout" color="text-red-400" />
+            <DropdownItem label="Sign out" href="/logout" className="text-red-400" />
           </div>
         </Dropdown>
       )}
     </div>
-  );
-}
-
-function DropdownItem({
-  label,
-  href,
-  color = "text-neutral-300",
-}: {
-  label: string;
-  href: string;
-  color?: string;
-}) {
-  return (
-    <a
-      href={href}
-      className={`block px-3 py-2 text-sm rounded-md hover:bg-neutral-800 transition-colors ${color}`}
-    >
-      {label}
-    </a>
   );
 }

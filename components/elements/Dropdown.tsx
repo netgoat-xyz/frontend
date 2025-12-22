@@ -10,7 +10,7 @@ interface DropdownProps {
   className?: string;
 }
 
-export default function Dropdown({ isOpen, onClose, children, className = "" }: DropdownProps) {
+export function Dropdown({ isOpen, onClose, children, className = "" }: DropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close when clicking outside
@@ -40,4 +40,64 @@ export default function Dropdown({ isOpen, onClose, children, className = "" }: 
       )}
     </AnimatePresence>
   );
+}
+
+type DropdownItemVariant = "primary" | "disabled" | "destructive"
+
+export function DropdownItem({
+  label,
+  href,
+  icon,
+  description,
+  rightSlot,
+  variant = "primary",
+  className = "",
+  onClick,
+}: {
+  label: string
+  href?: string
+  icon?: React.ReactNode
+  description?: string
+  rightSlot?: React.ReactNode
+  variant?: DropdownItemVariant
+  className?: string
+  onClick?: () => void
+}) {
+  const base =
+    "flex w-full items-start gap-3 px-3 py-2 rounded-[11px] text-sm transition-colors"
+
+  const variants: Record<DropdownItemVariant, string> = {
+    primary: "text-neutral-300 hover:bg-neutral-800",
+    destructive: "text-red-400 hover:bg-red-500/10",
+    disabled: "text-neutral-500 opacity-50 pointer-events-none",
+  }
+
+  const content = (
+    <>
+      {icon && <span className="mt-0.5">{icon}</span>}
+      <span className="flex flex-col">
+        <span className="leading-tight">{label}</span>
+        {description && (
+          <span className="text-xs text-neutral-500">{description}</span>
+        )}
+      </span>
+      {rightSlot && <span className="ml-auto">{rightSlot}</span>}
+    </>
+  )
+
+  const classes = `${base} ${variants[variant]} ${className}`
+
+  if (href && variant !== "disabled") {
+    return (
+      <a href={href} className={classes}>
+        {content}
+      </a>
+    )
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={classes}>
+      {content}
+    </button>
+  )
 }

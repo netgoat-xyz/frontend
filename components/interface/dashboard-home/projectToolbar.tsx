@@ -4,16 +4,20 @@ import { useState } from "react";
 
 import {
   ChevronDownIcon,
-  FilterIcon,
-  GridIcon,
-  ListIcon,
   PlusIcon,
-  SearchIcon,
-} from "lucide-react";
+  GlobeAltIcon,
+  RocketLaunchIcon,
+  FolderIcon,
+  GlobeAmericasIcon,
+} from "@heroicons/react/24/outline";
+import { SearchIcon, FilterIcon, GridIcon, ListIcon } from "lucide-react";
+
+import { Dropdown, DropdownItem } from "../../elements/Dropdown"; // Assuming it's in the same directory
 
 export default function ProjectToolbar() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
+  const [isAddNewOpen, setIsAddNewOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-3 w-full">
@@ -61,10 +65,45 @@ export default function ProjectToolbar() {
         <button className="lg:hidden flex items-center justify-center w-10 h-10 bg-white text-black rounded-md hover:bg-neutral-200 transition-colors">
           <PlusIcon className="size-5" />
         </button>
-        <button className="hidden lg:flex items-center justify-between min-w-32 bg-white text-black px-3 py-2 rounded-md font-medium text-sm hover:bg-neutral-200 transition-colors">
-          <span>Add New...</span>
-          <ChevronDownIcon className="size-5" />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setIsAddNewOpen(!isAddNewOpen)}
+            className="flex items-center space-x-2 bg-white text-black px-3 py-1.5 rounded-md font-medium text-sm hover:bg-neutral-200 transition-all active:scale-95"
+          >
+            <span>Add New...</span>
+            <ChevronDownIcon
+              className={`size-4 transition-transform ${
+                isAddNewOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          <Dropdown
+            isOpen={isAddNewOpen}
+            onClose={() => setIsAddNewOpen(false)}
+            className="w-56 mt-2"
+          >
+            <div className="p-1">
+              <div className="p-2 border-b border-neutral-800">
+                <p className="text-xs text-neutral-500">Add New</p>
+              </div>
+
+              <DropdownItem
+                icon={<GlobeAltIcon className="size-4" />}
+                className="mt-1"
+                label="Domain"
+                href="/domains"
+              />
+
+                            <DropdownItem
+                icon={<FolderIcon className="size-4" />}
+                className="mt-1"
+                label="Group"
+                href="/groups"
+              />
+            </div>
+          </Dropdown>
+        </div>
       </div>
     </div>
   );
