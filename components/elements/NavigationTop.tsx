@@ -138,11 +138,11 @@ export default function NavigationTop() {
               <BellIcon />
             </button>
 
-              <Avatar
-                username="Ducky" 
-                showDropdown={true}
-                className="ml-1"
-              ></Avatar>
+            <Avatar
+              username="Ducky"
+              showDropdown={true}
+              className="ml-1"
+            ></Avatar>
           </div>
         </div>
 
@@ -150,7 +150,10 @@ export default function NavigationTop() {
         <div className="bg-neutral-900 border-b border-neutral-800 w-full px-4 md:px-6">
           <div className="h-12 flex items-center gap-6 text-sm text-neutral-400 relative">
             {tabs.map((tab) => {
-              const isActive = (pathname || "").startsWith(tab.href);
+              const isActive =
+                tab.href === "/dashboard"
+                  ? pathname === "/dashboard" || pathname === "/dashboard/"
+                  : pathnameStr.startsWith(tab.href);
               return (
                 <Link
                   key={tab.title}
@@ -179,19 +182,17 @@ export default function NavigationTop() {
           </div>
         </div>
       </nav>
-          <Modal
-            layoutId="FeedbackModalID"
-            isOpen={isFeedbackModalOpen}
-            onClose={() => setIsFeedbackModalOpen(false)}
-            title="Submit Feedback"
-          >
-            aaa
-          </Modal>
+      <Modal
+        layoutId="FeedbackModalID"
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
+        title="Submit Feedback"
+      >
+        aaa
+      </Modal>
     </div>
   );
 }
-
-
 
 // The Up/Down selector arrows
 function SelectorIcon() {
