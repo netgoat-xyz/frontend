@@ -1,0 +1,106 @@
+{
+  "HomePage": {
+    "calm": "Calma",
+    "networking": "Redes",
+    "sub_header": "Redes simplificadas.",
+    "detailed": "Una solución de red segura, escalable y fácil de usar.",
+    "pricing_button": "Precios",
+    "get_started_button": "Empezar",
+    "home": "Inicio",
+    "blogs": "Blogs",
+    "docs": "Documentación",
+    "source_code": "Código Fuente",
+    "discord": "Discord",
+    "public_beta": "✨ Beta Pública - Próximamente...",
+    "netgoat": "NetGoat",
+    "login": "Iniciar Sesión",
+    "features": {
+      "speed": {
+        "title": "Rápido como un rayo",
+        "description": "Optimizado para conexiones de baja latencia en todo el mundo."
+      },
+      "security": {
+        "title": "Confianza Cero",
+        "description": "Políticas por defecto de denegación con controles granulares."
+      },
+      "scalability": {
+        "title": "Escalabilidad Infinita",
+        "description": "Crece de uno a un millón de nodos sin fricción."
+      }
+    },
+    "bento": {
+      "network": {
+        "title": "Red Edge Global",
+        "desc": "Desplegado en más de 35 ubicaciones en todo el mundo para mínima latencia."
+      },
+      "analytics": {
+        "title": "Analítica en Tiempo Real",
+        "desc": "Inspecciona el flujo de tráfico al instante."
+      },
+      "security": {
+        "title": "Protección DDoS",
+        "desc": "Mitigación de capa 3/4 y 7 incluida."
+      },
+      "api": {
+        "title": "Diseño API First",
+        "desc": "Automatiza todo con nuestra API robusta."
+      },
+      "community": {
+        "title": "Impulsado por la Comunidad",
+        "desc": "Componentes open-source y comunidad activa."
+      }
+    },
+    "testimonials": {
+      "title": "Confiado por desarrolladores de todo el mundo"
+    },
+    "how_it_works": {
+      "title": "Cómo Funciona",
+      "step1": {
+        "title": "Conectar",
+        "desc": "Instala nuestro agente ligero en cualquier dispositivo."
+      },
+      "step2": {
+        "title": "Configurar",
+        "desc": "Define tu lógica y políticas de seguridad."
+      },
+      "step3": {
+        "title": "Controlar",
+        "desc": "Monitorea el tráfico y gestiona el acceso en tiempo real."
+      }
+    },
+    "stats": {
+      "commits": "Total de Commits",
+      "stars": "Estrellas en GitHub",
+      "pung": "Usuarios Globales (Self-Hosted + Cloud)"
+    },
+    "cta": {
+      "title": "¿Listo para asegurar tu red?",
+      "button": "Comenzar gratis"
+    },
+    "footer": {
+      "rights": "© 2026 NetGoat Inc. Todos los derechos reservados."
+    }
+  },
+  "Auth": {
+    "welcome_back": "Bienvenido de nuevo",
+    "create_account": "Crear Cuenta",
+    "enter_details": "Por favor ingrese sus datos.",
+    "login_failed": "Error al iniciar sesión",
+    "signup_failed": "Error al registrarse",
+    "signing_in": "Iniciando sesión...",
+    "creating_account": "Creando cuenta...",
+    "sign_in": "Iniciar Sesión",
+    "sign_up": "Registrarse",
+    "name": "Nombre",
+    "email_address": "Correo Electrónico",
+    "password": "Contraseña",
+    "no_account": "¿No tienes cuenta?",
+    "back_to_login": "Volver a Iniciar Sesión",
+    "sign_up_link": "Registrarse"
+  },
+  "Dashboard": {
+    "usage": "Uso",
+    "alerts": "Alertas",
+    "domains": "Dominios"
+  }
+}

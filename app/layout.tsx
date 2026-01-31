@@ -2,25 +2,29 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import NavigationTop from "@/components/elements/NavigationTop";
+import {NextIntlClientProvider} from 'next-intl';
+import {getLocale, getMessages} from 'next-intl/server';
+import 'cal-sans';
+import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
-export const metadata: Metadata = {
-  title: "Web Analytics Dashboard",
-  description: "Recreated Vercel-style dashboard",
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className="dark">
+    <html lang={locale} className={cn("dark", inter.variable)} suppressHydrationWarning>
       <body
-        className={`${inter.className} bg-neutral-950 text-white antialiased transform-gpu transition-all duration-200 min-h-full min-w-full h-full w-full`}
+        className={`${inter.className} bg-neutral-950 text-white antialiased transform-gpu transition-all duration-200 `}
       >
-        <main>{children}</main>
+        <NextIntlClientProvider messages={messages}>
+          <main>{children}</main>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

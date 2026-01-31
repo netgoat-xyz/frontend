@@ -1,0 +1,106 @@
+{
+  "HomePage": {
+    "calm": "Tenang",
+    "networking": "Jaringan",
+    "sub_header": "Jaringan jadi mudah.",
+    "detailed": "Solusi jaringan yang aman, skalabel, dan mudah digunakan.",
+    "pricing_button": "Harga",
+    "get_started_button": "Mulai",
+    "home": "Beranda",
+    "blogs": "Blog",
+    "docs": "Dokumen",
+    "source_code": "Kode Sumber",
+    "discord": "Discord",
+    "public_beta": "✨ Beta Publik - Segera Hadir...",
+    "netgoat": "NetGoat",
+    "login": "Masuk",
+    "features": {
+      "speed": {
+        "title": "Super Cepat",
+        "description": "Dioptimalkan untuk koneksi latensi rendah secara global."
+      },
+      "security": {
+        "title": "Zero Trust",
+        "description": "Kebijakan default deny dengan kontrol akses terperinci."
+      },
+      "scalability": {
+        "title": "Skala Tanpa Batas",
+        "description": "Tumbuh dari satu hingga satu juta node tanpa hambatan."
+      }
+    },
+    "bento": {
+      "network": {
+        "title": "Jaringan Edge Global",
+        "desc": "Ditempatkan di 35+ lokasi di seluruh dunia untuk latensi minimum."
+      },
+      "analytics": {
+        "title": "Analitik Real-time",
+        "desc": "Pantau aliran trafik secara instan."
+      },
+      "security": {
+        "title": "Perlindungan DDoS",
+        "desc": "Mitigasi Layer 3/4 & 7 termasuk."
+      },
+      "api": {
+        "title": "Desain API First",
+        "desc": "Otomatisasi semua hal dengan API yang kuat."
+      },
+      "community": {
+        "title": "Didorong Komunitas",
+        "desc": "Komponen open-source dan komunitas aktif."
+      }
+    },
+    "testimonials": {
+      "title": "Dipercaya oleh pengembang di seluruh dunia"
+    },
+    "how_it_works": {
+      "title": "Cara Kerjanya",
+      "step1": {
+        "title": "Hubungkan",
+        "desc": "Pasang agen ringan kami di perangkat apa pun."
+      },
+      "step2": {
+        "title": "Konfigurasi",
+        "desc": "Tentukan logika dan kebijakan keamanan Anda."
+      },
+      "step3": {
+        "title": "Kontrol",
+        "desc": "Pantau trafik dan kelola akses secara real-time."
+      }
+    },
+    "stats": {
+      "commits": "Total Komit",
+      "stars": "Bintang di GitHub",
+      "pung": "Pengguna Global (Self-Hosted + Cloud)"
+    },
+    "cta": {
+      "title": "Siap mengamankan jaringan Anda?",
+      "button": "Mulai gratis"
+    },
+    "footer": {
+      "rights": "© 2026 NetGoat Inc. Semua hak dilindungi."
+    }
+  },
+  "Auth": {
+    "welcome_back": "Selamat datang kembali",
+    "create_account": "Buat Akun",
+    "enter_details": "Silakan masukkan detail Anda.",
+    "login_failed": "Gagal masuk",
+    "signup_failed": "Gagal mendaftar",
+    "signing_in": "Masuk...",
+    "creating_account": "Membuat akun...",
+    "sign_in": "Masuk",
+    "sign_up": "Daftar",
+    "name": "Nama",
+    "email_address": "Alamat Email",
+    "password": "Kata Sandi",
+    "no_account": "Belum punya akun?",
+    "back_to_login": "Kembali ke Masuk",
+    "sign_up_link": "Daftar"
+  },
+  "Dashboard": {
+    "usage": "Penggunaan",
+    "alerts": "Peringatan",
+    "domains": "Domain"
+  }
+}

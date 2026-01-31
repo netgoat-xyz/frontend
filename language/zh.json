@@ -1,0 +1,106 @@
+{
+  "HomePage": {
+    "calm": "平静",
+    "networking": "网络",
+    "sub_header": "轻松构建网络。",
+    "detailed": "安全、可扩展且易用的网络解决方案。",
+    "pricing_button": "定价",
+    "get_started_button": "开始使用",
+    "home": "首页",
+    "blogs": "博客",
+    "docs": "文档",
+    "source_code": "源码",
+    "discord": "Discord",
+    "public_beta": "✨ 公测 - 即将上线...",
+    "netgoat": "NetGoat",
+    "login": "登录",
+    "features": {
+      "speed": {
+        "title": "闪电般快速",
+        "description": "针对全球低延迟连接优化。"
+      },
+      "security": {
+        "title": "零信任",
+        "description": "默认拒绝策略，提供精细访问控制。"
+      },
+      "scalability": {
+        "title": "无限扩展",
+        "description": "轻松扩展，从 1 节点到 100 万节点。"
+      }
+    },
+    "bento": {
+      "network": {
+        "title": "全球边缘网络",
+        "desc": "部署在全球 35+ 个地点，实现最低延迟。"
+      },
+      "analytics": {
+        "title": "实时分析",
+        "desc": "即时检查流量情况。"
+      },
+      "security": {
+        "title": "DDoS 防护",
+        "desc": "包含 3/4 层 & 7 层防护。"
+      },
+      "api": {
+        "title": "API 优先设计",
+        "desc": "使用强大的 API 自动化一切。"
+      },
+      "community": {
+        "title": "社区驱动",
+        "desc": "开源组件与活跃社区。"
+      }
+    },
+    "testimonials": {
+      "title": "全球开发者信赖"
+    },
+    "how_it_works": {
+      "title": "工作原理",
+      "step1": {
+        "title": "连接",
+        "desc": "在任意设备上安装轻量代理。"
+      },
+      "step2": {
+        "title": "配置",
+        "desc": "定义您的逻辑和安全策略。"
+      },
+      "step3": {
+        "title": "控制",
+        "desc": "实时监控流量并管理访问。"
+      }
+    },
+    "stats": {
+      "commits": "总提交数",
+      "stars": "GitHub 星标",
+      "pung": "全球用户（自托管 + 云端）"
+    },
+    "cta": {
+      "title": "准备好保护您的网络了吗？",
+      "button": "免费开始"
+    },
+    "footer": {
+      "rights": "© 2026 NetGoat Inc. 保留所有权利。"
+    }
+  },
+  "Auth": {
+    "welcome_back": "欢迎回来",
+    "create_account": "创建账户",
+    "enter_details": "请输入您的信息。",
+    "login_failed": "登录失败",
+    "signup_failed": "注册失败",
+    "signing_in": "正在登录...",
+    "creating_account": "正在创建账户...",
+    "sign_in": "登录",
+    "sign_up": "注册",
+    "name": "姓名",
+    "email_address": "电子邮箱",
+    "password": "密码",
+    "no_account": "还没有账户？",
+    "back_to_login": "返回登录",
+    "sign_up_link": "注册"
+  },
+  "Dashboard": {
+    "usage": "使用情况",
+    "alerts": "警报",
+    "domains": "域名"
+  }
+}

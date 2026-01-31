@@ -1,57 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
-import {Dropdown, DropdownItem} from "./Dropdown";
+import { Dropdown, DropdownItem } from "./Dropdown";
 
-interface AvatarProps {
-  src?: string;
-  username?: string;
-  showDropdown?: boolean;
-  className?: string;
-}
-
-export default function Avatar({ src, username = "User", showDropdown = false, className = "" }: AvatarProps) {
+export default function Avatar({ src, username = "User", showDropdown = false, className = "" }: { src?: string; username?: string; showDropdown?: boolean; className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
+const triggerRef = useRef<HTMLButtonElement>(null);
 
   return (
     <div className={`relative inline-block ${className}`}>
       <button
-        onClick={(e) => {
-          // stopPropagation prevents the Dropdown's "click outside" 
-          // listener from firing at the same time as this toggle
+        ref={triggerRef}
+        onMouseDown={(e) => {
           e.stopPropagation();
-          if (showDropdown) setIsOpen((prev) => !prev);
+          if (showDropdown) setIsOpen(v => !v);
         }}
         className="flex items-center justify-center overflow-hidden rounded-full border border-neutral-700 hover:border-neutral-500 transition-all active:scale-95 focus:outline-none"
         style={{ width: 32, height: 32 }}
       >
         {src ? (
-          <Image src={src} alt={username} width={32} height={32} className="object-cover" />
+          <Image src={src} alt={username} width={32} height={32} />
         ) : (
-          <div className="w-full h-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-             <Image 
-                src={`https://tapback.co/api/avatar/${username}`} 
-                alt={username} 
-                width={32} 
-                height={32} 
-                className="object-cover" 
-              />
-          </div>
+          <Image
+            src={`https://tapback.co/api/avatar/`}
+            alt={username}
+            width={32}
+            height={32}
+          />
         )}
       </button>
 
       {showDropdown && (
-        <Dropdown isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <Dropdown
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          triggerRef={triggerRef || null}
+        >
           <div className="px-4 py-3 border-b border-neutral-800">
             <p className="text-xs text-neutral-500">Signed in as</p>
             <p className="text-sm font-medium text-white truncate">{username}</p>
           </div>
           <div className="p-1">
             <DropdownItem label="Dashboard" href="/dashboard" />
-            <DropdownItem label="Settings" href="/dashboard/settings" />
+            <DropdownItem label="Settings" href="/account/settings" />
             <div className="h-px bg-neutral-800 my-1" />
-            <DropdownItem label="Sign out" href="/logout" className="text-red-400" />
+            <DropdownItem label="Sign out" href="/logout" />
           </div>
         </Dropdown>
       )}

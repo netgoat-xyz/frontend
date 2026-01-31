@@ -10,20 +10,29 @@ import Avatar from "./Avatar";
 import SlashSeparator from "./Seperator";
 import { UserIcon } from "@heroicons/react/24/outline";
 import useLastTeamName from "@/hooks/lastTeam";
+import NavSelectDrapdown from "./NavSelectDrapdown";
+import { UrlObject } from "url";
+import { createAuthClient } from "better-auth/react"
+const { useSession } = createAuthClient()
 
 export default function NavigationTop() {
+  const {
+    data: session,
+    isPending, //loading state
+    error, //error object 
+    refetch //refetch the session
+  } = useSession()
+
   const pathname = usePathname() || "";
   const teamNameConfusion = useLastTeamName();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
-  // 1. PARSE URL SEGMENTS
   const segments = pathname.split("/").filter(Boolean);
   const isDashboard = segments[0] === "dashboard";
+  const isAccount = segments[0] === "account";
 
-  // Check if the URL follows the /dashboard/teams/... pattern
   const isGlobalTeamsPath = isDashboard && segments[1] === "teams";
 
-  // teamName extraction based on path depth
   const teamName = isGlobalTeamsPath ? segments[2] : segments[1];
 
   const topLevelSlugs = [
@@ -34,17 +43,14 @@ export default function NavigationTop() {
     "overview",
   ];
 
-  // Domain detection (only active if not in a management path)
   const domainName =
     !isGlobalTeamsPath &&
-    teamName &&
-    segments[2] &&
-    !topLevelSlugs.includes(segments[2].toLowerCase())
+      teamName &&
+      segments[2] &&
+      !topLevelSlugs.includes(segments[2].toLowerCase())
       ? segments[2]
       : null;
 
-  // 2. DEFINE PATHS & TABS
-  // Maintain the current path style for the 'home' of the tabs
   const teamPath = isGlobalTeamsPath
     ? `/dashboard/teams/${teamName}`
     : `/dashboard/${teamName}`;
@@ -55,16 +61,19 @@ export default function NavigationTop() {
 
   let tabs = [];
 
-  if (projectPath) {
-    // Project Specific Tabs
+  if (isAccount) {
+    tabs = [
+      { title: "Overview", href: "/account" },
+      { title: "Activity", href: "/account/activity" },
+      { title: "Settings", href: "/account/settings" },
+    ];
+  } else if (projectPath) {
     tabs = [
       { title: "Overview", href: projectPath },
       { title: "Analytics", href: `${projectPath}/analytics` },
       { title: "Settings", href: `${projectPath}/settings` },
     ];
   } else {
-    // Unified Team Tabs (Used for both standard and /teams/ paths)
-    // We use the 'teamPath' variable so the "Overview" tab points to the correct current URL
     tabs = [
       { title: "Overview", href: `/dashboard/${teamNameConfusion}` },
       {
@@ -76,9 +85,13 @@ export default function NavigationTop() {
     ];
   }
 
-  // 3. ACTIVE TAB LOGIC
   const activeTab =
     tabs.find((tab) => {
+      if (isAccount) {
+        return tab.href === "/account"
+          ? pathname === tab.href
+          : pathname.startsWith(tab.href);
+      }
       if (tab.href === teamPath || tab.href === projectPath) {
         return pathname === tab.href;
       }
@@ -90,12 +103,11 @@ export default function NavigationTop() {
   return (
     <div className="flex flex-col bg-neutral-950 text-white">
       <nav className="sticky top-0 z-50 w-full flex-none flex flex-col">
-        {/* Top Header Bar */}
         <div className="bg-neutral-900 border-b border-neutral-800 w-full h-16 px-4 md:px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" aria-label="Home">
               <Image
-                src="/branding/logo.png"
+                src="/branding/netgoat_no_text.png"
                 alt="Logo"
                 width={28}
                 height={28}
@@ -105,10 +117,15 @@ export default function NavigationTop() {
 
             <SlashSeparator />
 
-            {/* BREADCRUMBS */}
             <div className="flex items-center gap-2">
-              {/* Only show "Teams" link if in the global teams path */}
-              {isGlobalTeamsPath && (
+              {isAccount && (
+                <>
+                  My Account
+                  <NavSelectDrapdown />
+                </>
+              )}
+
+              {!isAccount && isGlobalTeamsPath && (
                 <>
                   <Link
                     className="text-sm font-medium text-neutral-400 hover:text-neutral-300 transition-all"
@@ -120,8 +137,7 @@ export default function NavigationTop() {
                 </>
               )}
 
-              {/* Dynamic Team Name */}
-              {teamName && (
+              {!isAccount && teamName && (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center text-[10px] font-bold">
                     {teamName[0].toUpperCase()}
@@ -129,11 +145,12 @@ export default function NavigationTop() {
                   <span className="text-sm font-medium">
                     {decodeURIComponent(teamName)}
                   </span>
+                  <NavSelectDrapdown />
+
                 </div>
               )}
 
-              {/* Project Segment */}
-              {domainName && (
+              {!isAccount && domainName && (
                 <>
                   <SlashSeparator />
                   <span className="text-sm font-medium">
@@ -142,9 +159,8 @@ export default function NavigationTop() {
                 </>
               )}
 
-              {/* Active Page Title (Excluding "Teams" when redundant) */}
-              {teamName && <SlashSeparator />}
-              {activeTitle !== "Teams" && (
+              {!isAccount && teamName && <SlashSeparator />}
+              {!isAccount && activeTitle !== "Teams" && (
                 <span className="text-sm font-medium text-neutral-400">
                   {activeTitle}
                 </span>
@@ -170,26 +186,27 @@ export default function NavigationTop() {
               Feedback
             </motion.button>
 
-            <Avatar username="Ducky" showDropdown={true} className="ml-1" />
+            <Avatar username={session?.user?.name || ""} showDropdown={true} className="ml-1" />
           </div>
         </div>
 
-        {/* BOTTOM TABS */}
         <div className="bg-neutral-900 border-b border-neutral-800 w-full px-4 md:px-6 overflow-x-auto no-scrollbar">
           <div className="h-12 flex items-center gap-6 text-sm text-neutral-400 relative">
             {tabs.map((tab) => {
-              const isActive =
-                tab.href === teamPath || tab.href === projectPath
+              const isActive = isAccount
+                ? tab.href === "/account"
+                  ? pathname === tab.href
+                  : pathname.startsWith(tab.href)
+                : tab.href === teamPath || tab.href === projectPath
                   ? pathname === tab.href
                   : pathname.startsWith(tab.href);
 
               return (
                 <Link
                   key={tab.title}
-                  href={tab.href}
-                  className={`relative h-full flex items-center px-1 transition-colors duration-200 ${
-                    isActive ? "text-white" : "hover:text-neutral-200"
-                  }`}
+                  href={tab.href as any}
+                  className={`relative h-full flex items-center px-1 transition-colors duration-200 ${isActive ? "text-white" : "hover:text-neutral-200"
+                    }`}
                 >
                   {tab.title}
                   {isActive && (

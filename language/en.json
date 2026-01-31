@@ -1,0 +1,106 @@
+{
+  "HomePage": {
+    "calm": "Calm",
+    "networking": "Networking",
+    "sub_header": "Networking made simple.",
+    "detailed": "A secure, scalable, and easy-to-use networking solution.",
+    "pricing_button": "Pricing",
+    "get_started_button": "Get Started",
+    "home": "Home",
+    "blogs": "Blogs",
+    "docs": "Docs",
+    "source_code": "Source Code",
+    "discord": "Discord",
+    "public_beta": "✨ Public Beta - Coming Soon...",
+    "netgoat": "NetGoat",
+    "login": "Login",
+    "features": {
+      "speed": {
+        "title": "Lightning Fast",
+        "description": "Optimized specifically for low-latency connections globally."
+      },
+      "security": {
+        "title": "Zero Trust",
+        "description": "Default deny policies with granular access controls."
+      },
+      "scalability": {
+        "title": "Infinite Scale",
+        "description": "Grow from one to one million nodes without friction."
+      }
+    },
+    "bento": {
+      "network": {
+        "title": "Global Edge Network",
+        "desc": " deployed across 35+ locations worldwide for minimum latency."
+      },
+      "analytics": {
+        "title": "Real-time Analytics",
+        "desc": "Inspect traffic flow instantly."
+      },
+      "security": {
+        "title": "DDoS Protection",
+        "desc": "Layer 3/4 & 7 mitigation included."
+      },
+      "api": {
+        "title": "API First Design",
+        "desc": "Automate everything with our robust API."
+      },
+      "community": {
+        "title": "Community Driven",
+        "desc": "Open source components and active community."
+      }
+    },
+    "testimonials": {
+      "title": "Trusted by developers worldwide"
+    },
+    "how_it_works": {
+      "title": "How it works",
+      "step1": {
+        "title": "Connect",
+        "desc": "Install our lightweight agent on any device."
+      },
+      "step2": {
+        "title": "Configure",
+        "desc": "Define your logic and security policies."
+      },
+      "step3": {
+        "title": "Control",
+        "desc": "Monitor traffic and manage access in real-time."
+      }
+    },
+    "stats": {
+      "commits": "Total Commits",
+      "stars": "Stars on GitHub",
+      "pung": "Users Globally (Self-Hosted + Cloud)"
+    },
+    "cta": {
+      "title": "Ready to secure your network?",
+      "button": "Start for free"
+    },
+    "footer": {
+      "rights": "© 2026 NetGoat Inc. All rights reserved."
+    }
+  },
+  "Auth": {
+    "welcome_back": "Welcome Back",
+    "create_account": "Create Account",
+    "enter_details": "Please enter your details.",
+    "login_failed": "Login failed",
+    "signup_failed": "Signup failed",
+    "signing_in": "Signing in...",
+    "creating_account": "Creating account...",
+    "sign_in": "Sign In",
+    "sign_up": "Sign Up",
+    "name": "Name",
+    "email_address": "Email Address",
+    "password": "Password",
+    "no_account": "Don't have an account?",
+    "back_to_login": "Back to Login",
+    "sign_up_link": "Sign up"
+  },
+  "Dashboard": {
+    "usage": "Usage",
+    "alerts": "Alerts",
+    "domains": "Domains"
+  }
+}

@@ -10,19 +10,36 @@ interface DropdownProps {
   className?: string;
 }
 
-export function Dropdown({ isOpen, onClose, children, className = "" }: DropdownProps) {
-  const dropdownRef = useRef<HTMLDivElement>(null);
+interface DropdownProps {
+  isOpen: boolean
+  onClose: () => void
+  children: ReactNode
+  className?: string
+triggerRef?: React.RefObject<HTMLElement | null>
+}
 
-  // Close when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, onClose]);
+export function Dropdown({
+  isOpen,
+  onClose,
+  children,
+  className = "",
+  triggerRef,
+}: DropdownProps) {
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+useEffect(() => {
+  const handleMouseDown = (event: MouseEvent) => {
+    const target = event.target as Node
+
+    if (dropdownRef.current?.contains(target)) return
+    if (triggerRef?.current?.contains(target)) return
+
+    onClose()
+  }
+
+  if (isOpen) document.addEventListener("mousedown", handleMouseDown)
+  return () => document.removeEventListener("mousedown", handleMouseDown)
+}, [isOpen, onClose, triggerRef])
 
   return (
     <AnimatePresence>
@@ -39,8 +56,9 @@ export function Dropdown({ isOpen, onClose, children, className = "" }: Dropdown
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }
+
 
 type DropdownItemVariant = "primary" | "disabled" | "destructive"
 

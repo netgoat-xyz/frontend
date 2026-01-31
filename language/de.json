@@ -1,0 +1,106 @@
+{
+  "HomePage": {
+    "calm": "Ruhig",
+    "networking": "Netzwerken",
+    "sub_header": "Netzwerken leicht gemacht.",
+    "detailed": "Eine sichere, skalierbare und benutzerfreundliche Netzwerklösung.",
+    "pricing_button": "Preise",
+    "get_started_button": "Loslegen",
+    "home": "Startseite",
+    "blogs": "Blogs",
+    "docs": "Dokumentation",
+    "source_code": "Quellcode",
+    "discord": "Discord",
+    "public_beta": "✨ Öffentliche Beta - Bald verfügbar...",
+    "netgoat": "NetGoat",
+    "login": "Anmelden",
+    "features": {
+      "speed": {
+        "title": "Blitzschnell",
+        "description": "Optimiert für Verbindungen mit niedriger Latenz weltweit."
+      },
+      "security": {
+        "title": "Zero Trust",
+        "description": "Standardmäßig alles verweigern mit granularem Zugriff."
+      },
+      "scalability": {
+        "title": "Unendliche Skalierung",
+        "description": "Wachsen Sie von einem auf eine Million Knoten ohne Reibung."
+      }
+    },
+    "bento": {
+      "network": {
+        "title": "Globales Edge-Netzwerk",
+        "desc": "Bereitgestellt an 35+ Standorten weltweit für minimale Latenz."
+      },
+      "analytics": {
+        "title": "Echtzeit-Analysen",
+        "desc": "Verkehr sofort überwachen."
+      },
+      "security": {
+        "title": "DDoS-Schutz",
+        "desc": "Layer 3/4 & 7 Schutz inklusive."
+      },
+      "api": {
+        "title": "API First Design",
+        "desc": "Automatisieren Sie alles mit unserer robusten API."
+      },
+      "community": {
+        "title": "Community-getrieben",
+        "desc": "Open-Source-Komponenten und aktive Community."
+      }
+    },
+    "testimonials": {
+      "title": "Von Entwicklern weltweit vertraut"
+    },
+    "how_it_works": {
+      "title": "Wie es funktioniert",
+      "step1": {
+        "title": "Verbinden",
+        "desc": "Installieren Sie unseren leichten Agenten auf jedem Gerät."
+      },
+      "step2": {
+        "title": "Konfigurieren",
+        "desc": "Definieren Sie Ihre Logik und Sicherheitsrichtlinien."
+      },
+      "step3": {
+        "title": "Kontrolle",
+        "desc": "Überwachen Sie den Verkehr und verwalten Sie den Zugriff in Echtzeit."
+      }
+    },
+    "stats": {
+      "commits": "Gesamte Commits",
+      "stars": "Sterne auf GitHub",
+      "pung": "Benutzer weltweit (Self-Hosted + Cloud)"
+    },
+    "cta": {
+      "title": "Bereit, Ihr Netzwerk zu sichern?",
+      "button": "Kostenlos starten"
+    },
+    "footer": {
+      "rights": "© 2026 NetGoat Inc. Alle Rechte vorbehalten."
+    }
+  },
+  "Auth": {
+    "welcome_back": "Willkommen zurück",
+    "create_account": "Konto erstellen",
+    "enter_details": "Bitte geben Sie Ihre Daten ein.",
+    "login_failed": "Anmeldung fehlgeschlagen",
+    "signup_failed": "Registrierung fehlgeschlagen",
+    "signing_in": "Anmeldung...",
+    "creating_account": "Konto wird erstellt...",
+    "sign_in": "Anmelden",
+    "sign_up": "Registrieren",
+    "name": "Name",
+    "email_address": "E-Mail-Adresse",
+    "password": "Passwort",
+    "no_account": "Noch kein Konto?",
+    "back_to_login": "Zurück zur Anmeldung",
+    "sign_up_link": "Registrieren"
+  },
+  "Dashboard": {
+    "usage": "Nutzung",
+    "alerts": "Warnungen",
+    "domains": "Domains"
+  }
+}
