@@ -7,6 +7,7 @@ const db = client.db();
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
+  trustedOrigins: [process.env.NEXT_PUBLIC_SITE_URL as string],
   logger: {
     level: "debug",
   },
