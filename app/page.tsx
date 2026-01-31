@@ -18,7 +18,7 @@ export default function ShaderShowcase() {
     <ShaderBackground>
       <div className="relative h-screen flex flex-col">
         <Header />
-        <div className="flex-grow relative w-full">
+        <div className="grow relative w-full">
            <HeroContent />
            <ScrollIndicator />
         </div>

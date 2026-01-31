@@ -23,7 +23,7 @@ const triggerRef = useRef<HTMLButtonElement>(null);
           <Image src={src} alt={username} width={32} height={32} />
         ) : (
           <Image
-            src={`https://tapback.co/api/avatar/`}
+            src={`https://tapback.co/api/avatar/${encodeURIComponent(username)}`}
             alt={username}
             width={32}
             height={32}

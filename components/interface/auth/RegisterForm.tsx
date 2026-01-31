@@ -1,0 +1,183 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import Image from "next/image";
+import { auth } from "@/lib/auth";
+
+export default function RegisterForm({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      await authClient.signUp.email({
+        email,
+        password,
+        name: username,
+      });
+      router.replace("/dashboard");
+    } catch (err: any) {
+      setError(err?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Card className="bg-card/25 filter backdrop-blur-md overflow-hidden p-0">
+        <CardContent className="grid p-0 md:grid-cols-2">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit}>
+            <FieldGroup>
+              <div className="flex flex-col items-center gap-2 text-center">
+                <h1 className="text-2xl font-bold">Welcome to Netgoat</h1>
+                <p className="text-muted-foreground text-balance">
+                  Create your Netgoat account
+                </p>
+              </div>
+              <Field>
+                <FieldLabel htmlFor="username">Username</FieldLabel>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="DuckyMcDuckFace"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Field>
+              <Field>
+                <div className="flex items-center">
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Field>
+              {error && (
+                <FieldDescription className="text-red-500 text-center">
+                  {error}
+                </FieldDescription>
+              )}
+              <Field>
+                <Button
+                  type="submit"
+                  className="cursor-pointer"
+                  disabled={loading}
+                >
+                  {loading ? "Registering..." : "Register"}
+                </Button>
+              </Field>
+              <FieldSeparator>Or continue with</FieldSeparator>
+              <Field className="grid grid-cols-3 gap-4">
+                <Button
+                  className="cursor-pointer"
+                  variant="outline"
+                  type="button"
+                  onClick={async () =>
+                    await authClient.signIn.social({ provider: "discord",  callbackURL: "/dashboard" })
+                  }
+                >
+                  <img
+                    src="/brands/Discord/Discord_idk1kDTKQj_0.svg"
+                    alt="Discord"
+                    className="cursor-pointer h-5 w-5 mx-auto"
+                  />
+                  <span className="sr-only">Register with Discord</span>
+                </Button>
+                <Button
+                  className="cursor-pointer"
+                  variant="outline"
+                  type="button"
+                  onClick={async () =>
+                    await authClient.signIn.social({ provider: "github", callbackURL: "/dashboard" })
+                  }
+                >
+                  <img
+                    src="/brands/GitHub/GitHub_Symbol_0.svg"
+                    alt="Github"
+                    className="cursor-pointer h-5 w-5 mx-auto"
+                  />
+                  <span className="sr-only">Register with Github</span>
+                </Button>
+                <Button
+                  className="cursor-pointer"
+                  variant="outline"
+                  type="button"
+                  onClick={async () =>
+                    await authClient.signIn.social({ provider: "gitlab", callbackURL: "/dashboard" })
+                  }
+                >
+                  <img
+                    src="/brands/GitLab/GitLab_Symbol_0.svg"
+                    alt="Gitlab"
+                    className="cursor-pointer h-5 w-5 mx-auto"
+                  />
+                  <span className="sr-only">Register with Gitlab</span>
+                </Button>
+              </Field>
+              <FieldDescription className="text-center">
+                Already have an account?{" "}
+                <Link href={"/auth/login" as any}>Login</Link>
+              </FieldDescription>
+            </FieldGroup>
+          </form>
+          <div className="bg-muted/25 filter backdrop-blur-md relative hidden md:block">
+            <Image
+              src="/ui_images/AuthImage.png"
+              width={5000}
+              height={5000}
+              alt="Image"
+              className="absolute inset-0 h-full select-none pointer-events-none w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              priority
+            />
+          </div>
+        </CardContent>
+      </Card>
+      <FieldDescription className="px-6 text-center">
+        By clicking continue, you agree to our{" "}
+        <Link href={"/terms" as any}>Terms of Service</Link> and{" "}
+        <Link href={"/privacy" as any}>Privacy Policy</Link>.
+      </FieldDescription>
+    </div>
+  );
+}

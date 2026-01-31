@@ -34,13 +34,14 @@ export default function Error({
             src="https://c.tenor.com/qkPV6_DL-NAAAAAd/tenor.gif"
             alt="Server Error Animation"
             fill
+            loading="eager"
             className="object-cover opacity-90 transition-opacity duration-500 group-hover:opacity-100"
             unoptimized
           />
         </div>
 
         <div className="space-y-4">
-          <h1 className="text-6xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">
+          <h1 className="text-6xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-gray-500">
             500
           </h1>
           <h2 className="text-2xl font-medium tracking-tight text-gray-200">
@@ -55,7 +56,7 @@ export default function Error({
           onClick={() => reset()}
           className="rounded-full bg-white px-8 py-2.5 text-sm font-semibold text-black transition-all hover:bg-gray-200 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black"
         >
-          Reboot System
+          Retry?
         </button>
       </div>
     </div>

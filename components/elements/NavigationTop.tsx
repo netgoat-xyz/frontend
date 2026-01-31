@@ -186,7 +186,7 @@ export default function NavigationTop() {
               Feedback
             </motion.button>
 
-            <Avatar username={session?.user?.name || ""} showDropdown={true} className="ml-1" />
+            <Avatar src={session?.user?.image || `https://tapback.co/api/avatar/${encodeURIComponent(session?.user?.name || "User")}`} username={session?.user?.name || ""} showDropdown={true} className="ml-1" />
           </div>
         </div>
 
