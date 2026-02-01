@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     siteName: "NetGoat",
     images: [
       {
-        url: "https://dry-spoons-battle.loca.lt/og.png",
+        url: "/og.png",
         width: 1200,
         height: 630,
         alt: "NetGoat Logo",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "NetGoat",
     description: "A secure, scalable, and easy-to-use networking solution.",
-    images: ["https://dry-spoons-battle.loca.lt/og.png"],
+    images: ["/og.png"],
     creator: "@duckeydev",
   },
   icons: {
