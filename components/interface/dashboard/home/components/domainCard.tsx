@@ -45,7 +45,7 @@ export default function DomainCard({ domain }: DomainPropsCard ) {
           </div>
         </div>
         
-        <Link href={domain.pathName} className="text-neutral-400 hover:text-neutral-100 text-xs font-medium border  border-neutral-800 px-3 py-1.5 rounded-md hover:bg-neutral-900 transition-all">
+        <Link href={domain.pathName as any} className="text-neutral-400 hover:text-neutral-100 text-xs font-medium border  border-neutral-800 px-3 py-1.5 rounded-md hover:bg-neutral-900 transition-all">
           Edit
         </Link>
       </div>
