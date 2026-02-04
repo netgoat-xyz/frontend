@@ -1,9 +1,8 @@
 "use client"
 
 export default function Page() {
-  // Uncommenting the following will simulate a client-side error
-  /*if (true) {
+  if (process.env.NODE_ENV === "development") {
     throw new Error("client-side oops")
-  }*/
+  }
   return null
 }

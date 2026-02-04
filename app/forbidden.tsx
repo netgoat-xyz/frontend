@@ -15,7 +15,7 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black font-sans text-white antialiased">
+    <div className="relative flex min-h-screen w-screen flex-col items-center justify-center overflow-hidden bg-black font-sans text-white antialiased">
       {/* Spacey Grid Background */}
       <div className="absolute inset-0 z-0 opacity-20"
         style={{
@@ -27,7 +27,7 @@ export default function Error({
       {/* Radial Gradient for "Space" Depth */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_100%)]"></div>
 
-      <div className="z-10 flex max-w-md flex-col items-center space-y-8 px-4 text-center">
+      <div className="z-10 flex max-w-md flex-col w-full items-center space-y-8 px-4 text-center">
         {/* GIF Container with Glow */}
         <div className="group relative mx-auto h-64 w-full overflow-hidden rounded-xl border border-white/10 shadow-[0_0_50px_-12px_rgba(255,255,255,0.2)] transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_80px_-20px_rgba(255,255,255,0.4)]">
           <Image
@@ -47,7 +47,7 @@ export default function Error({
             Access Denied
           </h2>
           <p className="text-sm text-gray-500">
-            You do not have the necessary permissions to access the turbine sector.
+            Nah, go away this is off limits.
           </p>
         </div>
 

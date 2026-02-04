@@ -41,7 +41,7 @@ const projects = [
 export default function NavSelectDrapdown() {
   return (
     <Menu>
-      <MenuButton className="group flex-col justify-center rounded-lg bg-neutral-900/60 p-1 text-sm font-medium text-neutral-200 transition-colors hover:bg-neutral-800 hover:text-white focus:outline-none data-open:bg-neutral-800">
+      <MenuButton className="group flex-col justify-center rounded-lg cursor-pointer p-1 text-sm font-medium text-neutral-200 transition-colors hover:bg-neutral-800 hover:text-white focus:outline-none data-open:bg-neutral-800">
                     <ChevronUpIcon className="size-3 text-neutral-400 transition-colors group-hover:text-white" />
                     <ChevronDownIcon className="size-3 text-neutral-400 transition-colors group-hover:text-white" />
       </MenuButton>
@@ -49,7 +49,7 @@ export default function NavSelectDrapdown() {
       <MenuItems
         transition
         anchor="bottom start"
-        className="z-50 mt-1 flex w-150 origin-top-left divide-x divide-neutral-800 rounded-xl border border-neutral-800 bg-black text-sm shadow-2xl ring-1 ring-white/5 focus:outline-none data-closed:scale-95 data-closed:opacity-0 transition duration-150 ease-out"
+        className="z-50 mt-1 flex w-150 origin-top-left divide-x divide-neutral-800 rounded-xl border border-neutral-800 bg-neutral-900/65 filter backdrop-blur-md text-sm shadow-2xl ring-1 ring-white/5 focus:outline-none data-closed:scale-95 data-closed:opacity-0 transition duration-150 ease-out"
       >
         {/* Teams Column */}
         <div className="flex-1 flex flex-col min-w-0">
@@ -66,7 +66,7 @@ export default function NavSelectDrapdown() {
             <div className="px-2 py-1.5 text-xs text-neutral-500">Teams</div>
             {teams.map((team) => (
               <MenuItem key={team.name}>
-                <button className="group flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white data-focus:bg-neutral-900 data-focus:text-white">
+                <button className="group flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-700/75 hover:text-white data-focus:bg-neutral-700/75 cursor-pointer data-focus:text-white">
                     <div className="flex items-center gap-2">
                         <TeamIcon />
                         <span className={team.active ? "text-white" : ""}>{team.name}</span>
@@ -76,7 +76,7 @@ export default function NavSelectDrapdown() {
             ))}
 
             <MenuItem>
-              <button className="group mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white data-focus:bg-neutral-900 data-focus:text-white">
+              <button className="group mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-700/75 hover:text-white data-focus:bg-neutral-700/75 cursor-pointer data-focus:text-white">
                 <PlusCircleIcon className="size-5 text-blue-500" />
                 <span>Create Team</span>
               </button>
@@ -100,7 +100,7 @@ export default function NavSelectDrapdown() {
             <div className="flex flex-col gap-0.5">
                 {projects.map((project) => (
                 <MenuItem key={project.name}>
-                    <button className="group flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white data-focus:bg-neutral-900 data-focus:text-white">
+                    <button className="group flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-700/75 hover:text-white data-focus:bg-neutral-700/75 cursor-pointer data-focus:text-white">
                         <ProjectIcon letter={project.name[0].toUpperCase()} />
                         <span>{project.name}</span>
                     </button>
@@ -108,7 +108,7 @@ export default function NavSelectDrapdown() {
                 ))}
 
                 <MenuItem>
-                <button className="group mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white data-focus:bg-neutral-900 data-focus:text-white">
+                <button className="group mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-neutral-400 hover:bg-neutral-700/75 hover:text-white data-focus:bg-neutral-700/75 cursor-pointer data-focus:text-white">
                     <PlusCircleIcon className="size-5 text-blue-500" />
                     <span>Create Project</span>
                 </button>

@@ -8,20 +8,32 @@ import { useState } from "react";
 import Modal from "./Modal";
 import Avatar from "./Avatar";
 import SlashSeparator from "./Seperator";
-import { UserIcon } from "@heroicons/react/24/outline";
+import {
+  Activity,
+  BarChart3,
+  Globe,
+  Home,
+  LayoutDashboard,
+  Lock,
+  Puzzle,
+  Settings,
+  Shield,
+  Users,
+  Zap,
+} from "lucide-react";
 import useLastTeamName from "@/hooks/lastTeam";
 import NavSelectDrapdown from "./NavSelectDrapdown";
 import { UrlObject } from "url";
-import { createAuthClient } from "better-auth/react"
-const { useSession } = createAuthClient()
+import { createAuthClient } from "better-auth/react";
+const { useSession } = createAuthClient();
 
 export default function NavigationTop() {
   const {
     data: session,
     isPending, //loading state
-    error, //error object 
-    refetch //refetch the session
-  } = useSession()
+    error, //error object
+    refetch, //refetch the session
+  } = useSession();
 
   const pathname = usePathname() || "";
   const teamNameConfusion = useLastTeamName();
@@ -45,9 +57,9 @@ export default function NavigationTop() {
 
   const domainName =
     !isGlobalTeamsPath &&
-      teamName &&
-      segments[2] &&
-      !topLevelSlugs.includes(segments[2].toLowerCase())
+    teamName &&
+    segments[2] &&
+    !topLevelSlugs.includes(segments[2].toLowerCase())
       ? segments[2]
       : null;
 
@@ -63,25 +75,42 @@ export default function NavigationTop() {
 
   if (isAccount) {
     tabs = [
-      { title: "Overview", href: "/account" },
-      { title: "Activity", href: "/account/activity" },
-      { title: "Settings", href: "/account/settings" },
+      { title: "Overview", href: "/account", icon: Home },
+      { title: "Activity", href: "/account/activity", icon: Activity },
+      { title: "Settings", href: "/account/settings", icon: Settings },
     ];
   } else if (projectPath) {
     tabs = [
-      { title: "Overview", href: projectPath },
-      { title: "Analytics", href: `${projectPath}/analytics` },
-      { title: "Settings", href: `${projectPath}/settings` },
+      { title: "Overview", href: projectPath, icon: LayoutDashboard },
+      {
+        title: "Analytics",
+        href: `${projectPath}/analytics`,
+        icon: BarChart3,
+      },
+      { title: "DNS", href: `${projectPath}/dns`, icon: Globe },
+      { title: "SSL/TLS", href: `${projectPath}/ssl`, icon: Lock },
+      { title: "WAF Rules", href: `${projectPath}/waf`, icon: Shield },
+      { title: "Caching", href: `${projectPath}/caching`, icon: Zap },
+      { title: "Settings", href: `${projectPath}/settings`, icon: Settings },
     ];
   } else {
     tabs = [
-      { title: "Overview", href: `/dashboard/${teamNameConfusion}` },
+      {
+        title: "Overview",
+        href: `/dashboard/${teamNameConfusion}`,
+        icon: LayoutDashboard,
+      },
       {
         title: "Integrations",
         href: `/dashboard/${teamNameConfusion}/integrations`,
+        icon: Puzzle,
       },
-      { title: "Teams", href: "/dashboard/teams" },
-      { title: "Settings", href: `/dashboard/${teamNameConfusion}/settings` },
+      { title: "Teams", href: "/dashboard/teams", icon: Users },
+      {
+        title: "Settings",
+        href: `/dashboard/${teamNameConfusion}/settings`,
+        icon: Settings,
+      },
     ];
   }
 
@@ -146,7 +175,6 @@ export default function NavigationTop() {
                     {decodeURIComponent(teamName)}
                   </span>
                   <NavSelectDrapdown />
-
                 </div>
               )}
 
@@ -186,7 +214,15 @@ export default function NavigationTop() {
               Feedback
             </motion.button>
 
-            <Avatar src={session?.user?.image || `https://tapback.co/api/avatar/${encodeURIComponent(session?.user?.name || "User")}`} username={session?.user?.name || ""} showDropdown={true} className="ml-1" />
+            <Avatar
+              src={
+                session?.user?.image ||
+                `https://tapback.co/api/avatar/${encodeURIComponent(session?.user?.name || "User")}`
+              }
+              username={session?.user?.name || ""}
+              showDropdown={true}
+              className="ml-1"
+            />
           </div>
         </div>
 
@@ -201,13 +237,17 @@ export default function NavigationTop() {
                   ? pathname === tab.href
                   : pathname.startsWith(tab.href);
 
+              const Icon = tab.icon;
+
               return (
                 <Link
                   key={tab.title}
                   href={tab.href as any}
-                  className={`relative h-full flex items-center px-1 transition-colors duration-200 ${isActive ? "text-white" : "hover:text-neutral-200"
-                    }`}
+                  className={`relative h-full flex items-center px-1 transition-colors duration-200 ${
+                    isActive ? "text-white" : "hover:text-neutral-200"
+                  }`}
                 >
+                  {Icon && <Icon className="w-4 h-4 mr-2" />}
                   {tab.title}
                   {isActive && (
                     <motion.div

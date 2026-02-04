@@ -15,7 +15,7 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black font-sans text-white antialiased">
+    <div className="relative flex min-h-screen w-screen flex-col items-center justify-center overflow-hidden bg-black font-sans text-white antialiased">
       {/* Spacey Grid Background */}
       <div className="absolute inset-0 z-0 opacity-20"
         style={{
@@ -27,15 +27,15 @@ export default function Error({
       {/* Radial Gradient for "Space" Depth */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_100%)]"></div>
 
-      <div className="z-10 flex max-w-md flex-col items-center space-y-8 px-4 text-center">
+      <div className="z-10 flex max-w-md flex-col items-center space-y-8 px-4 text-center w-full">
         {/* GIF Container with Glow */}
-        <div className="group relative mx-auto h-64 w-full overflow-hidden rounded-xl border border-white/10 shadow-[0_0_50px_-12px_rgba(255,255,255,0.2)] transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_80px_-20px_rgba(255,255,255,0.4)]">
+        <div className="group relative mx-auto h-64 min-w-full overflow-hidden rounded-xl border border-white/10 shadow-[0_0_50px_-12px_rgba(255,255,255,0.2)] transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_80px_-20px_rgba(255,255,255,0.4)]">
           <Image
             src="https://c.tenor.com/qkPV6_DL-NAAAAAd/tenor.gif"
             alt="Server Error Animation"
             fill
             loading="eager"
-            className="object-cover opacity-90 transition-opacity duration-500 group-hover:opacity-100"
+            className="object-cover opacity-90 select-none transition-opacity duration-500 group-hover:opacity-100"
             unoptimized
           />
         </div>
@@ -48,7 +48,7 @@ export default function Error({
             System Malfunction
           </h2>
           <p className="text-sm text-gray-500">
-            Critical error detected in the reactor core. Our engineers are stabilizing the system.
+            Houston, we have a problem.
           </p>
         </div>
 

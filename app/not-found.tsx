@@ -17,7 +17,7 @@ export default function NotFound() {
 
       <div className="z-10 flex max-w-md flex-col items-center space-y-8 px-4 text-center">
         {/* GIF Container with Glow */}
-        <div className="group relative mx-auto h-64 w-full overflow-hidden rounded-xl border border-white/10 shadow-[0_0_50px_-12px_rgba(255,255,255,0.2)] transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_80px_-20px_rgba(255,255,255,0.4)]">
+        <div className="group relative select-none mx-auto h-64 w-full overflow-hidden rounded-xl border border-white/10 shadow-[0_0_50px_-12px_rgba(255,255,255,0.2)] transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_80px_-20px_rgba(255,255,255,0.4)]">
           <Image
             src="https://c.tenor.com/zXCbu7b7qA8AAAAd/tenor.gif"
             alt="Pain"
@@ -35,7 +35,7 @@ export default function NotFound() {
             Sector Not Found
           </h2>
           <p className="text-sm text-gray-500">
-            The reactor core has exploded, and this sector got exploded.
+            These are not the droids you're looking for.
           </p>
         </div>
 
