@@ -11,11 +11,11 @@ interface DropdownProps {
 }
 
 interface DropdownProps {
-  isOpen: boolean
-  onClose: () => void
-  children: ReactNode
-  className?: string
-triggerRef?: React.RefObject<HTMLElement | null>
+  isOpen: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  className?: string;
+  triggerRef?: React.RefObject<HTMLElement | null>;
 }
 
 export function Dropdown({
@@ -25,21 +25,21 @@ export function Dropdown({
   className = "",
   triggerRef,
 }: DropdownProps) {
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-useEffect(() => {
-  const handleMouseDown = (event: MouseEvent) => {
-    const target = event.target as Node
+  useEffect(() => {
+    const handleMouseDown = (event: MouseEvent) => {
+      const target = event.target as Node;
 
-    if (dropdownRef.current?.contains(target)) return
-    if (triggerRef?.current?.contains(target)) return
+      if (dropdownRef.current?.contains(target)) return;
+      if (triggerRef?.current?.contains(target)) return;
 
-    onClose()
-  }
+      onClose();
+    };
 
-  if (isOpen) document.addEventListener("mousedown", handleMouseDown)
-  return () => document.removeEventListener("mousedown", handleMouseDown)
-}, [isOpen, onClose, triggerRef])
+    if (isOpen) document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, [isOpen, onClose, triggerRef]);
 
   return (
     <AnimatePresence>
@@ -56,11 +56,10 @@ useEffect(() => {
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
-
-type DropdownItemVariant = "primary" | "disabled" | "destructive"
+type DropdownItemVariant = "primary" | "disabled" | "destructive";
 
 export function DropdownItem({
   label,
@@ -72,23 +71,23 @@ export function DropdownItem({
   className = "",
   onClick,
 }: {
-  label: string
-  href?: string
-  icon?: React.ReactNode
-  description?: string
-  rightSlot?: React.ReactNode
-  variant?: DropdownItemVariant
-  className?: string
-  onClick?: () => void
+  label: string;
+  href?: string;
+  icon?: React.ReactNode;
+  description?: string;
+  rightSlot?: React.ReactNode;
+  variant?: DropdownItemVariant;
+  className?: string;
+  onClick?: () => void;
 }) {
   const base =
-    "flex w-full items-start gap-3 px-3 py-2 rounded-[11px] text-sm transition-colors"
+    "flex w-full items-start gap-3 px-3 py-2 rounded-[11.5px] text-sm transition-colors";
 
   const variants: Record<DropdownItemVariant, string> = {
     primary: "text-neutral-300 hover:bg-neutral-800",
     destructive: "text-red-400 hover:bg-red-500/10",
     disabled: "text-neutral-500 opacity-50 pointer-events-none",
-  }
+  };
 
   const content = (
     <>
@@ -101,21 +100,21 @@ export function DropdownItem({
       </span>
       {rightSlot && <span className="ml-auto">{rightSlot}</span>}
     </>
-  )
+  );
 
-  const classes = `${base} ${variants[variant]} ${className}`
+  const classes = `${base} ${variants[variant]} ${className}`;
 
   if (href && variant !== "disabled") {
     return (
       <a href={href} className={classes}>
         {content}
       </a>
-    )
+    );
   }
 
   return (
     <button type="button" onClick={onClick} className={classes}>
       {content}
     </button>
-  )
+  );
 }
