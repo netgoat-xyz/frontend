@@ -2,7 +2,7 @@ import NavigationTop from "@/components/elements/NavigationTop";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/dist/client/components/navigation";
 import { headers } from "next/dist/server/request/headers";
-
+import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
 
 export default async function DashboardLayout({
   children,
@@ -21,6 +21,7 @@ export default async function DashboardLayout({
     <div suppressHydrationWarning>
       <NavigationTop />
       <main className="p-6">{children}</main>
+      <BelowScreenFooter />
     </div>
   );
 }

@@ -102,8 +102,7 @@ export default function SettingsPage() {
     setIsLoading(true);
     try {
         await authClient.updateUser({
-            name: name,
-            email: email !== user?.email ? email : undefined
+            name: name
         });
     } catch (e) {
         console.error(e);

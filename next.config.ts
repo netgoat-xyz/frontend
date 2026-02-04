@@ -3,7 +3,17 @@ import type { NextConfig } from "next";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
+let commitHash = 'unknown';
+try {
+  commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString().trim();
+} catch (e) {
+  console.warn('Could not get commit hash', e);
+}
+
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_COMMIT_HASH: commitHash,
+  },
   devIndicators: false,
   allowedDevOrigins: ["demo.netgoat.xyz", "127.0.0.1"],
   experimental: {
