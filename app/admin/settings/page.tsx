@@ -39,7 +39,8 @@ export default function AdminSettingsPage() {
     auditLogRetentionDays: 30,
     globalBannerEnabled: false,
     globalBannerText: "",
-    globalBannerVariant: "info"
+    globalBannerVariant: "info",
+    featureFlags: []
   });
 
   const [loading, setLoading] = useState(true);
@@ -255,6 +256,100 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium flex items-center"><AlertTriangle className="mr-2 h-4 w-4"/> Experiments (Feature Flags)</h3>
+          <div className="rounded-lg border p-4 space-y-4">
+             <div className="flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">Manage rollout of beta features globally or per percentage.</p>
+                <Button variant="outline" size="sm" onClick={() => {
+                  setSettings({
+                    ...settings,
+                    featureFlags: [...(settings.featureFlags || []), { key: "", description: "", isActive: false, percentage: 0 }]
+                  })
+                }}>+ Add Flag</Button>
+             </div>
+             
+             <div className="space-y-4">
+               {settings.featureFlags?.map((flag: any, index: number) => (
+                 <div key={index} className="grid gap-4 items-start p-4 border rounded-md relative bg-background/50">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-destructive"
+                      onClick={() => {
+                         const newFlags = [...settings.featureFlags];
+                         newFlags.splice(index, 1);
+                         setSettings({...settings, featureFlags: newFlags});
+                      }}
+                    >
+                      <span className="text-lg">&times;</span>
+                    </Button>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                          <Label>Feature Key</Label>
+                          <Input 
+                            value={flag.key} 
+                            placeholder="e.g. new-dashboard"
+                            onChange={(e) => {
+                               const newFlags = [...settings.featureFlags];
+                               newFlags[index].key = e.target.value;
+                               setSettings({...settings, featureFlags: newFlags});
+                            }}
+                          />
+                       </div>
+                       <div className="space-y-2">
+                          <Label>Description</Label>
+                          <Input 
+                            value={flag.description} 
+                            placeholder="Internal description"
+                            onChange={(e) => {
+                               const newFlags = [...settings.featureFlags];
+                               newFlags[index].description = e.target.value;
+                               setSettings({...settings, featureFlags: newFlags});
+                            }}
+                          />
+                       </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-6">
+                       <div className="flex items-center space-x-2">
+                          <Switch 
+                            checked={flag.isActive}
+                            onCheckedChange={(c) => {
+                               const newFlags = [...settings.featureFlags];
+                               newFlags[index].isActive = c;
+                               setSettings({...settings, featureFlags: newFlags});
+                            }}
+                          />
+                          <Label>Globally Active</Label>
+                       </div>
+                       
+                       <div className="flex items-center space-x-2 flex-1">
+                          <Label className="whitespace-nowrap">Rollout %</Label>
+                          <Input 
+                             type="number" 
+                             min={0} max={100}
+                             value={flag.percentage}
+                             onChange={(e) => {
+                               const newFlags = [...settings.featureFlags];
+                               newFlags[index].percentage = parseInt(e.target.value);
+                               setSettings({...settings, featureFlags: newFlags});
+                            }}
+                          />
+                       </div>
+                    </div>
+                 </div>
+               ))}
+               {(!settings.featureFlags || settings.featureFlags.length === 0) && (
+                 <div className="text-center py-4 text-sm text-muted-foreground border-dashed border-2 rounded-md">
+                   No feature flags defined.
+                 </div>
+               )}
+             </div>
           </div>
         </div>
 

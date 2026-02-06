@@ -27,7 +27,16 @@ const SettingsSchema = new mongoose.Schema({
     type: String, 
     default: "info", 
     enum: ["info", "warning", "error", "success", "announcement", "marketing", "rainbow", "midnight"] 
-  }
+  },
+
+  // Feature Flags / Experiments
+  featureFlags: [{
+    key: String,
+    description: String,
+    isActive: { type: Boolean, default: false }, // Globally active
+    percentage: { type: Number, default: 0 }, // Rollout percentage 0-100
+    variants: [String] // Optional variants (e.g. ["red", "blue"])
+  }]
 }, { timestamps: true });
 
 // We will likely only have one document, but we'll query by finding the first one

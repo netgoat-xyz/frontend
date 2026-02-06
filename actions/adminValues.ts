@@ -63,9 +63,12 @@ export async function updateGlobalSettings(newSettings: any) {
   await checkAdmin();
   await dbConnect();
 
+  // Strip system fields
+  const { _id, __v, ...updateData } = newSettings;
+
   const settings = await Settings.findOneAndUpdate(
     {}, // find the first one
-    { $set: newSettings },
+    { $set: updateData },
     { new: true, upsert: true }
   );
 

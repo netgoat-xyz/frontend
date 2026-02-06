@@ -6,6 +6,10 @@ const UserSchema = new mongoose.Schema({
   image: String,
   role: { type: String, default: "user" },
   banned: { type: Boolean, default: false },
+  
+  // Experiments / Feature Flags user overrides
+  experiments: [String],
+
   createdAt: Date,
   updatedAt: Date
 }, { collection: "user" }); // better-auth uses 'user' by default

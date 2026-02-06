@@ -10,6 +10,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { getPublicSettings } from "@/actions/adminValues";
 import GlobalBanner from "@/components/elements/GlobalBanner";
 import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
+import ExperimentsInjector from "@/components/elements/ExperimentsInjector";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -70,6 +71,7 @@ export default async function RootLayout({
         className={`${inter.className} bg-neutral-950 text-white antialiased transition-all duration-200 `}
       >
         <NextIntlClientProvider messages={messages}>
+          <ExperimentsInjector />
           <GlobalBanner />
           <main>{children}</main>
           <BelowScreenFooter />
