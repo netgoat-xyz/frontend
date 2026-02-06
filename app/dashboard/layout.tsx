@@ -21,7 +21,6 @@ export default async function DashboardLayout({
     <div suppressHydrationWarning>
       <NavigationTop />
       <main className="p-6">{children}</main>
-      <BelowScreenFooter />
     </div>
   );
 }

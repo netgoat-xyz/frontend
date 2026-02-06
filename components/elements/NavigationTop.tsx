@@ -42,6 +42,7 @@ export default function NavigationTop() {
   const segments = pathname.split("/").filter(Boolean);
   const isDashboard = segments[0] === "dashboard";
   const isAccount = segments[0] === "account";
+  const isAdmin = segments[0] === "admin";
 
   const isGlobalTeamsPath = isDashboard && segments[1] === "teams";
 
@@ -78,6 +79,13 @@ export default function NavigationTop() {
       { title: "Overview", href: "/account", icon: Home },
       { title: "Activity", href: "/account/activity", icon: Activity },
       { title: "Settings", href: "/account/settings", icon: Settings },
+    ];
+  } else if (isAdmin) {
+    tabs = [
+      { title: "Overview", href: "/admin", icon: LayoutDashboard },
+      { title: "Users", href: "/admin/users", icon: Users },
+      { title: "Settings", href: "/admin/settings", icon: Settings },
+      { title: "Logs", href: "/admin/logs", icon: Activity },
     ];
   } else if (projectPath) {
     tabs = [
@@ -116,8 +124,8 @@ export default function NavigationTop() {
 
   const activeTab =
     tabs.find((tab) => {
-      if (isAccount) {
-        return tab.href === "/account"
+      if (isAccount || isAdmin) {
+        return tab.href === (isAccount ? "/account" : "/admin")
           ? pathname === tab.href
           : pathname.startsWith(tab.href);
       }
@@ -154,7 +162,14 @@ export default function NavigationTop() {
                 </>
               )}
 
-              {!isAccount && isGlobalTeamsPath && (
+              {isAdmin && (
+                <>
+                  <span className="text-sm font-medium">Administration</span>
+                  <NavSelectDrapdown />
+                </>
+              )}
+
+              {!isAccount && !isAdmin && isGlobalTeamsPath && (
                 <>
                   <Link
                     className="text-sm font-medium text-neutral-400 hover:text-neutral-300 transition-all"
@@ -166,7 +181,7 @@ export default function NavigationTop() {
                 </>
               )}
 
-              {!isAccount && teamName && (
+              {!isAccount && !isAdmin && teamName && (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center text-[10px] font-bold">
                     {teamName[0].toUpperCase()}
@@ -178,7 +193,7 @@ export default function NavigationTop() {
                 </div>
               )}
 
-              {!isAccount && domainName && (
+              {!isAccount && !isAdmin && domainName && (
                 <>
                   <SlashSeparator />
                   <span className="text-sm font-medium">
@@ -187,8 +202,8 @@ export default function NavigationTop() {
                 </>
               )}
 
-              {!isAccount && teamName && <SlashSeparator />}
-              {!isAccount && activeTitle !== "Teams" && (
+              {!isAccount && !isAdmin && teamName && <SlashSeparator />}
+              {!isAccount && !isAdmin && activeTitle !== "Teams" && (
                 <span className="text-sm font-medium text-neutral-400">
                   {activeTitle}
                 </span>
@@ -197,7 +212,7 @@ export default function NavigationTop() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center bg-neutral-900 border border-neutral-800 rounded-full px-3 py-1.5 w-64 text-neutral-400 focus-within:border-neutral-500 transition-colors">
+            <div className="cursor-pointer hidden md:flex items-center bg-neutral-900 border border-neutral-800 rounded-md px-3 py-1.5 w-64 text-neutral-400 focus-within:border-neutral-500 transition-colors">
               <SearchIcon />
               <input
                 type="text"
@@ -209,7 +224,7 @@ export default function NavigationTop() {
             <motion.button
               layoutId="FeedbackButtonID"
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="hidden sm:block text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded-md hover:bg-neutral-300 transition-colors"
+              className="cursor-pointer hidden sm:block text-xs font-medium bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded-md hover:bg-neutral-300 transition-colors"
             >
               Feedback
             </motion.button>

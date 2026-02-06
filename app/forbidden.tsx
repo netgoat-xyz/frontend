@@ -36,11 +36,12 @@ export default function Error({
             fill
             className="object-cover opacity-90 transition-opacity duration-500 group-hover:opacity-100"
             unoptimized
+            loading='eager'
           />
         </div>
 
         <div className="space-y-4">
-          <h1 className="text-6xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">
+          <h1 className="text-6xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-gray-500">
             403
           </h1>
           <h2 className="text-2xl font-medium tracking-tight text-gray-200">

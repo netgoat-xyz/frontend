@@ -9,11 +9,12 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  actionButtons?: React.ReactNode;
+  onConfirm?: () => void;
 }
 
-const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
+const Modal = ({ isOpen, onClose, title, children, actionButtons, onConfirm }: ModalProps) => {
   
-  // Close on Escape
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     if (isOpen) window.addEventListener('keydown', handleEsc);
@@ -35,7 +36,7 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center h-full p-4">
           
           {/* Backdrop Fade */}
           <motion.div 
@@ -49,39 +50,35 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
           {/* Modal Content - The "Origin" Animation */}
           <motion.div 
             className="relative bg-neutral-900 border border-neutral-800 w-full max-w-lg rounded-xl shadow-2xl flex flex-col overflow-hidden"
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300, duration: 0.2 }}
           >
             {/* Header */}
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              transition={{ delay: 0.1 }}
+            <div 
               className="flex items-center justify-between p-4 border-b border-neutral-800"
             >
               <h3 className="text-lg font-semibold text-white">{title}</h3>
               <button onClick={onClose} className="text-neutral-400 hover:text-white p-1">✕</button>
-            </motion.div>
+            </div>
 
             {/* Body */}
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              transition={{ delay: 0.15 }}
-              className="p-6 text-neutral-300"
-            >
+            <div className="p-6 text-neutral-300">
               {children}
-            </motion.div>
+            </div>
 
             {/* Footer */}
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              transition={{ delay: 0.2 }}
-              className="flex justify-end gap-3 p-4 border-t border-neutral-800 bg-neutral-900/50"
-            >
-              <button onClick={onClose} className="px-4 py-2 text-sm text-neutral-400">Cancel</button>
-              <button className="px-4 py-2 text-sm bg-white text-black rounded-md">Confirm</button>
-            </motion.div>
+            {(actionButtons || onConfirm) && (
+              <div className="flex justify-end gap-3 p-4 border-t border-neutral-800 bg-neutral-900/50">
+                {actionButtons ? actionButtons : (
+                  <>
+                    <button onClick={onClose} className="px-4 py-2 text-sm text-neutral-400 font-medium hover:text-white transition-colors">Cancel</button>
+                    <button onClick={onConfirm} className="px-4 py-2 text-sm bg-white text-black font-medium rounded-md hover:bg-neutral-200 transition-colors">Confirm</button>
+                  </>
+                )}
+              </div>
+            )}
           </motion.div>
         </div>
       )}
