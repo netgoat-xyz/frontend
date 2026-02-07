@@ -24,7 +24,7 @@ export default function BentoGrid() {
       <div className="grid grid-cols-1 md:grid-cols-6 md:grid-rows-2 gap-4 h-full">
         {/* Large Card: Global Network */}
         <BentoCard className="md:col-span-4 md:row-span-2 min-h-100 flex flex-col justify-between" delay={0.1}>
-           <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+           <div className="absolute inset-0 bg-linear-to-br from-violet-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
            
            <div className="relative z-10">
              <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center mb-4 text-violet-300">
@@ -38,8 +38,8 @@ export default function BentoGrid() {
 </BentoCard>
 
         {/* Small Card: Analytics */}
-        <BentoCard className="md:col-span-2 min-h-[200px]" delay={0.2}>
-           <div className="absolute inset-0 bg-gradient-to-bl from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <BentoCard className="md:col-span-2 min-h-50" delay={0.2}>
+           <div className="absolute inset-0 bg-linear-to-bl from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
            <div className="flex items-start justify-between">
               <div>
                 <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-3 text-emerald-300">
@@ -58,8 +58,8 @@ export default function BentoGrid() {
         </BentoCard>
 
         {/* Medium Card: API First */}
-        <BentoCard className="md:col-span-2 min-h-[200px]" delay={0.3}>
-            <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <BentoCard className="md:col-span-2 min-h-50" delay={0.3}>
+            <div className="absolute inset-0 bg-linear-to-tr from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mb-3 text-amber-300">
                <Code size={20} />
             </div>
@@ -77,8 +77,8 @@ export default function BentoGrid() {
         </BentoCard>
 
         {/* Small Card: DDoS */}
-        <BentoCard className="md:col-span-2 min-h-[200px]" delay={0.4}>
-          <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <BentoCard className="md:col-span-2 min-h-50" delay={0.4}>
+          <div className="absolute inset-0 bg-linear-to-br from-red-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center mb-3 text-red-300">
              <Shield size={20} />
           </div>

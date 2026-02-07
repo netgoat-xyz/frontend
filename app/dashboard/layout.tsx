@@ -12,11 +12,11 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth.api.getSession({
-    headers: await headers()
-  })
+    headers: await headers(),
+  });
 
   if (!session) {
-    redirect('/auth')
+    redirect("/auth");
   }
 
   const latestWhatsNew = await getLatestWhatsNew();
@@ -26,6 +26,7 @@ export default async function DashboardLayout({
       <WhatsNewPopup post={latestWhatsNew} />
       <NavigationTop />
       <main className="p-6">{children}</main>
+      <BelowScreenFooter />
     </div>
   );
 }

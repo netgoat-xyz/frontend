@@ -60,6 +60,7 @@ export default async function RootLayout({
 }) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const settings = await getPublicSettings();
 
   return (
     <html
@@ -74,9 +75,11 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <SelfHostedAnalytics />
           <ExperimentsInjector />
-          <GlobalBanner />
+          <GlobalBanner 
+            settings={settings} 
+            doNotShowBanner={["/blog", "/auth", "/", "/status"]} 
+          />
           <main>{children}</main>
-          <BelowScreenFooter />
         </NextIntlClientProvider>
       </body>
     </html>

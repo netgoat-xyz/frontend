@@ -1,35 +1,42 @@
 import { getPosts } from "@/actions/content";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import NavigationTop from "@/components/elements/NavigationTop";
-import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
-import ShaderBackground from "@/components/interface/homescreen/shader-background";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
+import Header from "@/components/interface/homescreen/header";
+import ShaderBackground from "@/components/interface/homescreen/shader-background";
+import Footer from "@/components/interface/homescreen/footer";
+import { Calendar, ArrowRight, BookOpen } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default function BlogPage() {
   return (
     <ShaderBackground>
-      <div className="min-h-screen flex flex-col bg-transparent">
-        <NavigationTop />
-        <main className="flex-1 container mx-auto px-4 py-8 relative z-10">
-          <div className="flex flex-col items-center text-center space-y-4 mb-16 mt-8">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-              Our Blog
+      <div className="min-h-screen w-full flex flex-col bg-transparent relative">
+        <Header />
+
+        <main className="flex-1 container mx-auto px-4 md:px-6 pt-16 pb-24 z-10 max-w-6xl">
+          {/* Hero Section */}
+          <div className="flex flex-col items-center w-full mx-auto text-center space-y-5 mb-24">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 backdrop-blur-sm border border-white/10">
+              <BookOpen className="w-3 h-3 text-violet-300 mr-2" />
+              <span className="text-white/70 text-xs font-light">Engineering &amp; Updates</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-light tracking-tight text-white">
+              Blog
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl text-blue-100/70">
-              Latest news, updates, and engineering deep dives.
+            <p className="text-sm md:text-base max-w-md text-white/50 leading-relaxed font-light">
+              Latest news, updates, and engineering deep dives from the NetGoat team.
             </p>
+            <div className="w-16 h-px bg-linear-to-r from-transparent via-white/20 to-transparent mt-4" />
           </div>
 
           <Suspense fallback={<BlogSkeleton />}>
             <BlogPostsList />
           </Suspense>
         </main>
-        <BelowScreenFooter />
+
+        <Footer />
       </div>
     </ShaderBackground>
   );
@@ -37,21 +44,33 @@ export default function BlogPage() {
 
 function BlogSkeleton() {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <Card key={i} className="h-full bg-black/40 border-white/10 backdrop-blur-md overflow-hidden">
-          <div className="w-full h-48 bg-white/5 animate-pulse" />
-          <CardHeader className="space-y-4">
+    <div className="space-y-16">
+      {/* Featured skeleton */}
+      <div className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur-sm overflow-hidden">
+        <div className="grid md:grid-cols-2 gap-0">
+          <div className="h-64 md:h-80 bg-white/5 animate-pulse" />
+          <div className="p-8 md:p-10 space-y-4 flex flex-col justify-center">
+            <Skeleton className="h-4 w-20 bg-white/10 rounded-full" />
             <Skeleton className="h-8 w-3/4 bg-white/10" />
-            <Skeleton className="h-4 w-1/4 bg-white/10" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-4 w-full bg-white/10 mb-2" />
-            <Skeleton className="h-4 w-full bg-white/10 mb-2" />
+            <Skeleton className="h-4 w-full bg-white/10" />
             <Skeleton className="h-4 w-2/3 bg-white/10" />
-          </CardContent>
-        </Card>
-      ))}
+          </div>
+        </div>
+      </div>
+      {/* Grid skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur-sm overflow-hidden">
+            <div className="h-48 bg-white/5 animate-pulse" />
+            <div className="p-6 space-y-3">
+              <Skeleton className="h-4 w-24 bg-white/10 rounded-full" />
+              <Skeleton className="h-6 w-3/4 bg-white/10" />
+              <Skeleton className="h-4 w-full bg-white/10" />
+              <Skeleton className="h-4 w-1/2 bg-white/10" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -59,60 +78,137 @@ function BlogSkeleton() {
 async function BlogPostsList() {
   const { posts } = await getPosts("blog");
 
-  if (posts.length === 0) {
+  if (!posts || posts.length === 0) {
     return (
-      <div className="text-center py-20">
-        <p className="text-2xl text-muted-foreground font-light">No posts published yet.</p>
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+          <BookOpen className="w-7 h-7 text-white/20" />
+        </div>
+        <p className="text-lg text-white/40 font-light mb-2">No posts yet</p>
+        <p className="text-sm text-white/20 font-light">Check back soon for updates.</p>
       </div>
     );
   }
 
+  const [featured, ...rest] = posts;
+
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {posts.map((post: any) => (
-        <Link key={post._id} href={"/blog/" + post.slug as any} className="group block h-full">
-          <Card className="h-full bg-black/40 border-white/10 backdrop-blur-md hover:bg-black/60 hover:border-violet-500/30 transition-all duration-300 overflow-hidden flex flex-col group-hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)]">
-            {post.coverImage ? (
-              <div className="w-full h-48 bg-neutral-900/50 overflow-hidden relative">
-                <img 
-                  src={post.coverImage} 
-                  alt={post.title} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-            ) : (
-                <div className="w-full h-48 bg-gradient-to-br from-violet-900/20 to-indigo-900/20 flex items-center justify-center">
-                    <span className="text-4xl opacity-50">📄</span>
+    <div className="space-y-16">
+      {/* Featured Post */}
+      <Link href={`/blog/${featured.slug}` as any} className="group block">
+        <article className="rounded-2xl border border-white/6 bg-white/2 hover:bg-white/4 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-white/12 hover:shadow-2xl hover:shadow-violet-500/5">
+          <div className="grid md:grid-cols-2 gap-0">
+            {/* Image */}
+            <div className="h-64 md:h-96 overflow-hidden relative">
+              {featured.coverImage ? (
+                <>
+                  <img
+                    src={featured.coverImage}
+                    alt={featured.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-r from-black/40 via-black/20 to-transparent" />
+                </>
+              ) : (
+                <div className="w-full h-full bg-linear-to-br from-violet-500/10 via-indigo-500/5 to-transparent flex items-center justify-center">
+                  <BookOpen className="w-12 h-12 text-white/10" />
                 </div>
-            )}
-            <CardHeader>
-              <div className="flex justify-between items-start gap-4">
-                <CardTitle className="group-hover:text-primary transition-colors text-xl leading-tight text-white/90">
-                    {post.title}
-                </CardTitle>
-              </div>
-              <CardDescription className="text-blue-200/50 font-mono text-xs pt-2">
-                {new Date(post.createdAt).toLocaleDateString(undefined, {
+              )}
+            </div>
+
+            {/* Content */}
+            <div className="p-8 md:p-10 flex flex-col justify-center space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                  Featured
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-white/30">
+                  <Calendar className="w-3 h-3" />
+                  {new Date(featured.createdAt).toLocaleDateString("en-US", {
                     year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                })}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1">
-              <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed text-blue-100/60">
-                {post.content ? post.content.replace(/[#*`]/g, "").substring(0, 150) : ""}...
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </span>
+              </div>
+
+              <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white/90 group-hover:text-white transition-colors leading-tight">
+                {featured.title}
+              </h2>
+
+              <p className="text-sm text-white/40 leading-relaxed line-clamp-3 font-light">
+                {featured.content ? featured.content.replace(/[#*`\[\]]/g, "").substring(0, 200).trim() : ""}
+                {featured.content && featured.content.length > 200 && "…"}
               </p>
-            </CardContent>
-             <div className="px-6 pb-6 pt-0 mt-auto">
-                 <span className="text-xs font-medium text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                    Read article <span className="transition-transform group-hover:translate-x-1">→</span>
-                 </span>
-             </div>
-          </Card>
-        </Link>
-      ))}
+
+              <div className="pt-2">
+                <span className="inline-flex items-center gap-2 text-xs font-medium text-violet-300/70 group-hover:text-violet-300 transition-colors">
+                  Read article
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </Link>
+
+      {/* Remaining Posts Grid */}
+      {rest.length > 0 && (
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {rest.map((post: any) => (
+            <Link key={post._id} href={`/blog/${post.slug}` as any} className="group block h-full">
+              <article className="h-full flex flex-col rounded-2xl border border-white/6 bg-white/2 hover:bg-white/4 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-white/12 hover:shadow-2xl hover:shadow-violet-500/5">
+                {/* Image */}
+                <div className="w-full h-48 overflow-hidden relative">
+                  {post.coverImage ? (
+                    <>
+                      <img
+                        src={post.coverImage}
+                        alt={post.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
+                    </>
+                  ) : (
+                    <div className="w-full h-full bg-linear-to-br from-violet-500/6 via-indigo-500/3 to-transparent flex items-center justify-center">
+                      <BookOpen className="w-8 h-8 text-white/6" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col flex-1 p-6 space-y-3">
+                  <div className="flex items-center gap-1.5 text-xs text-white/30">
+                    <Calendar className="w-3 h-3" />
+                    {new Date(post.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+
+                  <h3 className="text-lg font-light tracking-tight text-white/90 group-hover:text-white transition-colors line-clamp-2 leading-snug">
+                    {post.title}
+                  </h3>
+
+                  <p className="text-sm text-white/30 leading-relaxed line-clamp-3 font-light flex-1">
+                    {post.content ? post.content.replace(/[#*`\[\]]/g, "").substring(0, 120).trim() : ""}
+                    {post.content && post.content.length > 120 && "…"}
+                  </p>
+
+                  <div className="pt-2 mt-auto">
+                    <span className="inline-flex items-center gap-2 text-xs font-medium text-violet-300/50 group-hover:text-violet-300 transition-all">
+                      Read more
+                      <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </Link>
+          ))}
+        </div>
+      )}
+      
     </div>
   );
 }

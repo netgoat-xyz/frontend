@@ -11,23 +11,38 @@ export default function Features() {
     {
       id: "speed",
       icon: Zap,
-      color: "text-amber-300",
+      gradient: "from-amber-500/15 to-transparent",
+      iconBg: "bg-amber-500/10",
+      iconColor: "text-amber-300",
     },
     {
       id: "security",
       icon: Shield,
-      color: "text-emerald-300",
+      gradient: "from-emerald-500/15 to-transparent",
+      iconBg: "bg-emerald-500/10",
+      iconColor: "text-emerald-300",
     },
     {
       id: "scalability",
       icon: Network,
-      color: "text-blue-300",
+      gradient: "from-blue-500/15 to-transparent",
+      iconBg: "bg-blue-500/10",
+      iconColor: "text-blue-300",
     },
   ];
 
   return (
-    <section className="relative z-20 py-32 px-6 md:px-12 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <section className="relative z-20 py-28 px-6 md:px-12 max-w-5xl mx-auto">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-light text-white tracking-tight mb-4">
+          Built for the modern stack
+        </h2>
+        <p className="text-sm text-white/35 font-light max-w-md mx-auto">
+          Everything you need to build, deploy, and scale your network infrastructure.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {features.map((feature, idx) => (
           <motion.div
             key={feature.id}
@@ -35,21 +50,25 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1, duration: 0.5 }}
             viewport={{ once: true }}
-            className="group relative p-8 rounded-3xl bg-white/5 border border-white/5 backdrop-blur-sm overflow-hidden hover:bg-white/10 transition-colors duration-500"
+            className="group relative p-8 rounded-2xl bg-white/2 border border-white/6 overflow-hidden hover:border-white/12 transition-all duration-500"
           >
             {/* Hover Glow */}
-            <div className="absolute inset-0 bg-linear-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
+            <div
+              className={`absolute inset-0 bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+            />
+
             <div className="relative z-10">
-              <div className={`mb-6 p-3 w-fit rounded-2xl bg-white/5 ${feature.color}`}>
-                <feature.icon size={24} strokeWidth={1.5} />
+              <div
+                className={`mb-6 w-11 h-11 rounded-xl ${feature.iconBg} flex items-center justify-center ${feature.iconColor}`}
+              >
+                <feature.icon size={20} strokeWidth={1.5} />
               </div>
-              
-              <h3 className="text-xl font-light text-white mb-3">
+
+              <h3 className="text-lg font-light text-white mb-2 tracking-tight">
                 {t(`${feature.id}.title`)}
               </h3>
-              
-              <p className="text-sm font-light text-white/60 leading-relaxed">
+
+              <p className="text-sm font-light text-white/40 leading-relaxed">
                 {t(`${feature.id}.description`)}
               </p>
             </div>
