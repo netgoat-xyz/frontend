@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "BNF-0.0.1", 
+  "version": "BNF-0.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -39,6 +39,8 @@
     "react": "19.2.3",
     "react-day-picker": "^9.13.0",
     "react-dom": "19.2.3",
+    "react-hook-form": "^7.71.1",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.5.6",
     "recharts": "2.15.4",
     "shadcn": "^3.7.0",

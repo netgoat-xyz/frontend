@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminPage() {
   const [stats, setStats] = useState({
@@ -58,7 +59,11 @@ export default function AdminPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers.toLocaleString()}</div>
+            {loading ? (
+              <Skeleton className="h-8 w-[100px]" />
+            ) : (
+              <div className="text-2xl font-bold">{stats.totalUsers.toLocaleString()}</div>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -67,7 +72,11 @@ export default function AdminPage() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.activeSessions.toLocaleString()}</div>
+            {loading ? (
+              <Skeleton className="h-8 w-[100px]" />
+            ) : (
+              <div className="text-2xl font-bold">{stats.activeSessions.toLocaleString()}</div>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -76,7 +85,11 @@ export default function AdminPage() {
             <Server className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.systemLoad}</div>
+            {loading ? (
+              <Skeleton className="h-8 w-[100px]" />
+            ) : (
+              <div className="text-2xl font-bold">{stats.systemLoad}</div>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -85,7 +98,11 @@ export default function AdminPage() {
             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.securityEvents}</div>
+            {loading ? (
+              <Skeleton className="h-8 w-[100px]" />
+            ) : (
+              <div className="text-2xl font-bold">{stats.securityEvents}</div>
+            )}
           </CardContent>
         </Card>
       </div>

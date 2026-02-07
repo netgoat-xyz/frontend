@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 import os from "os";
 
 // Helper to check admin permission
-async function checkAdmin() {
+export async function checkAdmin() {
   const session = await auth.api.getSession({
     headers: await headers()
   });

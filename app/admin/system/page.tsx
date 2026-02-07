@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminSystemPage() {
   const [systemSpecs, setSystemSpecs] = useState<any>(null);
@@ -72,7 +73,14 @@ export default function AdminSystemPage() {
             </div>
         </div>
         ) : (
-        <div className="text-center py-4">Loading specs...</div>
+            <div className="grid gap-4 md:grid-cols-2">
+                {Array.from({length: 6}).map((_, i) => (
+                    <div key={i} className="flex justify-between border-b pb-2">
+                        <Skeleton className="h-5 w-[100px]" />
+                        <Skeleton className="h-5 w-[150px]" />
+                    </div>
+                ))}
+            </div>
         )}
     </CardContent>
     <CardFooter>

@@ -14,7 +14,7 @@ if (!(globalThis as any).__RUNTIME_LOGS__) {
 export function addLog(level: LogEntry["level"], ...args: any[]) {
   const message = args.map(arg => 
     typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-  ).join(' '); // Simple concatenation
+  ).join(' ');
 
   const entry: LogEntry = {
     id: Math.random().toString(36).substring(7),

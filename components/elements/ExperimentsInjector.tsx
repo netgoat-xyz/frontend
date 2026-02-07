@@ -18,12 +18,10 @@ export default function ExperimentsInjector() {
   const [userFlags, setUserFlags] = useState<Record<string, boolean | string>>({});
 
   useEffect(() => {
-    // Check if we should show the UI
     if (typeof window !== "undefined") {
       const isDev = localStorage.getItem("netgoat_experiments_ui") === "true";
       setShowUI(isDev);
 
-      // Define the window function
       (window as any).giveMeAllTheBugs = async () => {
         console.log("🐛 Enabling Experiment UI...");
         localStorage.setItem("netgoat_experiments_ui", "true");
@@ -42,7 +40,6 @@ export default function ExperimentsInjector() {
 
   useEffect(() => {
     if (showUI && open) {
-        // Fetch data when dialog is opened
         const loadData = async () => {
              const [all, current] = await Promise.all([
                  getAllAvailableExperiments(),
@@ -56,7 +53,6 @@ export default function ExperimentsInjector() {
   }, [showUI, open]);
 
   const handleUpdate = async (key: string, value: string | boolean) => {
-    // Optimistic update
     setUserFlags(prev => ({...prev, [key]: value}));
     
     try {

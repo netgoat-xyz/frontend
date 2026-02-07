@@ -20,6 +20,7 @@ import {
   Shield,
   Users,
   Zap,
+  FileText,
 } from "lucide-react";
 import useLastTeamName from "@/hooks/lastTeam";
 import NavSelectDrapdown from "./NavSelectDrapdown";
@@ -86,6 +87,8 @@ export default function NavigationTop() {
       { title: "Users", href: "/admin/users", icon: Users },
       { title: "Settings", href: "/admin/settings", icon: Settings },
       { title: "Logs", href: "/admin/logs", icon: Activity },
+      { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+      { title: "Content", href: "/admin/content", icon: FileText },
     ];
   } else if (projectPath) {
     tabs = [

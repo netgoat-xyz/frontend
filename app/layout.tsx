@@ -11,6 +11,7 @@ import { getPublicSettings } from "@/actions/adminValues";
 import GlobalBanner from "@/components/elements/GlobalBanner";
 import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
 import ExperimentsInjector from "@/components/elements/ExperimentsInjector";
+import SelfHostedAnalytics from "@/components/analytics/SelfHostedAnalytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -68,9 +69,10 @@ export default async function RootLayout({
     >
       <Analytics />
       <body
-        className={`${inter.className} bg-neutral-950 text-white antialiased transition-all duration-200 `}
+        className={`${inter.className} transform-gpu bg-neutral-950 text-white antialiased transition-all duration-200 `}
       >
         <NextIntlClientProvider messages={messages}>
+          <SelfHostedAnalytics />
           <ExperimentsInjector />
           <GlobalBanner />
           <main>{children}</main>

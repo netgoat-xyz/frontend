@@ -8,6 +8,6 @@ const SessionSchema = new mongoose.Schema({
   updatedAt: Date,
   ipAddress: String,
   userAgent: String
-}, { collection: "session" }); // better-auth uses 'session' by default
+}, { collection: "session" }); 
 
 export default mongoose.models.Session || mongoose.model("Session", SessionSchema);
