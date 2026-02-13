@@ -28,7 +28,7 @@ export default function Header() {
   };
 
   return (
-    <header className="relative z-20 flex items-center justify-between px-6 md:px-10 py-5">
+    <header className="relative z-50 flex items-center justify-between px-6 md:px-10 py-5">
       {/* --- Logo --- */}
       <Link href="/" className="flex items-center">
         <h1 className="text-xl tracking-normal text-white font-calsans">
@@ -97,68 +97,24 @@ export default function Header() {
             </button>
 
             {/* Dropdown — uses custom animated dropdown component */}
-            <Dropdown
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              triggerRef={triggerRef}
-              className="bg-black/80 backdrop-blur-xl border-white/8 shadow-2xl shadow-black/50 min-w-56"
-            >
-              {/* Account info header */}
-              <div className="px-4 py-3.5 border-b border-white/6">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-full overflow-hidden shrink-0 ring-1 ring-white/10">
-                    {session.user.image ? (
-                      <img
-                        src={session.user.image}
-                        alt={session.user.name || "User"}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <img
-                        src={`https://tapback.co/api/avatar/${encodeURIComponent(session.user.name || "User")}`}
-                        alt={session.user.name || "User"}
-                        className="h-full w-full object-cover"
-                      />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm text-white/90 font-light truncate">
-                      {session.user.name}
-                    </p>
-                    <p className="text-[11px] text-white/30 font-light truncate">
-                      {session.user.email}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Menu items */}
-              <div className="p-1.5 z-10">
-                <DropdownItem
-                  label="Dashboard"
-                  href="/dashboard"
-                  icon={<LayoutDashboard className="w-4 h-4 text-white/40" />}
-                  className="text-white/60 hover:text-white hover:bg-white/5"
-                />
-                <DropdownItem
-                  label="Account Settings"
-                  href="/account/settings"
-                  icon={<Settings className="w-4 h-4 text-white/40" />}
-                  className="text-white/60 hover:text-white hover:bg-white/5"
-                />
-                <div className="h-px bg-white/6 my-1 mx-2" />
-                <DropdownItem
-                  label="Sign out"
-                  onClick={handleSignOut}
-                  icon={<LogOut className="w-4 h-4" />}
-                  variant="destructive"
-                  className="hover:bg-red-500/5"
-                />
-              </div>
-            </Dropdown>
+        <Dropdown
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+          triggerRef={triggerRef || null}
+        >
+          <div className="px-4 py-3 border-b border-neutral-800">
+            <p className="text-xs text-neutral-500">Signed in as</p>
+            <p className="text-sm font-medium text-white truncate">{session.user.name}</p>
+          </div>
+          <div className="p-1">
+            <DropdownItem label="Dashboard" href="/dashboard" />
+            <DropdownItem label="Settings" href="/account/settings" />
+            <div className="h-px bg-neutral-800 my-1" />
+            <DropdownItem label="Sign out" href="/logout" />
+          </div>
+        </Dropdown>
           </div>
         ) : (
-          /* Logged Out — Gooey Button */
           <div
             id="gooey-btn"
             className="relative flex items-center group"

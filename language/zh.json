@@ -71,7 +71,7 @@
     "stats": {
       "commits": "总提交数",
       "stars": "GitHub 星标",
-      "pung": "全球用户（自托管 + 云端）"
+      "contributors": "贡献者"
     },
     "cta": {
       "title": "准备好保护您的网络了吗？",

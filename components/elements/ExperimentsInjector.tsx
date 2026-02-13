@@ -23,13 +23,13 @@ export default function ExperimentsInjector() {
       setShowUI(isDev);
 
       (window as any).giveMeAllTheBugs = async () => {
-        console.log("🐛 Enabling Experiment UI...");
+        if (process.env.NODE_ENV === 'development') console.log("🐛 Enabling Experiment UI...");
         localStorage.setItem("netgoat_experiments_ui", "true");
         setShowUI(true);
         
         try {
           await enableAllExperiments();
-          console.log("✅ All experiments enabled! Reloading...");
+          if (process.env.NODE_ENV === 'development') console.log("✅ All experiments enabled! Reloading...");
           window.location.reload();
         } catch (e) {
           console.error("❌ Failed to enable experiments. Are you logged in?", e);

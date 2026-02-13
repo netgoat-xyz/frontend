@@ -71,7 +71,7 @@
     "stats": {
       "commits": "Total Commits",
       "stars": "Stars on GitHub",
-      "pung": "Users Globally (Self-Hosted + Cloud)"
+      "contributors": "Contributors"
     },
     "cta": {
       "title": "Ready to secure your network?",

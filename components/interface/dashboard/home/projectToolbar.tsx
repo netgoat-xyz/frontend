@@ -6,15 +6,13 @@ import {
   ChevronDownIcon,
   PlusIcon,
   GlobeAltIcon,
-  RocketLaunchIcon,
   FolderIcon,
-  GlobeAmericasIcon,
 } from "@heroicons/react/24/outline";
 import { SearchIcon, FilterIcon, GridIcon, ListIcon } from "lucide-react";
 
 import { Dropdown, DropdownItem } from "../../../elements/Dropdown"; // Assuming it's in the same directory
 
-export default function ProjectToolbar() {
+export default function ProjectToolbar({ params }: { params: { teamName: string } }) {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
   const [isAddNewOpen, setIsAddNewOpen] = useState(false);
@@ -71,7 +69,7 @@ export default function ProjectToolbar() {
               e.stopPropagation();
               setIsAddNewOpen(v => !v);
             }}
-            className="flex items-center space-x-2 bg-white text-black px-3 py-1.5 rounded-md font-medium text-sm hover:bg-neutral-200 transition-all active:scale-95"
+            className="flex items-center cursor-pointer space-x-2 bg-white text-black px-3 py-1.5 rounded-md font-medium text-sm hover:bg-neutral-200 transition-all active:scale-95"
           >
             <span>Add New...</span>
             <ChevronDownIcon
@@ -93,14 +91,14 @@ export default function ProjectToolbar() {
                 icon={<GlobeAltIcon className="size-4" />}
                 className="mt-1"
                 label="Domain"
-                href="/domains"
+                href={`./${params.teamName}/new`}
               />
 
               <DropdownItem
                 icon={<FolderIcon className="size-4" />}
                 className="mt-1"
                 label="Group"
-                href="/groups"
+                href={`./${params.teamName}/groups`}
               />
             </div>
           </Dropdown>

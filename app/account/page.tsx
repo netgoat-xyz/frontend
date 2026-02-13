@@ -4,7 +4,14 @@ import IntegrationModal from "@/components/interface/dashboard/integrations/comp
 import IntegrationCard from "@/components/interface/dashboard/integrations/integrationCard";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -51,12 +58,7 @@ const integrations: Integration[] = [
   },
 ];
 
-const categories = [
-  "General",
-  "Security",
-  "Teams",
-  "Notifications"
-];
+const categories = ["General", "Security", "Teams", "Notifications"];
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("General");
@@ -74,45 +76,52 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-      if (user?.name) setName(user.name);
-      if (user?.email) setEmail(user.email);
+    if (user?.name) setName(user.name);
+    if (user?.email) setEmail(user.email);
   }, [user]);
 
   useEffect(() => {
-     const checkUserType = async () => {
-         try {
-             const accounts = await authClient.listAccounts(); 
-             if (!accounts?.error) {
-                 const hasPassword = accounts?.data?.some((a) => a.providerId === "credential");
-                 setIsPasswordUser(hasPassword || false);
-             }
-         } catch (e) {
-             console.error("Failed to list accounts", e);
-         }
-     }
-     checkUserType();
+    const checkUserType = async () => {
+      try {
+        const accounts = await authClient.listAccounts();
+        if (!accounts?.error) {
+          const hasPassword = accounts?.data?.some(
+            (a) => a.providerId === "credential",
+          );
+          setIsPasswordUser(hasPassword || false);
+        }
+      } catch (e) {
+        console.error("Failed to list accounts", e);
+      }
+    };
+    checkUserType();
   }, []);
 
   const filteredIntegrations = integrations.filter((i) =>
-    i.name.toLowerCase().includes(searchTerm.toLowerCase())
+    i.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   async function handleUpdateProfile(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
     try {
-        await authClient.updateUser({
-            name: name
-        });
+      await authClient.updateUser({
+        name: name,
+      });
     } catch (e) {
-        console.error(e);
+      console.error(e);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }
 
   return (
     <div className="mx-6">
+      <IntegrationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        integration={selectedIntegration}
+      />
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white tracking-tight">
           Settings
@@ -129,10 +138,11 @@ export default function SettingsPage() {
               <button
                 key={cat}
                 onClick={() => setActiveSection(cat)}
-                className={`relative w-full text-left px-3 py-2 rounded-md text-sm transition-all ${activeSection === cat
+                className={`relative w-full text-left px-3 py-2 rounded-md text-sm transition-all ${
+                  activeSection === cat
                     ? "bg-neutral-900 text-white"
                     : "text-neutral-500 hover:text-neutral-200 hover:bg-neutral-900/50"
-                  }`}
+                }`}
               >
                 {activeSection === cat && (
                   <motion.div
@@ -148,18 +158,18 @@ export default function SettingsPage() {
 
         <main className="flex-1 mx-12">
           {activeSection === "General" && (
-          <Card className="border shadow-sm">
+            <Card className="border shadow-sm">
               <CardHeader>
                 <CardTitle>Profile</CardTitle>
-                <CardDescription>Update how you appear on the platform.</CardDescription>
+                <CardDescription>
+                  Update how you appear on the platform.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center gap-6">
                   <div className="relative group cursor-pointer shrink-0">
-                    <Avatar 
-                      className="w-20! h-20! ring-2 ring-background shadow-sm"
-                    >
-                    <AvatarImage src={user?.image || undefined} />
+                    <Avatar className="w-20! h-20! ring-2 ring-background shadow-sm">
+                      <AvatarImage src={user?.image || undefined} />
                     </Avatar>
                     <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                       <Camera className="w-5 h-5 text-white" />
@@ -170,48 +180,69 @@ export default function SettingsPage() {
                     <p className="text-xs text-muted-foreground">
                       JPG, GIF or PNG. Max size of 2MB.
                     </p>
-                    <Button variant="outline" size="sm" className="w-fit h-8 text-xs mt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-fit h-8 text-xs mt-1"
+                    >
                       Change Avatar
                     </Button>
                   </div>
                 </div>
-                
+
                 <Separator />
-                
-                <form id="profile-form" onSubmit={handleUpdateProfile} className="space-y-4">
+
+                <form
+                  id="profile-form"
+                  onSubmit={handleUpdateProfile}
+                  className="space-y-4"
+                >
                   <div className="grid gap-2">
-                    <Label htmlFor="name" className="text-sm font-medium">Display Name</Label>
-                    <Input 
-                      id="name" 
+                    <Label htmlFor="name" className="text-sm font-medium">
+                      Display Name
+                    </Label>
+                    <Input
+                      id="name"
                       className="max-w-md"
-                      value={name} 
-                      onChange={(e) => setName(e.target.value)} 
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
-                    <Input 
-                      id="email" 
-                      value={email} 
-                       onChange={(e) => setEmail(e.target.value)}
+                    <Label htmlFor="email" className="text-sm font-medium">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       disabled={!isPasswordUser}
-                      className={`max-w-md ${!isPasswordUser ? "bg-muted/50 text-muted-foreground italic" : ""}`} 
+                      className={`max-w-md ${!isPasswordUser ? "bg-muted/50 text-muted-foreground italic" : ""}`}
                     />
                     {!isPasswordUser && (
-                        <p className="text-[11px] text-muted-foreground">
-                        Managed by your SSO provider. Contact your admin to change this.
-                        </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Managed by your SSO provider. Contact your admin to
+                        change this.
+                      </p>
                     )}
                   </div>
                 </form>
               </CardContent>
               <CardFooter className="border-t flex justify-end">
-                <Button type="submit" form="profile-form" disabled={isLoading} size="sm">
-                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                <Button
+                  type="submit"
+                  form="profile-form"
+                  disabled={isLoading}
+                  size="sm"
+                >
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
                   {isLoading ? "Saving..." : "Save changes"}
                 </Button>
               </CardFooter>
-            </Card>          )}
+            </Card>
+          )}
 
           {activeSection === "Apps & Integrations" && (
             <>
@@ -241,12 +272,6 @@ export default function SettingsPage() {
           )}
         </main>
       </div>
-
-      <IntegrationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        integration={selectedIntegration}
-      />
     </div>
   );
 }

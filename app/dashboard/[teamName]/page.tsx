@@ -2,16 +2,17 @@ import UsageCard from "@/components/interface/dashboard/home/usageCard";
 import AlertsCard from "@/components/interface/dashboard/home/alertsCard";
 import ProjectToolbar from "@/components/interface/dashboard/home/projectToolbar";
 import DomainsSection from "@/components/interface/dashboard/home/domainsCard";
-import {useTranslations} from 'next-intl';
+import {getTranslations} from 'next-intl/server';
 
 export { default as generateMetadata } from "./metadata";
 
-export default function DashboardHome() {
-  const t = useTranslations('Dashboard');
+export default async function DashboardHome({ params }: { params: Promise<{ teamName: string }> }) {
+  const param = await params;
+  const t = await getTranslations('Dashboard');
   return (
     <div>
       <div>
-        <ProjectToolbar />
+        <ProjectToolbar params={param} />
       </div>
       <div className="flex flex-col md:flex-row w-full md:space-x-8 space-y-6 md:space-y-0">
         <div className="w-full md:w-[30%] min-w-0">

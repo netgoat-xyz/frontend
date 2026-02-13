@@ -69,6 +69,12 @@ const [name, setName] = useState("Netgoat");
 
   return (
     <div className="mx-6">
+      
+      <IntegrationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        integration={selectedIntegration}
+      />
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white tracking-tight">
           Settings
@@ -177,12 +183,6 @@ const [name, setName] = useState("Netgoat");
           )}
         </main>
       </div>
-
-      <IntegrationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        integration={selectedIntegration}
-      />
     </div>
   );
 }

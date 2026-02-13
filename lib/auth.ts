@@ -3,6 +3,7 @@ import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import dbConnect from "@/lib/mongoose";
 import Settings from "@/models/Settings";
+import { Team } from "@/models/Team";
 
 const client = new MongoClient(process.env.MONGODB_URI!);
 const db = client.db();
@@ -26,6 +27,57 @@ export const auth = betterAuth({
            });
         }
       }
+    },
+    after: async (ctx) => {
+      const reqUrl = ctx.request?.url;
+      // Create personal team for new users (non-blocking)
+      if (reqUrl?.includes("/sign-up/email")) {
+        // Run team creation asynchronously without blocking the response
+        setImmediate(async () => {
+          try {
+            await dbConnect();
+            // Fetch the latest user from database to get the created user info
+            const users = await db.collection('user').find().sort({_id: -1}).limit(1).toArray();
+            const user = users[0];
+            
+            if (!user) return;
+            
+            const userId = user.id;
+            const userEmail = user.email;
+            const userName = user.name || userEmail?.split('@')[0] || 'User';
+            
+            // Use user-specific slug to avoid unique constraint issues
+            const personalSlug = `@me-${userId}`;
+            
+            // Check if personal team already exists for this user
+            const existingTeam = await Team.findOne({
+              slug: personalSlug
+            });
+            
+            if (!existingTeam) {
+              // Create personal team with user-specific slug
+              await Team.create({
+                name: `${userName}'s Personal Team`,
+                slug: personalSlug,
+                description: 'Your personal team',
+                members: [{
+                  user_id: userId,
+                  role: 'owner',
+                  joined_at: new Date()
+                }],
+                active: true
+              });
+              
+              console.log(`Created personal team ${personalSlug} for user ${userId}`);
+            }
+          } catch (error) {
+            console.error('Failed to create personal team:', error);
+          }
+        });
+      }
+      
+      // Always return to allow the hook to complete properly
+      return ctx;
     },
   },
   emailAndPassword: {

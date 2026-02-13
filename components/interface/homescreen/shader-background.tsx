@@ -1,7 +1,4 @@
-"use client";
-
 import type React from "react";
-import { LightRays } from "@/components/ui/light-rays"
 
 interface ShaderBackgroundProps {
   children: React.ReactNode;

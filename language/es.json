@@ -71,7 +71,7 @@
     "stats": {
       "commits": "Total de Commits",
       "stars": "Estrellas en GitHub",
-      "pung": "Usuarios Globales (Self-Hosted + Cloud)"
+      "contributors": "Colaboradores"
     },
     "cta": {
       "title": "¿Listo para asegurar tu red?",

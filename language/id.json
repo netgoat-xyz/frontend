@@ -71,7 +71,7 @@
     "stats": {
       "commits": "Total Komit",
       "stars": "Bintang di GitHub",
-      "pung": "Pengguna Global (Self-Hosted + Cloud)"
+      "contributors": "Kontributor"
     },
     "cta": {
       "title": "Siap mengamankan jaringan Anda?",

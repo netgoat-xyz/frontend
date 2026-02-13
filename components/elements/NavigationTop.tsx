@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Modal from "./Modal";
 import Avatar from "./Avatar";
 import SlashSeparator from "./Seperator";
@@ -22,11 +22,11 @@ import {
   Zap,
   FileText,
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import useLastTeamName from "@/hooks/lastTeam";
 import NavSelectDrapdown from "./NavSelectDrapdown";
-import { UrlObject } from "url";
-import { createAuthClient } from "better-auth/react";
-const { useSession } = createAuthClient();
+import { getTeam } from "@/actions/teams";
+import { useSession } from "@/lib/auth-client";
 
 export default function NavigationTop() {
   const {
@@ -39,6 +39,8 @@ export default function NavigationTop() {
   const pathname = usePathname() || "";
   const teamNameConfusion = useLastTeamName();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [teamData, setTeamData] = useState<any>(null);
+  const [loadingTeam, setLoadingTeam] = useState(false);
 
   const segments = pathname.split("/").filter(Boolean);
   const isDashboard = segments[0] === "dashboard";
@@ -48,6 +50,29 @@ export default function NavigationTop() {
   const isGlobalTeamsPath = isDashboard && segments[1] === "teams";
 
   const teamName = isGlobalTeamsPath ? segments[2] : segments[1];
+
+  // Fetch team data when teamName changes
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      if (!teamName || isAccount || isAdmin || isGlobalTeamsPath) {
+        setTeamData(null);
+        return;
+      }
+
+      try {
+        setLoadingTeam(true);
+        const team = await getTeam(teamName);
+        setTeamData(team);
+      } catch (error) {
+        // Silently fail - team name will fallback to URL slug
+        setTeamData(null);
+      } finally {
+        setLoadingTeam(false);
+      }
+    };
+
+    fetchTeamData();
+  }, [teamName, isAccount, isAdmin, isGlobalTeamsPath]);
 
   const topLevelSlugs = [
     "integrations",
@@ -73,16 +98,15 @@ export default function NavigationTop() {
     ? `/dashboard/${teamName}/${domainName}`
     : null;
 
-  let tabs = [];
-
+  let tabs = useMemo(() => {
   if (isAccount) {
-    tabs = [
+    return [
       { title: "Overview", href: "/account", icon: Home },
       { title: "Activity", href: "/account/activity", icon: Activity },
       { title: "Settings", href: "/account/settings", icon: Settings },
     ];
   } else if (isAdmin) {
-    tabs = [
+    return [
       { title: "Overview", href: "/admin", icon: LayoutDashboard },
       { title: "Users", href: "/admin/users", icon: Users },
       { title: "Settings", href: "/admin/settings", icon: Settings },
@@ -91,7 +115,7 @@ export default function NavigationTop() {
       { title: "Content", href: "/admin/content", icon: FileText },
     ];
   } else if (projectPath) {
-    tabs = [
+    return [
       { title: "Overview", href: projectPath, icon: LayoutDashboard },
       {
         title: "Analytics",
@@ -105,7 +129,7 @@ export default function NavigationTop() {
       { title: "Settings", href: `${projectPath}/settings`, icon: Settings },
     ];
   } else {
-    tabs = [
+    return [
       {
         title: "Overview",
         href: `/dashboard/${teamNameConfusion}`,
@@ -124,8 +148,9 @@ export default function NavigationTop() {
       },
     ];
   }
+  }, [isAccount, isAdmin, projectPath, teamNameConfusion]);
 
-  const activeTab =
+  const activeTab = useMemo(() =>
     tabs.find((tab) => {
       if (isAccount || isAdmin) {
         return tab.href === (isAccount ? "/account" : "/admin")
@@ -136,7 +161,8 @@ export default function NavigationTop() {
         return pathname === tab.href;
       }
       return pathname.startsWith(tab.href);
-    }) || tabs[0];
+    }) || tabs[0]
+  , [tabs, pathname, isAccount, isAdmin, teamPath, projectPath]);
 
   const activeTitle = activeTab?.title || "Overview";
 
@@ -186,12 +212,21 @@ export default function NavigationTop() {
 
               {!isAccount && !isAdmin && teamName && (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center text-[10px] font-bold">
-                    {teamName[0].toUpperCase()}
-                  </div>
-                  <span className="text-sm font-medium">
-                    {decodeURIComponent(teamName)}
-                  </span>
+                  {loadingTeam ? (
+                    <>
+                      <Skeleton className="w-4 h-4 rounded-sm" />
+                      <Skeleton className="h-4 w-32" />
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center text-[10px] font-bold">
+                        {teamData?.name?.[0]?.toUpperCase() || teamName[0].toUpperCase()}
+                      </div>
+                      <span className="text-sm font-medium">
+                        {teamData?.name || decodeURIComponent(teamName)}
+                      </span>
+                    </>
+                  )}
                   <NavSelectDrapdown />
                 </div>
               )}

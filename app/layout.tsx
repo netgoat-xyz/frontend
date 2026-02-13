@@ -7,12 +7,16 @@ import { getLocale, getMessages } from "next-intl/server";
 import "cal-sans";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/next";
-import { getPublicSettings } from "@/actions/adminValues";
+import { cache } from "react";
+import { getPublicSettings as _getPublicSettings } from "@/actions/adminValues";
+
+// Deduplicate getPublicSettings calls within a single request
+const getPublicSettings = cache(_getPublicSettings);
 import GlobalBanner from "@/components/elements/GlobalBanner";
 import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
 import ExperimentsInjector from "@/components/elements/ExperimentsInjector";
 import SelfHostedAnalytics from "@/components/analytics/SelfHostedAnalytics";
-
+import { SpeedInsights } from "@vercel/speed-insights/next";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -68,19 +72,20 @@ export default async function RootLayout({
       className={cn("dark", inter.variable)}
       suppressHydrationWarning
     >
-      <Analytics />
       <body
-        className={`${inter.className} transform-gpu bg-neutral-950 text-white antialiased transition-all duration-200 `}
+        className={`${inter.className} transform-gpu bg-neutral-950 text-white antialiased`}
       >
+        <Analytics />
         <NextIntlClientProvider messages={messages}>
           <SelfHostedAnalytics />
           <ExperimentsInjector />
-          <GlobalBanner 
-            settings={settings} 
-            doNotShowBanner={["/blog", "/auth", "/", "/status"]} 
+          <GlobalBanner
+            settings={settings}
+            doNotShowBanner={["/blog", "/auth", "/", "/status"]}
           />
           <main>{children}</main>
         </NextIntlClientProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

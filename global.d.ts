@@ -17,5 +17,10 @@ interface DomainPropsCard {
     isStarred: boolean;
     updatedAt: string;
     pathName: string;
+    verified?: boolean;
+    verificationToken?: string;
+    lastVerificationCheck?: Date | string;
+    verificationAttempts?: number;
+    teamSlug?: string;
   };
 }

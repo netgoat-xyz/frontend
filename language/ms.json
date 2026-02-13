@@ -71,7 +71,7 @@
     "stats": {
       "commits": "Jumlah Komit",
       "stars": "Bintang di GitHub",
-      "pung": "Pengguna Global (Self-Hosted + Cloud)"
+      "contributors": "Penyumbang"
     },
     "cta": {
       "title": "Bersedia untuk mengamankan rangkaian anda?",

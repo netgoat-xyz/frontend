@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
   },
   devIndicators: false,
   allowedDevOrigins: ["demo.netgoat.xyz", "127.0.0.1"],
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+  },
   experimental: {
     authInterrupts: true,
   },

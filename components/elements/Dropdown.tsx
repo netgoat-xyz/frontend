@@ -50,7 +50,7 @@ export function Dropdown({
           animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, scale: 0.95, y: -10, filter: "blur(4px)" }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className={`absolute right-0 mt-2 z-100 min-w-50 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl overflow-hidden ${className}`}
+          className={`absolute right-0 mt-2 z-999 min-w-50 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl overflow-hidden ${className}`}
         >
           {children}
         </motion.div>

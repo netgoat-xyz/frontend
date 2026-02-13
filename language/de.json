@@ -71,7 +71,7 @@
     "stats": {
       "commits": "Gesamte Commits",
       "stars": "Sterne auf GitHub",
-      "pung": "Benutzer weltweit (Self-Hosted + Cloud)"
+      "contributors": "Mitwirkende"
     },
     "cta": {
       "title": "Bereit, Ihr Netzwerk zu sichern?",
