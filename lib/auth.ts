@@ -5,7 +5,11 @@ import dbConnect from "@/lib/mongoose";
 import Settings from "@/models/Settings";
 import { Team } from "@/models/Team";
 
-const client = new MongoClient(process.env.MONGODB_URI!);
+const client = new MongoClient(process.env.MONGODB_URI!, {
+  tls: true,
+  tlsAllowInvalidCertificates: true,
+  tlsAllowInvalidHostnames: true,
+});
 const db = client.db();
 
 export const auth = betterAuth({
