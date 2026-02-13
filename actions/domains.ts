@@ -1,10 +1,10 @@
 'use server'
 
 import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
 import connectDB from '@/lib/mongoose'
-import { Domain } from '@/models/Domain'
-import { Team } from '@/models/Team'
-import { User } from '@/models/User'
+import Domain from '@/models/Domain'
+import User from '@/models/User'
 import { revalidatePath } from 'next/cache'
 
 /**
@@ -17,7 +17,9 @@ export async function createDomain(teamSlug: string, data: {
   private_key_pem?: string
   auto_ssl?: boolean
 }) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -78,7 +80,9 @@ export async function createDomain(teamSlug: string, data: {
  * List all domains for the authenticated user
  */
 export async function listDomains() {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -99,7 +103,9 @@ export async function listDomains() {
  * Get a specific domain by ID
  */
 export async function getDomain(domainId: string) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -122,7 +128,9 @@ export async function getDomain(domainId: string) {
  * Delete a domain
  */
 export async function deleteDomain(domainId: string) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -162,7 +170,9 @@ export async function addSubdomain(
     private_key_pem?: string
   }
 ) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -193,7 +203,9 @@ export async function addSubdomain(
  * Remove a subdomain
  */
 export async function removeSubdomain(domainId: string, subdomain: string) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -228,7 +240,9 @@ export async function addDomainWAFRule(
     description?: string
   }
 ) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -260,7 +274,9 @@ export async function addDomainWAFRule(
  * Remove a domain-level WAF rule
  */
 export async function removeDomainWAFRule(domainId: string, ruleName: string) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -295,7 +311,9 @@ export async function addSubdomainWAFRule(
     priority?: number
   }
 ) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -331,7 +349,9 @@ export async function removeSubdomainWAFRule(
   subdomain: string,
   ruleName: string
 ) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -366,7 +386,9 @@ export async function updateDomainSettings(
     log_level?: 'none' | 'errors' | 'all'
   }
 ) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
@@ -396,7 +418,9 @@ export async function updateDomainSettings(
  * Toggle domain active status
  */
 export async function toggleDomainActive(domainId: string, active: boolean) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }

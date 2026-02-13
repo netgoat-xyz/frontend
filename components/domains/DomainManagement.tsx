@@ -24,7 +24,7 @@ interface Domain {
   created_at: Date
 }
 
-export function DomainManagement() {
+export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
   const [domains, setDomains] = useState<Domain[]>([])
   const [loading, setLoading] = useState(false)
   const [newDomain, setNewDomain] = useState({ domain: '', target_url: '' })
@@ -51,7 +51,7 @@ export function DomainManagement() {
 
     try {
       setLoading(true)
-      await createDomain({
+      await createDomain(teamSlug, {
         domain: newDomain.domain,
         target_url: newDomain.target_url
       })
