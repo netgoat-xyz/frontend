@@ -1,9 +1,12 @@
 import { betterAuth, APIError } from "better-auth";
+import { emailOTP, magicLink } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
+import { Resend } from "resend";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import dbConnect from "@/lib/mongoose";
 import Settings from "@/models/Settings";
 import { Team } from "@/models/Team";
+import mongoose from "mongoose";
 
 const client = new MongoClient(process.env.MONGODB_URI!, {
   tls: true,
@@ -11,6 +14,13 @@ const client = new MongoClient(process.env.MONGODB_URI!, {
   tlsAllowInvalidHostnames: true,
 });
 const db = client.db();
+const resendApiKey = process.env.RESEND_APIKEY;
+if (!resendApiKey) {
+  throw new Error("RESEND_APIKEY is required for magic link and OTP emails.");
+}
+const resend = new Resend(resendApiKey);
+const emailFrom = process.env.EMAIL_FROM ?? "noreply@netgoat.xyz";
+const appName = "Netgoat";
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
@@ -18,6 +28,46 @@ export const auth = betterAuth({
   logger: {
     level: "debug",
   },
+  plugins: [
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await resend.emails.send({
+          from: emailFrom,
+          to: email,
+          subject: `${appName} magic link`,
+          text: `Use this link to sign in: ${url}`,
+          html: `
+            <p>Use the link below to sign in to ${appName}.</p>
+            <p><a href="${url}">Sign in to ${appName}</a></p>
+            <p>If you did not request this, you can ignore this email.</p>
+          `,
+        });
+      },
+    }),
+    emailOTP({
+      overrideDefaultEmailVerification: true,
+      sendVerificationOnSignUp: true,
+      sendVerificationOTP: async ({ email, otp, type }) => {
+        const typeLabel =
+          type === "email-verification"
+            ? "email verification"
+            : type === "forget-password"
+              ? "password reset"
+              : "sign in";
+        await resend.emails.send({
+          from: emailFrom,
+          to: email,
+          subject: `${appName} ${typeLabel} code`,
+          text: `Your ${typeLabel} code is ${otp}.`,
+          html: `
+            <p>Your ${appName} ${typeLabel} code is:</p>
+            <p><strong>${otp}</strong></p>
+            <p>This code expires in a few minutes.</p>
+          `,
+        });
+      },
+    }),
+  ],
   hooks: {
     before: async (ctx) => {
       const reqUrl = ctx.request?.url;
@@ -34,32 +84,31 @@ export const auth = betterAuth({
     },
     after: async (ctx) => {
       const reqUrl = ctx.request?.url;
-      // Create personal team for new users (non-blocking)
       if (reqUrl?.includes("/sign-up/email")) {
-        // Run team creation asynchronously without blocking the response
         setImmediate(async () => {
           try {
             await dbConnect();
-            // Fetch the latest user from database to get the created user info
             const users = await db.collection('user').find().sort({_id: -1}).limit(1).toArray();
             const user = users[0];
             
             if (!user) return;
             
-            const userId = user.id;
+            const rawUserId = user?._id ?? user?.id;
+            if (!rawUserId) return;
+            const userId = mongoose.isValidObjectId(rawUserId)
+              ? new mongoose.Types.ObjectId(rawUserId)
+              : null;
+            if (!userId) return;
             const userEmail = user.email;
             const userName = user.name || userEmail?.split('@')[0] || 'User';
             
-            // Use user-specific slug to avoid unique constraint issues
             const personalSlug = `@me-${userId}`;
             
-            // Check if personal team already exists for this user
             const existingTeam = await Team.findOne({
               slug: personalSlug
             });
             
             if (!existingTeam) {
-              // Create personal team with user-specific slug
               await Team.create({
                 name: `${userName}'s Personal Team`,
                 slug: personalSlug,
@@ -86,7 +135,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false,
+    requireEmailVerification: true,
   },
   user: {
     additionalFields: {

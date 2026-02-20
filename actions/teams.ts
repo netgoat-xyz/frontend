@@ -6,6 +6,7 @@ import connectDB from '@/lib/mongoose'
 import { Team } from '@/models/Team'
 import User from '@/models/User'
 import { revalidatePath } from 'next/cache'
+import mongoose from 'mongoose'
 
 /**
  * Create a new team
@@ -21,6 +22,10 @@ export async function createTeam(data: {
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
+  if (!mongoose.isValidObjectId(session.user.id)) {
+    throw new Error('Invalid user id')
+  }
+  const userObjectId = new mongoose.Types.ObjectId(session.user.id)
 
   await connectDB()
 
@@ -36,7 +41,7 @@ export async function createTeam(data: {
     slug: data.slug,
     description: data.description,
     members: [{
-      user_id: session.user.id,
+      user_id: userObjectId,
       role: 'owner',
       joined_at: new Date()
     }],
@@ -57,6 +62,10 @@ export async function getUserTeams() {
   if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
+  if (!mongoose.isValidObjectId(session.user.id)) {
+    throw new Error('Invalid user id')
+  }
+  const userObjectId = new mongoose.Types.ObjectId(session.user.id)
 
   await connectDB()
 
@@ -93,12 +102,13 @@ export async function getTeam(slug: string) {
     
     if (!team) {
       // Create personal team on-the-fly if it doesn't exist
+      const displayName = session.user.name || session.user.email || 'User'
       team = await Team.create({
-        name: `${session.user.name || 'User'}'s Personal Team`,
+        name: `${displayName}'s Personal Team`,
         slug: personalSlug,
         description: 'Your personal team',
         members: [{
-          user_id: session.user.id,
+          user_id: userObjectId,
           role: 'owner',
           joined_at: new Date()
         }],

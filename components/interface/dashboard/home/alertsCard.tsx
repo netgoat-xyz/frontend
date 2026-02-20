@@ -27,7 +27,6 @@ const alertsData = [
   },
 ];
 
-
 export default function alertsCard() {
   const [animate, setAnimate] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(true);
@@ -36,7 +35,7 @@ export default function alertsCard() {
     const timer = setTimeout(() => setAnimate(true), 100);
     return () => clearTimeout(timer);
   }, []);
-  
+
   return (
     <div className="rounded-xl bg-neutral-900 border border-neutral-800 overflow-hidden">
       <div className="p-4 flex justify-between items-center">
@@ -60,14 +59,14 @@ export default function alertsCard() {
                 a.variant === "red"
                   ? "bg-red-500/10 border-red-500/20 text-red-400"
                   : a.variant === "yellow"
-                  ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
-                  : "bg-blue-500/10 border-blue-500/20 text-blue-400";
+                    ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
+                    : "bg-blue-500/10 border-blue-500/20 text-blue-400";
               const dot =
                 a.variant === "red"
                   ? "bg-red-500"
                   : a.variant === "yellow"
-                  ? "bg-yellow-500"
-                  : "bg-blue-500";
+                    ? "bg-yellow-500"
+                    : "bg-blue-500";
               return (
                 <div
                   key={a.id}
@@ -82,8 +81,8 @@ export default function alertsCard() {
                         a.variant === "red"
                           ? "text-red-400"
                           : a.variant === "yellow"
-                          ? "text-yellow-400"
-                          : "text-blue-400"
+                            ? "text-yellow-400"
+                            : "text-blue-400"
                       }`}
                     >
                       {a.title}
@@ -100,10 +99,12 @@ export default function alertsCard() {
         )}
       </AnimatePresence>
 
-      <div className="flex justify-center p-2 border-t border-neutral-800 group cursor-pointer hover:bg-neutral-900 transition-colors">
+      <div
+        onClick={() => setAlertsOpen((s) => !s)}
+        className="flex justify-center p-2 border-t border-neutral-800 group cursor-pointer hover:bg-neutral-900 transition-colors"
+      >
         <button
           aria-label="Toggle alerts"
-          onClick={() => setAlertsOpen((s) => !s)}
           className="w-6 h-6 flex items-center justify-center rounded-full"
         >
           <svg

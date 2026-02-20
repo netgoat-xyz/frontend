@@ -25,7 +25,7 @@ const usageData = [
     limit: 50000,
     displayCurrent: "450GB",
     displayLimit: "10TB",
-  }
+  },
 ];
 
 export default function UsageCard() {
@@ -65,10 +65,12 @@ export default function UsageCard() {
         )}
       </AnimatePresence>
 
-      <div className="flex justify-center p-2 border-t border-neutral-800 group cursor-pointer hover:bg-neutral-900 transition-colors">
+      <div
+        onClick={() => setUsageOpen((s) => !s)}
+        className="flex justify-center p-2 border-t border-neutral-800 group cursor-pointer hover:bg-neutral-900 transition-colors"
+      >
         <button
           aria-label="Toggle usage"
-          onClick={() => setUsageOpen((s) => !s)}
           className="w-6 h-6 flex items-center justify-center rounded-full"
         >
           <svg
@@ -91,4 +93,3 @@ export default function UsageCard() {
     </div>
   );
 }
-

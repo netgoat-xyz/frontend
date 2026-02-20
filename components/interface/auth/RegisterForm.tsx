@@ -16,7 +16,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
-import { auth } from "@/lib/auth";
 
 export default function RegisterForm({
   className,
@@ -39,7 +38,7 @@ export default function RegisterForm({
         password,
         name: username,
       });
-      router.replace("/dashboard");
+      router.replace(`/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
       setError(err?.message || "Registration failed");
     } finally {
@@ -93,6 +92,11 @@ export default function RegisterForm({
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </Field>
+              <FieldDescription className="text-center">
+                Prefer passwordless?{" "}
+                <Link href="/auth/register/magic-link">Magic link</Link> or{" "}
+                <Link href="/auth/register/otp">OTP</Link>.
+              </FieldDescription>
               {error && (
                 <FieldDescription className="text-red-500 text-center">
                   {error}

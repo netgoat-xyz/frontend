@@ -77,7 +77,7 @@ const TeamInviteSchema = new Schema<ITeamInvite>({
   invited_by: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   invited_at: { type: Date, default: Date.now },
   expires_at: { type: Date, required: true },
-  token: { type: String, required: true, unique: true },
+  token: { type: String, required: true },
   accepted: { type: Boolean, default: false }
 })
 
@@ -113,9 +113,10 @@ const TeamSchema = new Schema<ITeam>({
   updated_at: { type: Date, default: Date.now }
 })
 
-// Indexes (slug and invites.token already have unique indexes from schema definition)
+// Indexes (slug already has a unique index from schema definition)
 TeamSchema.index({ 'members.user_id': 1 })
 TeamSchema.index({ 'invites.email': 1 })
+TeamSchema.index({ 'invites.token': 1 }, { unique: true, sparse: true })
 
 // Virtuals
 TeamSchema.virtual('can_add_domain').get(function() {

@@ -82,6 +82,11 @@ export default function LoginForm({
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </Field>
+              <FieldDescription className="text-center">
+                Prefer passwordless?{" "}
+                <Link href="/auth/login/magic-link">Magic link</Link> or{" "}
+                <Link href="/auth/login/otp">OTP</Link>.
+              </FieldDescription>
               {error && (
                 <FieldDescription className="text-red-500 text-center">
                   {error}
