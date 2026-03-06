@@ -3,15 +3,26 @@ import { OriginSettings } from "@/components/interface/domains/settings/OriginSe
 import { CacheSettings } from "@/components/interface/domains/settings/CacheSettings";
 import { PerformanceSettings } from "@/components/interface/domains/settings/PerformanceSettings";
 import { DangerZone } from "@/components/interface/domains/settings/DangerZone";
+import { loadDomainByRoute } from "../_lib/domain-data";
 
-const SettingsPage = () => {
-  const domainData = {
-    name: "netgoat.xyz",
-    status: "healthy",
-    origin: "http://10.0.0.4:3000",
-    certExp: "89 days",
-    wafStatus: "Active",
-  };
+type Props = {
+  params: {
+    teamName: string
+    domainName: string
+  }
+}
+
+const SettingsPage = async ({ params }: Props) => {
+  const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
+
+  if (!domain || !domainData) {
+    return (
+      <div className="min-h-screen p-8">
+        <h2 className="text-2xl font-semibold">Domain not found</h2>
+        <p className="text-muted">No domain "{domainName}" found for team "{teamName}".</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

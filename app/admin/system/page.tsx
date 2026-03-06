@@ -39,10 +39,23 @@ export default function AdminSystemPage() {
   };
 
   return (
-    <Card>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">System Information</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
+            Server specifications and status.
+          </p>
+        </div>
+        <Button variant="destructive" onClick={handleRestart} className="shadow-sm">
+            <Power className="mr-2 h-4 w-4"/> Restart System
+        </Button>
+      </div>
+
+    <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
     <CardHeader>
-        <CardTitle>System Information</CardTitle>
-        <CardDescription>Server specifications and status.</CardDescription>
+        <CardTitle>Hardware Details</CardTitle>
+        <CardDescription>Current hardware allocation and usage metrics.</CardDescription>
     </CardHeader>
     <CardContent>
         {systemSpecs ? (
@@ -83,11 +96,7 @@ export default function AdminSystemPage() {
             </div>
         )}
     </CardContent>
-    <CardFooter>
-        <Button variant="destructive" onClick={handleRestart}>
-            <Power className="mr-2 h-4 w-4"/> Restart System
-        </Button>
-    </CardFooter>
     </Card>
+    </div>
   );
 }

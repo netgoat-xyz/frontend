@@ -103,6 +103,8 @@ export async function getTeam(slug: string) {
     if (!team) {
       // Create personal team on-the-fly if it doesn't exist
       const displayName = session.user.name || session.user.email || 'User'
+      const userObjectId = new mongoose.Types.ObjectId(session.user.id)
+      
       team = await Team.create({
         name: `${displayName}'s Personal Team`,
         slug: personalSlug,

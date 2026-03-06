@@ -121,20 +121,31 @@ export default function ContentEditor({ post }: { post?: any }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => router.back()}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back
+    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">{post ? "Edit Post" : "Create New Post"}</h1>
+            <p className="text-muted-foreground mt-1 text-sm md:text-base">
+              {post ? "Make changes to your existing content." : "Draft a new piece of content for your site."}
+            </p>
+          </div>
+        </div>
+        <Button onClick={handleSubmit(onSubmit)} disabled={loading} className="shadow-sm w-full sm:w-auto">
+          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          {loading ? "Saving..." : "Save Post"}
         </Button>
-        <h1 className="text-2xl font-bold">{post ? "Edit Post" : "Create New Post"}</h1>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Card>
-            <CardHeader>
-                <CardTitle>Post Details</CardTitle>
+        <Card className="shadow-sm border-border/50 transition-shadow hover:shadow-md">
+            <CardHeader className="pb-4 border-b border-border/50 mb-4">
+                <CardTitle className="text-xl">Content Details</CardTitle>
             </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="title">Title</Label>
@@ -213,33 +224,37 @@ export default function ContentEditor({ post }: { post?: any }) {
                 )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="content">Content (Markdown)</Label>
               <Textarea 
                 id="content" 
                 {...register("content", { required: true })} 
-                className="font-mono min-h-100" 
+                className="font-mono min-h-[350px] resize-y p-4 bg-background border-input shadow-sm focus-visible:ring-1" 
                 placeholder="# Hello World (Paste images here supported)"
                 onPaste={handlePaste}
               />
               {errors.content && <span className="text-red-500 text-sm">Content is required</span>}
             </div>
 
-            <div className="flex items-center space-x-2 rounded-lg border p-4">
+            <div className="flex items-center justify-between rounded-xl border p-5 shadow-sm bg-neutral-50/50 dark:bg-neutral-900/50 transition-colors">
+               <div className="space-y-1 text-sm">
+                  <Label htmlFor="published" className="font-medium text-base">Published Status</Label>
+                  <p className="text-muted-foreground leading-snug">Toggle whether this post is visible to the public or saved as a draft.</p>
+               </div>
                <Switch 
                     id="published" 
                     checked={watch("published")}
                     onCheckedChange={(checked) => setValue("published", checked)}
+                    className="data-[state=checked]:bg-green-600"
                />
-               <Label htmlFor="published">Published</Label>
             </div>
 
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <div className="text-sm text-neutral-500">
-                {post ? `Last updated: ${new Date(post.updatedAt).toLocaleString()}` : ""}
+          <CardFooter className="flex justify-between items-center pt-6 pb-6 px-6 bg-neutral-50 dark:bg-neutral-900/20 border-t border-border/50">
+            <div className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                {post ? `Last updated: ${new Date(post.updatedAt).toLocaleString()}` : "Not saved yet"}
             </div>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="shadow-sm">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <Save className="mr-2 h-4 w-4" /> Save Post
             </Button>

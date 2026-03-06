@@ -2,14 +2,59 @@
 
 import { BarChart3, Clock, AlertCircle, Zap, TrendingUp, TrendingDown } from "lucide-react";
 
-const stats = [
+const fallbackStats = [
   { label: "Total Requests", value: "284,192", subtext: "Last 24h", change: "+12.5%", positive: true, icon: BarChart3, gradient: "from-indigo-500 to-purple-500" },
   { label: "Avg Response", value: "142ms", subtext: "p99: 890ms", change: "-8.2%", positive: true, icon: Clock, gradient: "from-emerald-500 to-teal-500" },
   { label: "Error Rate", value: "1.8%", subtext: "5,116 errors", change: "+0.3%", positive: false, icon: AlertCircle, gradient: "from-rose-500 to-red-500" },
   { label: "Throughput", value: "3.2K/s", subtext: "Peak: 8.4K/s", change: "+15.7%", positive: true, icon: Zap, gradient: "from-amber-500 to-orange-500" },
 ];
 
-export function LogStats() {
+type DomainStats = {
+  total_requests?: number
+  total_blocked?: number
+  bandwidth_used?: number
+}
+
+export function LogStats({ domainStats }: { domainStats?: DomainStats }) {
+  const stats = domainStats ? [
+    {
+      label: "Total Requests",
+      value: (domainStats.total_requests ?? 0).toLocaleString(),
+      subtext: "All time",
+      change: "—",
+      positive: true,
+      icon: BarChart3,
+      gradient: "from-indigo-500 to-purple-500"
+    },
+    {
+      label: "Blocked Requests",
+      value: (domainStats.total_blocked ?? 0).toLocaleString(),
+      subtext: "By WAF",
+      change: "—",
+      positive: true,
+      icon: AlertCircle,
+      gradient: "from-rose-500 to-red-500"
+    },
+    {
+      label: "Bandwidth",
+      value: `${((domainStats.bandwidth_used ?? 0) / 1024 / 1024).toFixed(2)} MB`,
+      subtext: "Transferred",
+      change: "—",
+      positive: true,
+      icon: Zap,
+      gradient: "from-amber-500 to-orange-500"
+    },
+    {
+      label: "Avg Response",
+      value: "N/A",
+      subtext: "No request timing source",
+      change: "—",
+      positive: true,
+      icon: Clock,
+      gradient: "from-emerald-500 to-teal-500"
+    },
+  ] : fallbackStats
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       {stats.map((stat) => {

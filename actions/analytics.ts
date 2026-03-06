@@ -9,6 +9,7 @@ type AnalyticsPayload = {
   type: "pageview" | "web-vital";
   path: string;
   visitorId: string;
+  referrer?: string;
   metricName?: string;
   metricValue?: number;
   metricRating?: string;
@@ -17,10 +18,10 @@ type AnalyticsPayload = {
 export async function trackAnalytics(data: AnalyticsPayload) {
   try {
     await dbConnect();
-    
+
     const headersList = await headers();
     const ua = headersList.get("user-agent") || "";
-    
+
     // Simple device detection
     let device = "desktop";
     if (/mobile/i.test(ua)) device = "mobile";
@@ -30,14 +31,14 @@ export async function trackAnalytics(data: AnalyticsPayload) {
       type: data.type,
       path: data.path,
       visitorId: data.visitorId,
+      referrer: data.referrer,
       userAgent: ua,
       device,
       metricName: data.metricName,
       metricValue: data.metricValue,
       metricRating: data.metricRating,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-
   } catch (error) {
     console.error("Failed to track analytics:", error);
     // Don't throw, we don't want to break the app for metrics
@@ -45,126 +46,146 @@ export async function trackAnalytics(data: AnalyticsPayload) {
 }
 
 export async function getAnalyticsMetadata() {
-    await dbConnect();
-    // Simply return counts for now to verify it works
-    const totalViews = await Analytics.countDocuments({ type: "pageview" });
-    return { totalViews };
+  await dbConnect();
+  // Simply return counts for now to verify it works
+  const totalViews = await Analytics.countDocuments({ type: "pageview" });
+  return { totalViews };
 }
 
-export async function getDashboardStats(timeRange: "24h" | "7d" | "30d" = "24h") {
-    await checkAdmin();
-    
-    const now = new Date();
-    let startDate = new Date();
-    
-    if (timeRange === "24h") startDate.setHours(now.getHours() - 24);
-    if (timeRange === "7d") startDate.setDate(now.getDate() - 7);
-    if (timeRange === "30d") startDate.setDate(now.getDate() - 30);
+export async function getDashboardStats(
+  timeRange: "24h" | "7d" | "30d" = "24h",
+) {
+  await checkAdmin();
 
-    const matchStage = { timestamp: { $gte: startDate } };
+  const now = new Date();
+  let startDate = new Date();
 
-    // 1. Total Visitors (Unique Visitor IDs)
-    const uniqueVisitors = await Analytics.distinct("visitorId", { 
-        ...matchStage, 
-        type: "pageview" 
-    });
+  if (timeRange === "24h") startDate.setHours(now.getHours() - 24);
+  if (timeRange === "7d") startDate.setDate(now.getDate() - 7);
+  if (timeRange === "30d") startDate.setDate(now.getDate() - 30);
 
-    // 2. Total Page Views
-    const totalPageViews = await Analytics.countDocuments({ 
-        ...matchStage, 
-        type: "pageview" 
-    });
+  const matchStage = { timestamp: { $gte: startDate } };
 
-    // 3. Top Pages
-    const topPages = await Analytics.aggregate([
-        { $match: { ...matchStage, type: "pageview" } },
-        { $group: { _id: "$path", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 5 }
-    ]);
+  // 1. Total Visitors (Unique Visitor IDs)
+  const uniqueVisitors = await Analytics.distinct("visitorId", {
+    ...matchStage,
+    type: "pageview",
+  });
 
-    // 4. Web Vitals (Avg LCP)
-    const avgLCP = await Analytics.aggregate([
-        { $match: { ...matchStage, type: "web-vital", metricName: "LCP" } },
-        { $group: { _id: null, avg: { $avg: "$metricValue" } } }
-    ]);
+  // 2. Total Page Views
+  const totalPageViews = await Analytics.countDocuments({
+    ...matchStage,
+    type: "pageview",
+  });
 
-    // 5. Views Over Time (for chart)
-    const viewsOverTime = await Analytics.aggregate([
-        { $match: { ...matchStage, type: "pageview" } },
-        { 
-            $group: { 
-                _id: { 
-                    $dateToString: { 
-                        format: timeRange === "24h" ? "%H:00" : "%Y-%m-%d", 
-                        date: "$timestamp" 
-                    } 
-                }, 
-                count: { $sum: 1 } 
-            } 
+  // 3. Top Pages
+  const topPages = await Analytics.aggregate([
+    { $match: { ...matchStage, type: "pageview" } },
+    { $group: { _id: "$path", count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+    { $limit: 5 },
+  ]);
+
+  // 4. Web Vitals (Avg LCP)
+  const avgLCP = await Analytics.aggregate([
+    { $match: { ...matchStage, type: "web-vital", metricName: "LCP" } },
+    { $group: { _id: null, avg: { $avg: "$metricValue" } } },
+  ]);
+
+  // 4b. Top Referrers
+  const topReferrers = await Analytics.aggregate([
+    {
+      $match: {
+        ...matchStage,
+        type: "pageview",
+        referrer: { $nin: [null, ""] },
+      },
+    },
+    { $group: { _id: "$referrer", count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+    { $limit: 5 },
+  ]);
+
+  // 5. Views Over Time (for chart)
+  const viewsOverTime = await Analytics.aggregate([
+    { $match: { ...matchStage, type: "pageview" } },
+    {
+      $group: {
+        _id: {
+          $dateToString: {
+            format: timeRange === "24h" ? "%H:00" : "%Y-%m-%d",
+            date: "$timestamp",
+          },
         },
-        { $sort: { "_id": 1 } }
-    ]);
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
 
-    // 6. Calculate Bounce Rate (Visitors with only 1 pageview)
-    // This is expensive on large datasets, simplified here
-    const visitorPageCounts = await Analytics.aggregate([
-        { $match: { ...matchStage, type: "pageview" } },
-        { $group: { _id: "$visitorId", count: { $sum: 1 } } }
-    ]);
-    
-    const totalSessions = visitorPageCounts.length;
-    const singlePageSessions = visitorPageCounts.filter(v => v.count === 1).length;
-    const bounceRate = totalSessions > 0 ? (singlePageSessions / totalSessions) * 100 : 0;
+  // 6. Calculate Bounce Rate (Visitors with only 1 pageview)
+  // This is expensive on large datasets, simplified here
+  const visitorPageCounts = await Analytics.aggregate([
+    { $match: { ...matchStage, type: "pageview" } },
+    { $group: { _id: "$visitorId", count: { $sum: 1 } } },
+  ]);
 
-    // 7. Per-Page Web Vitals
-    const pagesPerformance = await Analytics.aggregate([
-        { $match: { ...matchStage, type: "web-vital" } },
-        { 
-            $group: {
-                _id: { path: "$path", metric: "$metricName" },
-                avgValue: { $avg: "$metricValue" },
-                count: { $sum: 1 }
-            }
+  const totalSessions = visitorPageCounts.length;
+  const singlePageSessions = visitorPageCounts.filter(
+    (v) => v.count === 1,
+  ).length;
+  const bounceRate =
+    totalSessions > 0 ? (singlePageSessions / totalSessions) * 100 : 0;
+
+  // 7. Per-Page Web Vitals
+  const pagesPerformance = await Analytics.aggregate([
+    { $match: { ...matchStage, type: "web-vital" } },
+    {
+      $group: {
+        _id: { path: "$path", metric: "$metricName" },
+        avgValue: { $avg: "$metricValue" },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id.path",
+        metrics: {
+          $push: {
+            name: "$_id.metric",
+            value: "$avgValue",
+            count: "$count",
+          },
         },
-        {
-            $group: {
-                _id: "$_id.path",
-                metrics: {
-                    $push: {
-                        name: "$_id.metric",
-                        value: "$avgValue",
-                        count: "$count"
-                    }
-                },
-                totalSamples: { $sum: "$count" }
-            }
-        },
-        { $sort: { totalSamples: -1 } }
-    ]);
+        totalSamples: { $sum: "$count" },
+      },
+    },
+    { $sort: { totalSamples: -1 } },
+  ]);
 
-    // 8. Device Stats
-    const deviceStats = await Analytics.aggregate([
-        { $match: { ...matchStage, type: "pageview" } },
-        { $group: { _id: "$device", count: { $sum: 1 } } }
-    ]);
+  // 8. Device Stats
+  const deviceStats = await Analytics.aggregate([
+    { $match: { ...matchStage, type: "pageview" } },
+    { $group: { _id: "$device", count: { $sum: 1 } } },
+  ]);
 
-    return {
-        visitors: uniqueVisitors.length,
-        pageViews: totalPageViews,
-        webVitals: {
-            lcp: avgLCP[0]?.avg || 0
-        },
-        topPages: topPages.map(p => ({ path: p._id, count: p.count })),
-        chartData: viewsOverTime.map(v => ({ date: v._id, views: v.count })),
-        deviceStats: deviceStats.map(d => ({ device: d._id, count: d.count })),
-        bounceRate: Math.round(bounceRate),
-        pagesPerformance: pagesPerformance.map(p => ({
-            path: p._id,
-            metrics: p.metrics.reduce((acc: any, m: any) => {
-                acc[m.name] = Math.round(m.value * 100) / 100; // Round to 2 decimals
-                return acc;
-            }, {})
-        }))
-    };
+  return {
+    visitors: uniqueVisitors.length,
+    pageViews: totalPageViews,
+    webVitals: {
+      lcp: avgLCP[0]?.avg || 0,
+    },
+    topPages: topPages.map((p) => ({ path: p._id, count: p.count })),
+    topReferrers: topReferrers.map((r) => ({ url: r._id, count: r.count })),
+    chartData: viewsOverTime.map((v) => ({ date: v._id, views: v.count })),
+    deviceStats: deviceStats.map((d) => ({ device: d._id, count: d.count })),
+    bounceRate: Math.round(bounceRate),
+    pagesPerformance: pagesPerformance.map((p) => ({
+      path: p._id,
+      metrics: p.metrics.reduce((acc: any, m: any) => {
+        acc[m.name] = Math.round(m.value * 100) / 100; // Round to 2 decimals
+        return acc;
+      }, {}),
+    })),
+  };
 }

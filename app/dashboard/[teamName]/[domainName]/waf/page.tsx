@@ -3,15 +3,26 @@ import { WafModeSelector } from "@/components/interface/domains/waf/WafModeSelec
 import { WafStats } from "@/components/interface/domains/waf/WafStats";
 import { WafEvents } from "@/components/interface/domains/waf/WafEvents";
 import { WafRules } from "@/components/interface/domains/waf/WafRules";
+import { loadDomainByRoute } from "../_lib/domain-data";
 
-const WafPage = () => {
-  const domainData = {
-    name: "netgoat.xyz",
-    status: "healthy",
-    origin: "http://10.0.0.4:3000",
-    certExp: "89 days",
-    wafStatus: "Active",
-  };
+type Props = {
+  params: {
+    teamName: string
+    domainName: string
+  }
+}
+
+const WafPage = async ({ params }: Props) => {
+  const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
+
+  if (!domain || !domainData) {
+    return (
+      <div className="min-h-screen p-8">
+        <h2 className="text-2xl font-semibold">Domain not found</h2>
+        <p className="text-muted">No domain "{domainName}" found for team "{teamName}".</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -22,7 +33,7 @@ const WafPage = () => {
         <div className="xl:col-span-2">
           <WafEvents />
         </div>
-        <WafRules />
+        <WafRules rules={domain.waf_rules || []} />
       </div>
     </div>
   );

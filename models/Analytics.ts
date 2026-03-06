@@ -6,6 +6,7 @@ const AnalyticsSchema = new mongoose.Schema({
   path: { type: String, required: true },
   visitorId: { type: String, required: true },
   sessionId: { type: String },
+  referrer: { type: String },
   
   userAgent: String,
   device: { type: String, default: "desktop" }, 

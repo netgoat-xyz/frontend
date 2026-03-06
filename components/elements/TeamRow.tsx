@@ -2,6 +2,8 @@ import { ChevronRightIcon, Cog6ToothIcon, UserIcon } from "@heroicons/react/16/s
 import Link from "next/link";
 
 export default function TeamRow({ team }: { team: Team }) {
+  const displaySlug = team.slug && team.slug.startsWith('@me-') ? '@me' : team.slug
+
   return (
     <div className="group relative bg-neutral-900/50 border border-neutral-800 rounded-xl p-4 hover:border-neutral-600 transition-all flex items-center justify-between">
       <div className="flex items-center gap-4">

@@ -87,11 +87,11 @@ export default function AnalyticsDashboard({
   })) || [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Analytics</h2>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
             Self-hosted insights and performance metrics.
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function AnalyticsDashboard({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Visitors
@@ -125,7 +125,7 @@ export default function AnalyticsDashboard({
             <p className="text-xs text-muted-foreground">Unique devices</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Page Views</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
@@ -135,7 +135,7 @@ export default function AnalyticsDashboard({
             <p className="text-xs text-muted-foreground">Total page loads</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bounce Rate</CardTitle>
             <MousePointerClick className="h-4 w-4 text-muted-foreground" />
@@ -147,7 +147,7 @@ export default function AnalyticsDashboard({
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg LCP</CardTitle>
             <Zap className="h-4 w-4 text-muted-foreground" />
@@ -164,7 +164,7 @@ export default function AnalyticsDashboard({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4 lg:col-span-5">
+        <Card className="col-span-4 lg:col-span-5 shadow-sm border-border/50 hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
           </CardHeader>
@@ -218,13 +218,13 @@ export default function AnalyticsDashboard({
           </CardContent>
         </Card>
         
-        <Card className="col-span-3 lg:col-span-2">
+        <Card className="col-span-3 lg:col-span-2 shadow-sm border-border/50 hover:shadow-md transition-shadow">
           <CardHeader>
              <CardTitle>Devices</CardTitle>
              <CardDescription>By type</CardDescription>
           </CardHeader>
           <CardContent>
-             <div className="h-[250px] w-full relative">
+             <div className="h-62.5 w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -269,142 +269,128 @@ export default function AnalyticsDashboard({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-        <Card className="col-span-2">
+        <Card className="col-span-3 shadow-sm border-border/50 hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle>Top Pages</CardTitle>
             <CardDescription>Most visited paths.</CardDescription>
           </CardHeader>
-          <CardContent className="">
-            <div className="space-y-2">
-              {stats.topPages.map((page: any, i: number) => {
-                const percentage =
-                  stats.pageViews > 0
-                    ? (page.count / stats.pageViews) * 100
-                    : 0;
-
-                return (
-                  <div
-                    key={i}
-                    className="group select-text relative w-full "
+          <CardContent>
+            {stats.topPages?.length > 0 ? (
+              <div className="h-62.5 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={stats.topPages}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
-                    <div className="relative h-8 rounded overflow-hidden p-0 w-full">
-                      <div
-                        className="absolute h-8 rounded pr-1 bg-neutral-200 dark:bg-neutral-800 opacity-40 transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
-                      ></div>
-                      <div className="flex justify-between p-0 group/row px-3 h-8 items-center relative z-10">
-                        <div className="relative flex items-center gap-2 overflow-hidden w-0 flex-1">
-                          <span
-                            className="text-left text-sm leading-8 w-full truncate font-medium"
-                            title={page.path}
-                          >
-                            <a
-                              href={`https://netgoat.xyz${page.path}`}
-                              rel="noopener"
-                              target="_blank"
-                              className="hover:underline"
-                            >
-                              {page.path}
-                            </a>
-                          </span>
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 flex items-center bg-background/50 backdrop-blur px-1 rounded">
-                             <Copy className="w-3 h-3 text-muted-foreground mr-1" />
-                          </div>
-                        </div>
-                        <div className="flex flex-row gap-2">
-                          <div className="flex justify-end items-center">
-                            <span className="text-right text-sm font-semibold">
-                              {page.count}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              {stats.topPages.length === 0 && (
-                <div className="text-sm text-muted-foreground p-4 text-center">
-                  No data available
-                </div>
-              )}
-            </div>
+                    <XAxis type="number" hide />
+                    <YAxis 
+                      type="category" 
+                      dataKey="path" 
+                      width={120} 
+                      tick={{ fontSize: 12 }} 
+                      axisLine={false} 
+                      tickLine={false}
+                    />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: "#1f1f1f", border: "1px solid #333", borderRadius: "8px" }}
+                      itemStyle={{ color: "#fff" }}
+                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                    />
+                    <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground p-8 text-center flex items-center justify-center h-62.5">
+                No data available
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        <Card className="col-span-4">
-        <CardHeader>
-          <CardTitle>Page Speed Insights</CardTitle>
-          <CardDescription>
-            Performance metrics per page (Average values).
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border border-neutral-800">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-neutral-800 bg-neutral-900/50">
-                  <th className="p-3 text-left font-medium">Path</th>
-                  <th className="p-3 text-right font-medium text-muted-foreground">
-                    LCP
-                  </th>
-                  <th className="p-3 text-right font-medium text-muted-foreground">
-                    FID
-                  </th>
-                  <th className="p-3 text-right font-medium text-muted-foreground">
-                    CLS
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {stats.pagesPerformance?.slice(0, 5).map((page: any, i: number) => (
-                  <tr
-                    key={i}
-                    className="border-b border-neutral-800 last:border-0 hover:bg-neutral-900/20"
+        <Card className="col-span-3 shadow-sm border-border/50 hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle>Top Referrers</CardTitle>
+            <CardDescription>Main sources of traffic.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {stats.topReferrers?.length > 0 ? (
+              <div className="h-62.5 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={stats.topReferrers}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
-                    <td className="p-3 font-medium truncate max-w-[150px]" title={page.path}>{page.path}</td>
-                    <td
-                      className={`p-3 text-right ${getRatingColor(
-                        "LCP",
-                        page.metrics.LCP
-                      )}`}
-                    >
-                      {formatMetric(page.metrics.LCP)}ms
-                    </td>
-                    <td
-                      className={`p-3 text-right ${getRatingColor(
-                        "FID",
-                        page.metrics.FID
-                      )}`}
-                    >
-                      {formatMetric(page.metrics.FID)}ms
-                    </td>
-                     <td
-                      className={`p-3 text-right ${getRatingColor(
-                        "CLS",
-                        page.metrics.CLS
-                      )}`}
-                    >
-                      {formatMetric(page.metrics.CLS, 3)}
-                    </td>
-                  </tr>
-                ))}
-                {(!stats.pagesPerformance ||
-                  stats.pagesPerformance.length === 0) && (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="p-8 text-center text-muted-foreground"
-                    >
-                      No web vitals data collected yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                    <XAxis type="number" hide />
+                    <YAxis 
+                      type="category" 
+                      dataKey="url" 
+                      width={120} 
+                      tick={{ fontSize: 12 }} 
+                      axisLine={false} 
+                      tickLine={false}
+                    />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: "#1f1f1f", border: "1px solid #333", borderRadius: "8px" }}
+                      itemStyle={{ color: "#fff" }}
+                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                    />
+                    <Bar dataKey="count" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground p-8 text-center flex items-center justify-center h-62.5">
+                No data available
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-6 shadow-sm border-border/50 hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle>Page Speed Insights</CardTitle>
+            <CardDescription>
+              Performance metrics per page (Average values).
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {stats.pagesPerformance?.length > 0 ? (
+              <div className="h-75 w-full mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={stats.pagesPerformance.slice(0, 5).map((p: any) => ({
+                      path: p.path,
+                      LCP: p.metrics.LCP,
+                      FID: p.metrics.FID,
+                      CLS_Scaled: p.metrics.CLS * 1000 // scale CLS for visibility alongside ms metrics
+                    }))}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
+                    <XAxis dataKey="path" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: "#1f1f1f", border: "1px solid #333", borderRadius: "8px" }}
+                      itemStyle={{ color: "#fff" }}
+                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: "20px" }} />
+                    <Bar dataKey="LCP" name="LCP (ms)" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="FID" name="FID (ms)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="CLS_Scaled" name="CLS (x1000)" fill="#ec4899" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground p-8 text-center flex items-center justify-center h-75">
+                No web vitals data collected yet.
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

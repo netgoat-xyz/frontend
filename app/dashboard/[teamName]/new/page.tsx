@@ -128,7 +128,7 @@ export default function NewDomainPage() {
         verification_token: verificationToken, // Pass the existing token
       });
       toast.success("Domain added");
-      router.push(`/dashboard/${teamSlug}/domains`);
+      router.push(`/dashboard/${teamSlug}/${domain}`);
     } catch (error: any) {
       toast.error(error.message || "Failed to create domain");
     } finally {

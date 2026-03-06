@@ -20,13 +20,16 @@ export default function BlogPage() {
           <div className="flex flex-col items-center w-full mx-auto text-center space-y-5 mb-24">
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 backdrop-blur-sm border border-white/10">
               <BookOpen className="w-3 h-3 text-violet-300 mr-2" />
-              <span className="text-white/70 text-xs font-light">Engineering &amp; Updates</span>
+              <span className="text-white/70 text-xs font-light">
+                Engineering &amp; Updates
+              </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-light tracking-tight text-white">
               Blog
             </h1>
             <p className="text-sm md:text-base max-w-md text-white/50 leading-relaxed font-light">
-              Latest news, updates, and engineering deep dives from the NetGoat team.
+              Latest news, updates, and engineering deep dives from the NetGoat
+              team.
             </p>
             <div className="w-16 h-px bg-linear-to-r from-transparent via-white/20 to-transparent mt-4" />
           </div>
@@ -60,7 +63,10 @@ function BlogSkeleton() {
       {/* Grid skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur-sm overflow-hidden">
+          <div
+            key={i}
+            className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur-sm overflow-hidden"
+          >
             <div className="h-48 bg-white/5 animate-pulse" />
             <div className="p-6 space-y-3">
               <Skeleton className="h-4 w-24 bg-white/10 rounded-full" />
@@ -85,12 +91,30 @@ async function BlogPostsList() {
           <BookOpen className="w-7 h-7 text-white/20" />
         </div>
         <p className="text-lg text-white/40 font-light mb-2">No posts yet</p>
-        <p className="text-sm text-white/20 font-light">Check back soon for updates.</p>
+        <p className="text-sm text-white/20 font-light">
+          Check back soon for updates.
+        </p>
       </div>
     );
   }
 
   const [featured, ...rest] = posts;
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const ogUrl = `${siteUrl}/api/og/blog?title=${featured.title}&author="Netgoat OSS Team"&date=${new Date(
+    featured.createdAt,
+  ).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })}&description=${
+    featured.content
+      ? featured.content
+          .replace(/[#*`\[\]]/g, "")
+          .substring(0, 200)
+          .trim()
+      : ""
+  }`;
 
   return (
     <div className="space-y-16">
@@ -100,20 +124,12 @@ async function BlogPostsList() {
           <div className="grid md:grid-cols-2 gap-0">
             {/* Image */}
             <div className="h-64 md:h-96 overflow-hidden relative">
-              {featured.coverImage ? (
-                <>
-                  <img
-                    src={featured.coverImage}
-                    alt={featured.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-r from-black/40 via-black/20 to-transparent" />
-                </>
-              ) : (
-                <div className="w-full h-full bg-linear-to-br from-violet-500/10 via-indigo-500/5 to-transparent flex items-center justify-center">
-                  <BookOpen className="w-12 h-12 text-white/10" />
-                </div>
-              )}
+              <img
+                src={ogUrl}
+                alt={featured.title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-linear-to-r from-black/40 via-black/20 to-transparent" />
             </div>
 
             {/* Content */}
@@ -137,7 +153,12 @@ async function BlogPostsList() {
               </h2>
 
               <p className="text-sm text-white/40 leading-relaxed line-clamp-3 font-light">
-                {featured.content ? featured.content.replace(/[#*`\[\]]/g, "").substring(0, 200).trim() : ""}
+                {featured.content
+                  ? featured.content
+                      .replace(/[#*`\[\]]/g, "")
+                      .substring(0, 200)
+                      .trim()
+                  : ""}
                 {featured.content && featured.content.length > 200 && "…"}
               </p>
 
@@ -156,24 +177,19 @@ async function BlogPostsList() {
       {rest.length > 0 && (
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {rest.map((post: any) => (
-            <Link key={post._id} href={`/blog/${post.slug}` as any} className="group block h-full">
+            <Link
+              key={post._id}
+              href={`/blog/${post.slug}` as any}
+              className="group block h-full"
+            >
               <article className="h-full flex flex-col rounded-2xl border border-white/6 bg-white/2 hover:bg-white/4 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-white/12 hover:shadow-2xl hover:shadow-violet-500/5">
                 {/* Image */}
                 <div className="w-full h-48 overflow-hidden relative">
-                  {post.coverImage ? (
-                    <>
-                      <img
-                        src={post.coverImage}
-                        alt={post.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
-                    </>
-                  ) : (
-                    <div className="w-full h-full bg-linear-to-br from-violet-500/6 via-indigo-500/3 to-transparent flex items-center justify-center">
-                      <BookOpen className="w-8 h-8 text-white/6" />
-                    </div>
-                  )}
+                  <img
+                    src={post.coverImage}
+                    alt={post.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
                 </div>
 
                 {/* Content */}
@@ -192,7 +208,12 @@ async function BlogPostsList() {
                   </h3>
 
                   <p className="text-sm text-white/30 leading-relaxed line-clamp-3 font-light flex-1">
-                    {post.content ? post.content.replace(/[#*`\[\]]/g, "").substring(0, 120).trim() : ""}
+                    {post.content
+                      ? post.content
+                          .replace(/[#*`\[\]]/g, "")
+                          .substring(0, 120)
+                          .trim()
+                      : ""}
                     {post.content && post.content.length > 120 && "…"}
                   </p>
 
@@ -208,7 +229,6 @@ async function BlogPostsList() {
           ))}
         </div>
       )}
-      
     </div>
   );
 }

@@ -63,11 +63,20 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <Card>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
+            Manage your users, roles, and access.
+          </p>
+        </div>
+      </div>
+
+      <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
         <CardHeader>
-          <CardTitle>User Management</CardTitle>
-          <CardDescription>Manage your users, roles, and access.</CardDescription>
+          <CardTitle>Directory</CardTitle>
+          <CardDescription>Search explicitly or browse dynamically.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2 mb-4">

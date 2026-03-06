@@ -143,6 +143,7 @@ export default function NavSelectDrapdown() {
   ), [domains, domainSearch]);
 
   const handleTeamClick = useCallback((teamSlug: string) => {
+    // Navigate using the real team slug so server actions resolve correctly
     router.push(`/dashboard/${teamSlug}`);
   }, [router]);
 

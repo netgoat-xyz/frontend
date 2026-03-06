@@ -46,15 +46,15 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
             Manage your global application configuration.
           </p>
         </div>
-        <Button onClick={handleSaveSettings} disabled={saving} size="lg">
+        <Button onClick={handleSaveSettings} disabled={saving} size="lg" className="shadow-sm">
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {!saving && <Save className="mr-2 h-4 w-4" />}
           Save Changes
@@ -62,7 +62,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="w-full justify-start overflow-x-auto bg-neutral-900 border-neutral-800 border">
+        <TabsList className="w-full justify-start overflow-x-auto bg-card border-border border">
           <TabsTrigger value="general">
             <Settings className="mr-2 h-4 w-4" /> General
           </TabsTrigger>
@@ -83,7 +83,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
         <div className="mt-6">
           {/* GENERAL TAB */}
           <TabsContent value="general" className="space-y-4">
-            <Card>
+            <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
               <CardHeader>
                 <CardTitle>General Configuration</CardTitle>
                 <CardDescription>Basic settings for your NetGoat instance.</CardDescription>
@@ -126,7 +126,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
           {/* FEATURES & LIMITS TAB */}
           <TabsContent value="features" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2">
-              <Card>
+              <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle>Core Features</CardTitle>
                   <CardDescription>Toggle optional functionalities.</CardDescription>
@@ -156,7 +156,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle>System Limits</CardTitle>
                   <CardDescription>Default quotas for users.</CardDescription>
@@ -193,7 +193,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
 
           {/* INTEGRATIONS TAB */}
           <TabsContent value="integrations" className="space-y-4">
-            <Card>
+            <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
               <CardHeader>
                 <CardTitle>External Integrations</CardTitle>
                 <CardDescription>Connect with third-party services.</CardDescription>
@@ -238,7 +238,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
 
           {/* BANNER TAB */}
           <TabsContent value="banner" className="space-y-4">
-             <Card>
+             <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
                 <CardHeader>
                    <CardTitle>Global Announcement Banner</CardTitle>
                    <CardDescription>Display a persistent message at the top of the site.</CardDescription>
@@ -306,7 +306,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
 
           {/* EXPERIMENTS TAB */}
           <TabsContent value="experiments" className="space-y-4">
-            <Card>
+            <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <div className="space-y-1">
                      <CardTitle>Feature Flags & Experiments</CardTitle>

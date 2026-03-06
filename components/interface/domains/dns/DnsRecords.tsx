@@ -2,18 +2,18 @@
 
 import { Plus, Pencil, Trash2, Globe, Shield } from "lucide-react";
 
-const records = [
-  { id: 1, type: "A", name: "@", value: "76.76.21.21", ttl: "Auto", proxy: true },
-  { id: 2, type: "A", name: "www", value: "76.76.21.21", ttl: "Auto", proxy: true },
-  { id: 3, type: "AAAA", name: "@", value: "2606:4700:3030::6815:1521", ttl: "Auto", proxy: true },
-  { id: 4, type: "CNAME", name: "api", value: "api.netgoat.xyz.cdn.netgoat.net", ttl: "Auto", proxy: true },
-  { id: 5, type: "CNAME", name: "mail", value: "ghs.googlehosted.com", ttl: "3600", proxy: false },
-  { id: 6, type: "MX", name: "@", value: "mx1.googlemail.com", ttl: "3600", proxy: false },
-  { id: 7, type: "MX", name: "@", value: "mx2.googlemail.com", ttl: "3600", proxy: false },
-  { id: 8, type: "TXT", name: "@", value: "v=spf1 include:_spf.google.com ~all", ttl: "Auto", proxy: false },
-  { id: 9, type: "TXT", name: "_dmarc", value: "v=DMARC1; p=quarantine; rua=mailto:dmarc@netgoat.xyz", ttl: "Auto", proxy: false },
-  { id: 10, type: "SRV", name: "_sip._tcp", value: "0 5 5060 sipserver.netgoat.xyz", ttl: "3600", proxy: false },
-  { id: 11, type: "CAA", name: "@", value: '0 issue "letsencrypt.org"', ttl: "Auto", proxy: false },
+const fallbackRecords = [
+  { id: 1, type: "A", name: "@", value: "76.76.21.21", ttl: "Auto", proxied: true },
+  { id: 2, type: "A", name: "www", value: "76.76.21.21", ttl: "Auto", proxied: true },
+  { id: 3, type: "AAAA", name: "@", value: "2606:4700:3030::6815:1521", ttl: "Auto", proxied: true },
+  { id: 4, type: "CNAME", name: "api", value: "api.netgoat.xyz.cdn.netgoat.net", ttl: "Auto", proxied: true },
+  { id: 5, type: "CNAME", name: "mail", value: "ghs.googlehosted.com", ttl: "3600", proxied: false },
+  { id: 6, type: "MX", name: "@", value: "mx1.googlemail.com", ttl: "3600", proxied: false },
+  { id: 7, type: "MX", name: "@", value: "mx2.googlemail.com", ttl: "3600", proxied: false },
+  { id: 8, type: "TXT", name: "@", value: "v=spf1 include:_spf.google.com ~all", ttl: "Auto", proxied: false },
+  { id: 9, type: "TXT", name: "_dmarc", value: "v=DMARC1; p=quarantine; rua=mailto:dmarc@netgoat.xyz", ttl: "Auto", proxied: false },
+  { id: 10, type: "SRV", name: "_sip._tcp", value: "0 5 5060 sipserver.netgoat.xyz", ttl: "3600", proxied: false },
+  { id: 11, type: "CAA", name: "@", value: '0 issue "letsencrypt.org"', ttl: "Auto", proxied: false },
 ];
 
 const typeColors: Record<string, string> = {
@@ -27,7 +27,17 @@ const typeColors: Record<string, string> = {
   NS: "bg-teal-500/10 text-teal-400 border-teal-500/20",
 };
 
-export function DnsRecords() {
+type DNSRecordRow = {
+  id?: string | number
+  _id?: string
+  type: string
+  name: string
+  value: string
+  ttl?: string | number
+  proxied?: boolean
+}
+
+export function DnsRecords({ records = fallbackRecords }: { records?: DNSRecordRow[] }) {
   return (
     <div className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800/50 rounded-xl overflow-hidden">
       <div className="flex justify-between items-center p-5 border-b border-neutral-800/50">
@@ -55,9 +65,9 @@ export function DnsRecords() {
             </tr>
           </thead>
           <tbody>
-            {records.map((r) => (
+            {records.map((r, idx) => (
               <tr
-                key={r.id}
+                key={r._id || r.id || `${r.type}-${r.name}-${idx}`}
                 className="group border-b border-neutral-800/30 hover:bg-neutral-800/30 transition-all"
               >
                 <td className="px-5 py-3">
@@ -69,9 +79,9 @@ export function DnsRecords() {
                 <td className="px-4 py-3 font-mono text-[11px] text-neutral-400 max-w-[300px] truncate">
                   {r.value}
                 </td>
-                <td className="px-4 py-3 text-xs text-neutral-400">{r.ttl}</td>
+                <td className="px-4 py-3 text-xs text-neutral-400">{r.ttl ?? 'Auto'}</td>
                 <td className="px-4 py-3 text-center">
-                  {r.proxy ? (
+                  {r.proxied ? (
                     <div className="inline-flex items-center gap-1.5 text-[10px] font-medium text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded-md">
                       <Shield size={10} /> Proxied
                     </div>

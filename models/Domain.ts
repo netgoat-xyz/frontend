@@ -95,7 +95,16 @@ const DomainSchema = new mongoose.Schema({
 });
 
 // Indexes
-DomainSchema.index({ user_id: 1, domain: 1 }, { unique: true });
+// Use partial unique indexes so uniqueness is enforced only when the owner field exists.
+// This avoids collisions where `user_id` is null for team-owned domains.
+DomainSchema.index(
+  { user_id: 1, domain: 1 },
+  { unique: true, partialFilterExpression: { user_id: { $exists: true, $ne: null } } }
+);
+DomainSchema.index(
+  { team_id: 1, domain: 1 },
+  { unique: true, partialFilterExpression: { team_id: { $exists: true, $ne: null } } }
+);
 DomainSchema.index({ domain: 1 });
 DomainSchema.index({ 'subdomains.full_domain': 1 });
 

@@ -1,3 +1,4 @@
+// Updated auth.ts with new email templates
 import { betterAuth, APIError } from "better-auth";
 import { emailOTP, magicLink } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
@@ -7,6 +8,7 @@ import dbConnect from "@/lib/mongoose";
 import Settings from "@/models/Settings";
 import { Team } from "@/models/Team";
 import mongoose from "mongoose";
+import { renderMagicLinkEmail, renderOTPEmail } from "@/lib/email/index";
 
 const client = new MongoClient(process.env.MONGODB_URI!, {
   tls: true,
@@ -31,16 +33,14 @@ export const auth = betterAuth({
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
+        const html = await renderMagicLinkEmail(url, appName);
+        
         await resend.emails.send({
-          from: emailFrom,
+          from: `${appName} <${emailFrom}>`,
           to: email,
-          subject: `${appName} magic link`,
-          text: `Use this link to sign in: ${url}`,
-          html: `
-            <p>Use the link below to sign in to ${appName}.</p>
-            <p><a href="${url}">Sign in to ${appName}</a></p>
-            <p>If you did not request this, you can ignore this email.</p>
-          `,
+          subject: `Sign in to ${appName}`,
+          html,
+          text: `Sign in to ${appName}: ${url}`, // Fallback text
         });
       },
     }),
@@ -48,22 +48,21 @@ export const auth = betterAuth({
       overrideDefaultEmailVerification: true,
       sendVerificationOnSignUp: true,
       sendVerificationOTP: async ({ email, otp, type }) => {
+        const html = await renderOTPEmail(otp, type, appName);
+        
         const typeLabel =
           type === "email-verification"
-            ? "email verification"
+            ? "Verify your email"
             : type === "forget-password"
-              ? "password reset"
-              : "sign in";
+              ? "Reset your password"
+              : "Sign in code";
+        
         await resend.emails.send({
-          from: emailFrom,
+          from: `${appName} <${emailFrom}>`,
           to: email,
-          subject: `${appName} ${typeLabel} code`,
-          text: `Your ${typeLabel} code is ${otp}.`,
-          html: `
-            <p>Your ${appName} ${typeLabel} code is:</p>
-            <p><strong>${otp}</strong></p>
-            <p>This code expires in a few minutes.</p>
-          `,
+          subject: `${typeLabel} - ${appName}`,
+          html,
+          text: `Your ${typeLabel.toLowerCase()} for ${appName} is: ${otp}`, // Fallback text
         });
       },
     }),
@@ -129,7 +128,6 @@ export const auth = betterAuth({
         });
       }
       
-      // Always return to allow the hook to complete properly
       return ctx;
     },
   },

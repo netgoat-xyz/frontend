@@ -178,16 +178,16 @@ export default function AdminLogsPage() {
     : logs;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Logs</h2>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight">Logs</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
             View and manage your server logs in real-time.
           </p>
         </div>
       </div>
-      <Card className="h-[calc(100vh-200px)] flex flex-col">
+      <Card className="h-[calc(100vh-250px)] flex flex-col shadow-sm border-border/50 hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div className="space-y-1">
             <CardTitle className="text-xl flex items-center gap-2">

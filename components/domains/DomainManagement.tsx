@@ -33,7 +33,7 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
   const loadDomains = async () => {
     try {
       setLoading(true)
-      const result = await listDomains()
+      const result = await listDomains(teamSlug)
       setDomains(result as any)
     } catch (error: any) {
       toast.error(error.message)
@@ -77,7 +77,7 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
       await addSubdomain(domainId, {
         subdomain,
         target_url: targetUrl
-      })
+      }, teamSlug)
       toast.success(`Subdomain ${subdomain}.${domain} created!`)
       await loadDomains()
     } catch (error: any) {
@@ -101,7 +101,7 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
         expression,
         action: 'BLOCK',
         priority: 10
-      })
+      }, teamSlug)
       toast.success('WAF rule added! Agents will enforce it immediately.')
       await loadDomains()
     } catch (error: any) {

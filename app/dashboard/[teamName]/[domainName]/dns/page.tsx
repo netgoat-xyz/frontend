@@ -1,22 +1,42 @@
 import { HeaderSection } from "@/components/interface/domains/overview/HeaderSection";
 import { DnsRecords } from "@/components/interface/domains/dns/DnsRecords";
 import { DnsNameservers } from "@/components/interface/domains/dns/DnsNameservers";
+import { loadDomainByRoute } from "../_lib/domain-data";
 
-const DnsPage = () => {
-  const domainData = {
-    name: "netgoat.xyz",
-    status: "healthy",
-    origin: "http://10.0.0.4:3000",
-    certExp: "89 days",
-    wafStatus: "Active",
-  };
+type Props = {
+  params: {
+    teamName: string
+    domainName: string
+  }
+}
+
+const DnsPage = async ({ params }: Props) => {
+  const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
+
+  if (!domain || !domainData) {
+    return (
+      <div className="min-h-screen p-8">
+        <h2 className="text-2xl font-semibold">Domain not found</h2>
+        <p className="text-muted">No domain "{domainName}" found for team "{teamName}".</p>
+      </div>
+    )
+  }
+
+  const dnsRecords = (domain.dns_records || []).map((record: any) => ({
+    _id: record._id,
+    type: record.type,
+    name: record.name,
+    value: record.value,
+    ttl: record.ttl,
+    proxied: record.proxied
+  }))
 
   return (
     <div className="space-y-6">
       <HeaderSection domainData={domainData} />
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2">
-          <DnsRecords />
+          <DnsRecords records={dnsRecords} />
         </div>
       </div>
     </div>

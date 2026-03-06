@@ -5,6 +5,8 @@ import { headers } from 'next/headers'
 import connectDB from '@/lib/mongoose'
 import Domain from '@/models/Domain'
 import { Team } from '@/models/Team'
+import DNSRecord from '@/models/DNSRecord'
+import ProxyConfig from '@/models/ProxyConfig'
 import { revalidatePath } from 'next/cache'
 
 async function resolveTeam(teamSlug: string, userId: string, userName: string) {
@@ -14,26 +16,43 @@ async function resolveTeam(teamSlug: string, userId: string, userName: string) {
   let team
   
   if (decodedTeamSlug === '@me' || decodedTeamSlug.startsWith('@me-')) {
-    // Look for user's personal team with user-specific slug
-    const personalSlug = decodedTeamSlug === '@me' ? `@me-${userId}` : decodedTeamSlug;
+    // @me is a convenience descriptor that always maps to the user's personal team slug
+    const personalSlug = `@me-${userId}`
+    
+    // Try to find existing personal team
     team = await Team.findOne({
       slug: personalSlug
     })
     
     if (!team) {
-      // Create personal team on-the-fly if it doesn't exist
-      team = await Team.create({
-        name: `${userName}'s Personal Team`,
-        slug: personalSlug,
-        description: 'Your personal team',
-        members: [{
-          user_id: userId,
-          role: 'owner',
-          joined_at: new Date()
-        }],
-        active: true
-      })
-      console.log(`Created personal team ${personalSlug} for user ${userId}`)
+      try {
+        // Create personal team on-the-fly if it doesn't exist
+        team = await Team.create({
+          name: `${userName}'s Personal Team`,
+          slug: personalSlug,
+          description: 'Your personal team',
+          members: [{
+            user_id: userId,
+            role: 'owner',
+            joined_at: new Date()
+          }],
+          active: true
+        })
+        console.log(`Created personal team ${personalSlug} for user ${userId}`)
+      } catch (err: any) {
+        console.error("Team creation failed:", err);
+        // If creation fails (e.g., duplicate slug from race condition), try finding it again
+        if (err.code === 11000 || err.message?.includes('duplicate')) {
+          team = await Team.findOne({
+            slug: personalSlug
+          })
+          if (!team) {
+            throw new Error(`Failed to resolve personal team for ${userId}`)
+          }
+        } else {
+          throw err
+        }
+      }
     }
   } else {
     const cleanSlug = decodedTeamSlug.replace(/^@/, '')
@@ -41,6 +60,40 @@ async function resolveTeam(teamSlug: string, userId: string, userName: string) {
   }
   
   return team
+}
+
+export async function getUserTeamDomainHierarchy() {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+
+  await connectDB()
+
+  const teams = await Team.findUserTeams(session.user.id)
+  const hierarchyTeams = await Promise.all(
+    teams.map(async (team: any) => {
+      const domains = await listTeamDomains(team.slug)
+      return {
+        id: team._id,
+        name: team.name,
+        slug: team.slug,
+        role: Team.getUserRole(team, session.user.id),
+        domains
+      }
+    })
+  )
+
+  return {
+    user: {
+      id: session.user.id,
+      name: session.user.name,
+      email: session.user.email
+    },
+    teams: hierarchyTeams
+  }
 }
 
 export async function createDomainForTeam(
@@ -149,7 +202,7 @@ export async function listTeamDomains(teamSlug: string) {
   )
   
   if (!team) {
-    throw new Error('Team not found')
+    throw new Error(`Team not found: '${teamSlug}' (user: ${session.user.id}, decoded: ${decodeURIComponent(teamSlug)})`)
   }
 
   if (!Team.hasPermission(team, session.user.id, 'viewer')) {
@@ -163,8 +216,96 @@ export async function listTeamDomains(teamSlug: string) {
     .sort({ created_at: -1 })
     .lean()
 
-  // Properly serialize to plain objects for client components
-  return JSON.parse(JSON.stringify(domains))
+  const domainIds = domains.map((d: any) => d._id)
+  if (domainIds.length === 0) {
+    return []
+  }
+
+  const [dnsRecords, proxyConfigs] = await Promise.all([
+    DNSRecord.find({
+      team_id: team._id,
+      domain_id: { $in: domainIds },
+      active: true
+    }).lean(),
+    ProxyConfig.find({
+      team_id: team._id,
+      domain_id: { $in: domainIds },
+      enabled: true
+    }).lean()
+  ])
+
+  const dnsByDomain = new Map<string, any[]>()
+  for (const record of dnsRecords as any[]) {
+    const domainId = record.domain_id?.toString()
+    if (!domainId) continue
+    if (!dnsByDomain.has(domainId)) dnsByDomain.set(domainId, [])
+    dnsByDomain.get(domainId)!.push(record)
+  }
+
+  const proxyByDomain = new Map<string, any[]>()
+  for (const cfg of proxyConfigs as any[]) {
+    const domainId = cfg.domain_id?.toString()
+    if (!domainId) continue
+    if (!proxyByDomain.has(domainId)) proxyByDomain.set(domainId, [])
+    proxyByDomain.get(domainId)!.push(cfg)
+  }
+
+  const enrichedDomains = (domains as any[]).map((domain) => {
+    const domainId = domain._id.toString()
+    const domainDNS = dnsByDomain.get(domainId) || []
+    const domainProxy = proxyByDomain.get(domainId) || []
+
+    const subdomains = Array.isArray(domain.subdomains) ? domain.subdomains : []
+    const subdomainMap = new Map<string, any>()
+    for (const sub of subdomains) {
+      subdomainMap.set(sub.subdomain, {
+        ...sub,
+        dns_records: [],
+        proxy_configs: []
+      })
+    }
+
+    const rootDNS: any[] = []
+    for (const record of domainDNS) {
+      const name = record.name === '@' ? '' : record.name
+      if (!name) {
+        rootDNS.push(record)
+        continue
+      }
+
+      const existingSub = subdomainMap.get(name)
+      if (existingSub) {
+        existingSub.dns_records.push(record)
+      } else {
+        rootDNS.push(record)
+      }
+    }
+
+    const rootProxy: any[] = []
+    for (const config of domainProxy) {
+      const sub = config.subdomain?.trim()
+      if (!sub) {
+        rootProxy.push(config)
+        continue
+      }
+
+      const existingSub = subdomainMap.get(sub)
+      if (existingSub) {
+        existingSub.proxy_configs.push(config)
+      } else {
+        rootProxy.push(config)
+      }
+    }
+
+    return {
+      ...domain,
+      dns_records: rootDNS,
+      proxy_configs: rootProxy,
+      subdomains: Array.from(subdomainMap.values())
+    }
+  })
+
+  return JSON.parse(JSON.stringify(enrichedDomains))
 }
 
 export async function getDomain(teamSlug: string, domainId: string) {
