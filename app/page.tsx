@@ -5,6 +5,7 @@ import Header from "@/components/interface/homescreen/header";
 import HeroContent from "@/components/interface/homescreen/hero-content";
 import ShaderBackground from "@/components/interface/homescreen/shader-background";
 import ScrollIndicator from "@/components/interface/homescreen/scroll-indicator";
+import LaunchWrapper from "@/components/interface/homescreen/launch-wrapper";
 import { getExperiments } from "@/actions/experiments";
 
 const Features = dynamic(
@@ -45,22 +46,26 @@ export default async function ShaderShowcase() {
         <Header />
         <div className="grow relative w-full">
           <HeroContent />
-          <ScrollIndicator />
+          <LaunchWrapper>
+            <ScrollIndicator />
+          </LaunchWrapper>
         </div>
       </div>
 
       {/* Below-the-fold content */}
-      <div
-        id="content-start"
-        className="relative z-10 bg-black/30 backdrop-blur-3xl"
-      >
-        <Stats />
-        <Features />
-        <Brands />
-        <HowItWorks />
-        <CallToAction />
-        <Footer />
-      </div>
+      <LaunchWrapper>
+        <div
+          id="content-start"
+          className="relative z-10 bg-black/30 backdrop-blur-3xl"
+        >
+          <Stats />
+          <Features />
+          <Brands />
+          <HowItWorks />
+          <CallToAction />
+          <Footer />
+        </div>
+      </LaunchWrapper>
     </ShaderBackground>
   );
 }
