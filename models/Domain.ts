@@ -41,6 +41,7 @@ const DomainWAFRuleSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now }
 });
 
+const ReverseProxySchema = new mongoose.Schema({ name: { type: String, required: true }, path: { type: String, default: "/*" }, target_url: { type: String, required: true }, enabled: { type: Boolean, default: true }, preserve_host: { type: Boolean, default: true }, created_at: { type: Date, default: Date.now } });
 const DomainSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true }, // Legacy support
   team_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', index: true }, // Team-based ownership
@@ -68,6 +69,9 @@ const DomainSchema = new mongoose.Schema({
   
   // Subdomains
   subdomains: [SubdomainSchema],
+
+  // Reverse Proxies
+  reverse_proxies: [ReverseProxySchema],
   
   // Settings
   settings: {

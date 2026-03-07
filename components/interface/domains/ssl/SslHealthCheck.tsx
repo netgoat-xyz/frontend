@@ -17,9 +17,15 @@ const checks = [
   { name: "CAA Record", status: "pass", detail: "letsencrypt.org" },
 ];
 
-export function SslHealthCheck() {
-  const passCount = checks.filter((c) => c.status === "pass").length;
-  const score = Math.round((passCount / checks.length) * 100);
+export function SslHealthCheck({ domain }: { domain?: any }) {
+  const isAuto = domain?.auto_ssl;
+  const isManual = domain?.ssl_enabled && !isAuto;
+  const isActive = isAuto || isManual;
+
+  const actualChecks = isActive ? checks : checks.map(c => ({...c, status: 'fail', detail: 'SSL Not Configured'}));
+
+  const passCount = actualChecks.filter((c) => c.status === "pass").length;
+  const score = Math.round((passCount / actualChecks.length) * 100);
 
   // Helper to get status styles
   const getStatusStyle = (status: string) => {
@@ -46,16 +52,16 @@ export function SslHealthCheck() {
         <div className="flex items-center gap-4">
              <div className="flex flex-col items-end">
                 <span className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">Security Grade</span>
-                <span className="text-xs text-neutral-400">{passCount}/{checks.length} Checks Passed</span>
+                <span className="text-xs text-neutral-400">{passCount}/{actualChecks.length} Checks Passed</span>
              </div>
-             <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-lg shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                A+
+             <div className={`w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br ${isActive ? 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400 font-bold shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'from-red-500/20 to-orange-500/10 border-red-500/30 text-red-400 font-bold shadow-[0_0_15px_rgba(220,38,38,0.1)]'} text-lg`}>
+                {isActive ? 'A+' : 'F'}
              </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {checks.map((check, index) => {
+        {actualChecks.map((check, index) => {
           const style = getStatusStyle(check.status);
           const Icon = style.icon;
           

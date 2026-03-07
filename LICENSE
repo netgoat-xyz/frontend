@@ -1,0 +1,8 @@
+    <div className="flex min-h-svh flex-col items-center p-6 md:p-10 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
+      <div className="prose dark:prose-invert text-muted-foreground w-full">
+        <p>Your privacy is important to us.</p>
+        <p>We only collect and store information necessary to provide and improve our services.</p>
+        <p>We do not sell your personal information to third parties.</p>
+      </div>
+    </div>

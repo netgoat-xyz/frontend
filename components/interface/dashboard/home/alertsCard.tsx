@@ -3,31 +3,15 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 
-const alertsData = [
-  {
-    id: "reroute",
-    variant: "red",
-    title: "Rerouting",
-    body: "Requests from YGN will be rerouted to MDY.",
-    action: "Resolve",
-  },
-  {
-    id: "cache",
-    variant: "yellow",
-    title: "Cache Misses High",
-    body: "Cache keeps missing for assets on netgoat.xyz",
-    action: "Resolve",
-  },
-  {
-    id: "maintenance",
-    variant: "blue",
-    title: "Maintenance Scheduled",
-    body: "Maintenance is scheduled for June 15, 2025 at 02:00 AM UTC.",
-    action: "Resolve",
-  },
-];
+export interface AlertData {
+  _id: string;
+  variant: "red" | "yellow" | "blue";
+  title: string;
+  body: string;
+  actionText: string;
+}
 
-export default function alertsCard() {
+export default function AlertsCard({ initialAlerts = [] }: { initialAlerts?: AlertData[] }) {
   const [animate, setAnimate] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(true);
 
@@ -35,6 +19,16 @@ export default function alertsCard() {
     const timer = setTimeout(() => setAnimate(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  if (initialAlerts.length === 0) {
+    return (
+      <div className="rounded-xl bg-neutral-900 border border-neutral-800 p-4">
+        <div className="text-neutral-500 text-sm text-center">
+          No active alerts.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-xl bg-neutral-900 border border-neutral-800 overflow-hidden">
@@ -54,7 +48,7 @@ export default function alertsCard() {
             transition={{ duration: 0.35, ease: "easeInOut" }}
             className="px-4 pb-2"
           >
-            {alertsData.map((a) => {
+            {initialAlerts.map((a) => {
               const bg =
                 a.variant === "red"
                   ? "bg-red-500/10 border-red-500/20 text-red-400"
@@ -69,7 +63,7 @@ export default function alertsCard() {
                     : "bg-blue-500";
               return (
                 <div
-                  key={a.id}
+                  key={a._id}
                   className={`mb-4 rounded-lg ${bg} border p-3 flex items-start gap-3`}
                 >
                   <div
@@ -90,7 +84,7 @@ export default function alertsCard() {
                     <p className="text-neutral-300 text-sm">{a.body}</p>
                   </div>
                   <button className="text-white text-xs underline underline-offset-4 hover:text-neutral-300">
-                    {a.action}
+                    {a.actionText}
                   </button>
                 </div>
               );

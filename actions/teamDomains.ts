@@ -730,3 +730,50 @@ export async function toggleDomainActive(teamSlug: string, domainId: string, act
   revalidatePath(`/dashboard/${teamSlug}`)
   return { success: true }
 }
+
+export async function addReverseProxy(teamSlug: string, domainId: string, proxyData: any) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() })
+    if (!session?.user?.id) throw new Error('Unauthorized')
+    
+    await connectDB()
+    const team = await Team.findBySlug(teamSlug.replace(/^@/, '')) || await Team.findOne({ slug: teamSlug })
+    if (!team) throw new Error('Team not found')
+      
+    if (!Team.hasPermission(team, session.user.id, 'member')) throw new Error('Insufficient permissions')
+      
+    const domain = await Domain.findOne({ _id: domainId, team_id: team._id })
+    if (!domain) throw new Error('Domain not found')
+      
+    if (!domain.reverse_proxies) domain.reverse_proxies = [];
+    domain.reverse_proxies.push(proxyData);
+    await domain.save();
+    
+    revalidatePath(`/dashboard/${teamSlug}/${domain.domain}/reverse-proxies`);
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function removeReverseProxy(teamSlug: string, domainId: string, proxyId: string) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() })
+    if (!session?.user?.id) throw new Error('Unauthorized')
+    
+    await connectDB()
+    const team = await Team.findBySlug(teamSlug.replace(/^@/, '')) || await Team.findOne({ slug: teamSlug })
+    if (!team) throw new Error('Team not found')
+      
+    const domain = await Domain.findOne({ _id: domainId, team_id: team._id })
+    if (!domain) throw new Error('Domain not found')
+      
+    domain.reverse_proxies = domain.reverse_proxies.filter((p: any) => p._id.toString() !== proxyId);
+    await domain.save();
+    
+    revalidatePath(`/dashboard/${teamSlug}/${domain.domain}/reverse-proxies`);
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}

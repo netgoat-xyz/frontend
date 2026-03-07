@@ -21,6 +21,8 @@ import {
   Users,
   Zap,
   FileText,
+  Layers,
+  Network,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import useLastTeamName from "@/hooks/lastTeam";
@@ -112,20 +114,19 @@ export default function NavigationTop() {
       { title: "Settings", href: "/admin/settings", icon: Settings },
       { title: "Logs", href: "/admin/logs", icon: Activity },
       { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+      { title: "Dashboard Alerts", href: "/admin/alerts", icon: Activity },
+      { title: "Status Incidents", href: "/admin/incidents", icon: Activity },
       { title: "Content", href: "/admin/content", icon: FileText },
     ];
   } else if (projectPath) {
     return [
       { title: "Overview", href: projectPath, icon: LayoutDashboard },
-      {
-        title: "Analytics",
-        href: `${projectPath}/analytics`,
-        icon: BarChart3,
-      },
+      { title: "Subdomains", href: `${projectPath}/subdomains`, icon: LayoutDashboard },
       { title: "DNS", href: `${projectPath}/dns`, icon: Globe },
-      { title: "SSL/TLS", href: `${projectPath}/ssl`, icon: Lock },
+      { title: "Reverse-Proxies", href: `${projectPath}/reverse-proxies`, icon: Globe },
+      { title: "SSL Certificates", href: `${projectPath}/ssl`, icon: Lock },
       { title: "WAF Rules", href: `${projectPath}/waf`, icon: Shield },
-      { title: "Caching", href: `${projectPath}/caching`, icon: Zap },
+      { title: "Analytics", href: `${projectPath}/analytics`, icon: BarChart3 },
       { title: "Settings", href: `${projectPath}/settings`, icon: Settings },
     ];
   } else {

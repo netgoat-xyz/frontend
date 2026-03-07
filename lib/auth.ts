@@ -40,7 +40,7 @@ export const auth = betterAuth({
           to: email,
           subject: `Sign in to ${appName}`,
           html,
-          text: `Sign in to ${appName}: ${url}`, // Fallback text
+          text: `Sign in to ${appName}: ${url}`,
         });
       },
     }),
@@ -62,7 +62,7 @@ export const auth = betterAuth({
           to: email,
           subject: `${typeLabel} - ${appName}`,
           html,
-          text: `Your ${typeLabel.toLowerCase()} for ${appName} is: ${otp}`, // Fallback text
+          text: `Your ${typeLabel.toLowerCase()} for ${appName} is: ${otp}`,
         });
       },
     }),

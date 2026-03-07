@@ -73,7 +73,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className={`${inter.className} transform-gpu bg-neutral-950 text-white antialiased`}
+        className={`${inter.className} transition-all transform-gpu bg-neutral-950 text-white antialiased`}
       >
         <Analytics />
         <NextIntlClientProvider messages={messages}>

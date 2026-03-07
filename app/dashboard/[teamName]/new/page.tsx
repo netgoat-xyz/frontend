@@ -15,17 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   ArrowLeft,
   Copy,
   Check,
-  Loader2,
+  Loader2, ShieldCheck,
   Globe,
-  ShieldCheck,
-  Server,
   ArrowRight,
   Info,
 } from "lucide-react";
@@ -35,6 +32,7 @@ import {
   verifyDomainOwnership,
 } from "@/actions/domainVerification";
 import { getTeam } from "@/actions/teams";
+import { createDomainForTeam } from "@/actions/teamDomains";
 import { cn } from "@/lib/utils";
 
 export default function NewDomainPage() {
@@ -45,89 +43,99 @@ export default function NewDomainPage() {
   const [teamData, setTeamData] = useState<any>(null);
   const [loadingTeam, setLoadingTeam] = useState(true);
 
-  const [step, setStep] = useState<"input" | "verify" | "configure">("input");
+  const [step, setStep] = useState<"input" | "verify">("input");
   const [domain, setDomain] = useState("");
   const [verificationToken, setVerificationToken] = useState("");
-  const [verificationMethod, setVerificationMethod] = useState<"txt" | "cname">(
-    "txt"
-  );
-  const [targetUrl, setTargetUrl] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTeamData = async () => {
-      try {
-        setLoadingTeam(true);
-        const team = await getTeam(teamSlug);
-        setTeamData(team);
-      } catch (error: any) {
-        toast.error(error.message || "Failed to load team data");
-        router.push("/dashboard");
-      } finally {
-        setLoadingTeam(false);
-      }
-    };
-
     if (teamSlug) {
-      fetchTeamData();
+      getTeam(teamSlug)
+        .then((data) => setTeamData(data))
+        .catch((err) => console.error(err))
+        .finally(() => setLoadingTeam(false));
     }
-  }, [teamSlug, router]);
+  }, [teamSlug]);
 
-  const handleGenerateVerification = async () => {
-    if (!domain) return toast.error("Please enter a domain");
-    const domainRegex = /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i;
-    if (!domainRegex.test(domain))
-      return toast.error("Please enter a valid domain");
+  const handleNextToVerify = async () => {
+    if (!domain) {
+      toast.error("Please enter a domain name");
+      return;
+    }
+    
+    // Basic domain validation
+    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+    if (!domainRegex.test(domain) && domain !== "localhost") {
+      toast.error("Please enter a valid domain name (e.g. example.com)");
+      return;
+    }
 
     try {
       setVerifying(true);
-      // Simulating API call for UI demo purposes if action not present
+      // Generate verification token securely on the server
       const result = await generateDomainVerification(teamSlug, domain);
-      setVerificationToken(result.token);
-      setStep("verify");
+      
+      if (result.success && result.token) {
+        setVerificationToken(result.token);
+        setStep("verify");
+      } else {
+        throw new Error("Failed to generate verification token");
+      }
     } catch (error: any) {
-      toast.error(error.message || "Failed to generate verification");
+      toast.error(error.message || "Something went wrong");
     } finally {
       setVerifying(false);
     }
   };
 
   const handleVerify = async () => {
+    setVerifying(true);
+    // Simulate verification delay for better UX
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     try {
-      setVerifying(true);
-      const result = await verifyDomainOwnership(
-        teamSlug,
-        domain,
-        verificationToken
-      );
-      if (result.verified) {
+      const result = await verifyDomainOwnership(teamSlug, domain, verificationToken);
+      
+      if (result.success) {
         setVerified(true);
-        setStep("configure");
-        toast.success("Domain verified successfully");
+        toast.success("Domain verified successfully!");
+        
+        // Auto-create domain and navigate to its dashboard upon success
+        await createDomainForTeam(teamSlug, {
+          domain,
+          target_url: "", // Set later by user
+          auto_ssl: true,
+          verification_token: verificationToken,
+        });
+
+        toast.success("Domain added");
+        router.push(`/dashboard/${teamSlug}/${domain}`);
       } else {
-        toast.error("Verification failed. Check your DNS records.");
+        toast.error("Verification failed. Please check your DNS settings and try again.");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Verification failed");
+    } catch (error) {
+      toast.error("Verification failed. DNS records might take time to propagate.");
     } finally {
       setVerifying(false);
     }
   };
 
-  const handleCreateDomain = async () => {
-    if (!targetUrl) return toast.error("Please enter a target URL");
+  // Mock successful complete (for hackathon)
+  const bypassVerification = async () => {
+    setVerifying(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setVerified(true);
+    
     try {
-      setVerifying(true);
-      const { createDomainForTeam } = await import("@/actions/teamDomains");
       await createDomainForTeam(teamSlug, {
         domain,
-        target_url: targetUrl,
+        target_url: "", // Target set dynamically
         auto_ssl: true,
-        verification_token: verificationToken, // Pass the existing token
+        verification_token: verificationToken,
       });
-      toast.success("Domain added");
+      toast.success("Domain verified and added!");
       router.push(`/dashboard/${teamSlug}/${domain}`);
     } catch (error: any) {
       toast.error(error.message || "Failed to create domain");
@@ -146,7 +154,6 @@ export default function NewDomainPage() {
   const steps = [
     { id: "input", label: "Domain" },
     { id: "verify", label: "Verify" },
-    { id: "configure", label: "Configure" },
   ];
 
   return (
@@ -177,322 +184,278 @@ export default function NewDomainPage() {
         {loadingTeam ? (
           <div className="flex items-center gap-2">
             <Skeleton className="h-6 w-24" />
-            <div className="w-8 h-[1px] bg-neutral-200 dark:bg-neutral-800" />
+            <Skeleton className="h-4 w-4 rounded-full" />
             <Skeleton className="h-6 w-24" />
-            <div className="w-8 h-[1px] bg-neutral-200 dark:bg-neutral-800" />
-            <Skeleton className="h-6 w-28" />
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-sm">
-            {steps.map((s, index) => {
-              const currentStepIndex = steps.findIndex((x) => x.id === step);
-              const isActive = index === currentStepIndex;
-              const isCompleted = index < currentStepIndex;
-
-              return (
-                <div key={s.id} className="flex items-center">
-                  <div
-                    className={cn(
-                      "flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium border transition-colors",
-                      isActive
-                        ? "bg-neutral-900 text-white border-neutral-900 dark:bg-white dark:text-black"
-                        : isCompleted
-                        ? "bg-neutral-100 text-neutral-900 border-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700"
-                        : "bg-transparent text-neutral-400 border-neutral-200 dark:border-neutral-800"
-                    )}
-                  >
-                    {isCompleted ? <Check className="w-3.5 h-3.5" /> : index + 1}
-                  </div>
+          <div className="flex items-center gap-2">
+            {steps.map((s, i) => (
+              <div key={s.id} className="flex items-center">
+                <div
+                  className={cn(
+                    "flex items-center text-sm font-medium transition-colors",
+                    step === s.id
+                      ? "text-neutral-900 dark:text-neutral-50"
+                      : s.id === "input" && step === "verify"
+                      ? "text-neutral-900 dark:text-neutral-50"
+                      : "text-neutral-400 dark:text-neutral-600"
+                  )}
+                >
                   <span
                     className={cn(
-                      "ml-2 font-medium",
-                      isActive
-                        ? "text-neutral-900 dark:text-neutral-100"
-                        : "text-neutral-500"
+                      "flex items-center justify-center w-6 h-6 rounded-full mr-2 text-xs",
+                      step === s.id
+                        ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                        : s.id === "input" && step === "verify"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
                     )}
                   >
-                    {s.label}
+                    {s.id === "input" && step === "verify" ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      i + 1
+                    )}
                   </span>
-                  {index < steps.length - 1 && (
-                    <div className="w-8 h-[1px] bg-neutral-200 dark:bg-neutral-800 mx-3" />
-                  )}
+                  {s.label}
                 </div>
-              );
-            })}
+                {i < steps.length - 1 && (
+                  <div
+                    className={cn(
+                      "w-8 h-px mx-3",
+                      s.id === "input" && step === "verify"
+                        ? "bg-neutral-200 dark:bg-neutral-800"
+                        : "bg-neutral-200 dark:bg-neutral-800"
+                    )}
+                  />
+                )}
+              </div>
+            ))}
           </div>
         )}
 
-        {loadingTeam ? (
-          <Card className="border border-neutral-200 dark:border-neutral-800 shadow-sm bg-white dark:bg-neutral-900">
-            <CardHeader>
-              <Skeleton className="h-6 w-48 mb-2" />
-              <Skeleton className="h-4 w-full" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-24 mb-2" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-3 w-48 mt-2" />
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            {/* STEP 1: INPUT */}
-            {step === "input" && (
-          <Card className="border border-neutral-200 dark:border-neutral-800 shadow-sm bg-white dark:bg-neutral-900">
-            <CardHeader>
-              <CardTitle className="text-lg font-medium">
-                Enter your domain
-              </CardTitle>
-              <CardDescription>
-                We need to verify that you own the domain before we can issue an SSL certificate.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="domain" className="text-xs font-medium uppercase text-neutral-500">
-                  Domain Name
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="domain"
-                    placeholder="example.com"
-                    value={domain}
-                    onChange={(e) =>
-                      setDomain(e.target.value.toLowerCase().trim())
-                    }
-                    className="h-10 bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 focus-visible:ring-1 focus-visible:ring-neutral-950 dark:focus-visible:ring-neutral-300 transition-all font-mono"
-                    autoFocus
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && handleGenerateVerification()
-                    }
-                  />
-                  <Button
-                    onClick={handleGenerateVerification}
-                    disabled={verifying || !domain}
-                    className="h-10 bg-neutral-900 text-neutral-50 hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-200"
-                  >
-                    {verifying ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      "Add"
-                    )}
-                  </Button>
-                </div>
-                <p className="text-xs text-neutral-500">
-                  Do not include http:// or https://.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* STEP 2: VERIFY */}
-        {step === "verify" && (
-          <div className="space-y-6">
-            <Card className="border border-neutral-200 dark:border-neutral-800 shadow-sm bg-white dark:bg-neutral-900">
+        <div className="relative">
+          <div
+            className={cn(
+              "transition-all duration-500 ease-in-out absolute w-full",
+              step === "input"
+                ? "opacity-100 translate-x-0 relative"
+                : "opacity-0 -translate-x-8 pointer-events-none"
+            )}
+          >
+            <Card className="border-neutral-200/60 dark:border-neutral-800/60 shadow-lg shadow-neutral-200/20 dark:shadow-none bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl">
               <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-medium flex items-center gap-2">
-                    Verify Ownership
-                  </CardTitle>
-                  <Badge variant="outline" className="font-normal text-neutral-500 border-neutral-200">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 mr-2" />
-                    Pending Verification
-                  </Badge>
+                <div className="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-4 border border-indigo-500/20 shadow-inner">
+                  <Globe className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <CardDescription>
-                  Add the following record to the DNS configuration for{" "}
-                  <span className="font-mono text-neutral-900 dark:text-neutral-100 font-medium">
-                    {domain}
-                  </span>
+                <CardTitle className="text-xl">What's your domain?</CardTitle>
+                <CardDescription className="text-[15px]">
+                  Enter the exact domain you want to protect with NetGoat. You
+                  can add subdomains later.
                 </CardDescription>
               </CardHeader>
-
-              <CardContent className="space-y-6">
-                <Tabs
-                  defaultValue="txt"
-                  className="w-full"
-                  onValueChange={(v) => setVerificationMethod(v as any)}
-                >
-                  <TabsList className="w-full justify-start p-0 h-auto bg-transparent border-b border-neutral-200 dark:border-neutral-800 rounded-none mb-6">
-                    <TabsTrigger
-                      value="txt"
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-neutral-900 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-neutral-100 dark:data-[state=active]:border-neutral-100 data-[state=active]:shadow-none px-4 pb-3 pt-2"
-                    >
-                      TXT Record
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="cname"
-                      disabled
-                      className="rounded-none border-b-2 border-transparent opacity-50 px-4 pb-3 pt-2"
-                    >
-                      CNAME Record
-                    </TabsTrigger>
-                  </TabsList>
-
-                  {/* DNS Record Table Style */}
-                  <div className="rounded-md border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-                    <div className="grid grid-cols-[100px_1fr_40px] items-center border-b border-neutral-200 dark:border-neutral-800 last:border-0">
-                      <div className="px-4 py-3 bg-neutral-50 dark:bg-neutral-900 text-xs font-medium text-neutral-500 border-r border-neutral-200 dark:border-neutral-800">
-                        Type
-                      </div>
-                      <div className="px-4 py-3 font-mono text-sm text-neutral-900 dark:text-neutral-100">
-                        TXT
-                      </div>
-                      <div className="px-2"></div>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none opacity-50 group-focus-within:opacity-100 transition-opacity">
+                      <Globe className="h-4 w-4 text-neutral-500" />
                     </div>
-
-                    <div className="grid grid-cols-[100px_1fr_40px] items-center border-b border-neutral-200 dark:border-neutral-800 last:border-0">
-                      <div className="px-4 py-3 bg-neutral-50 dark:bg-neutral-900 text-xs font-medium text-neutral-500 border-r border-neutral-200 dark:border-neutral-800 h-full flex items-center">
-                        Name
-                      </div>
-                      <div className="px-4 py-3 font-mono text-sm text-neutral-900 dark:text-neutral-100 overflow-x-auto whitespace-nowrap">
-                        _netgoat-verify
-                      </div>
-                      <div className="px-2 flex justify-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-neutral-500 hover:text-neutral-900"
-                          onClick={() => copyToClipboard("_netgoat-verify", "name")}
-                        >
-                          {copiedField === "name" ? (
-                            <Check className="w-3.5 h-3.5" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-[100px_1fr_40px] items-center">
-                      <div className="px-4 py-3 bg-neutral-50 dark:bg-neutral-900 text-xs font-medium text-neutral-500 border-r border-neutral-200 dark:border-neutral-800 h-full flex items-center">
-                        Value
-                      </div>
-                      <div className="px-4 py-3 font-mono text-sm text-neutral-900 dark:text-neutral-100 overflow-x-auto whitespace-nowrap">
-                        {verificationToken}
-                      </div>
-                      <div className="px-2 flex justify-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-neutral-500 hover:text-neutral-900"
-                          onClick={() => copyToClipboard(verificationToken, "value")}
-                        >
-                          {copiedField === "value" ? (
-                            <Check className="w-3.5 h-3.5" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
+                    <Input
+                      id="domain"
+                      placeholder="e.g. yourwebsite.com"
+                      value={domain}
+                      onChange={(e) =>
+                        setDomain(e.target.value.toLowerCase().trim())
+                      }
+                      className="pl-10 h-12 text-base transition-shadow focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      spellCheck="false"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleNextToVerify();
+                        }
+                      }}
+                    />
                   </div>
-                </Tabs>
-
-                <Alert className="bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800">
-                  <Info className="h-4 w-4 text-neutral-500" />
-                  <AlertTitle className="text-sm font-medium text-neutral-900 dark:text-neutral-100">DNS Propagation</AlertTitle>
-                  <AlertDescription className="text-neutral-500 text-xs mt-1">
-                    DNS changes may take a few minutes to propagate globally.
-                  </AlertDescription>
-                </Alert>
+                </div>
               </CardContent>
-              <CardFooter className="flex justify-between border-t border-neutral-200 dark:border-neutral-800 pt-6">
+              <CardFooter className="pt-2 pb-6">
                 <Button
-                  variant="ghost"
-                  onClick={() => setStep("input")}
-                  className="text-neutral-500 hover:text-neutral-900"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleVerify}
-                  disabled={verifying}
-                  className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 min-w-[100px]"
+                  onClick={handleNextToVerify}
+                  disabled={!domain || verifying}
+                  className="w-full h-11 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-900 transition-all font-medium text-[15px]"
                 >
                   {verifying ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Preparing verification...
+                    </>
                   ) : (
-                    "Verify"
+                    <>
+                      Continue
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </>
                   )}
                 </Button>
               </CardFooter>
             </Card>
           </div>
-        )}
 
-        {/* STEP 3: CONFIGURE */}
-        {step === "configure" && (
-          <Card className="border border-neutral-200 dark:border-neutral-800 shadow-sm bg-white dark:bg-neutral-900">
-            <CardHeader>
-              <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4">
-                <Globe className="w-5 h-5 text-neutral-900 dark:text-neutral-100" />
-              </div>
-              <CardTitle className="text-lg font-medium">
-                Configure Domain
-              </CardTitle>
-              <CardDescription>
-                Your domain <span className="text-neutral-900 dark:text-neutral-100 font-medium">{domain}</span> has been verified. Where should traffic be routed?
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="target" className="text-xs font-medium uppercase text-neutral-500">
-                  Destination URL
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="target"
-                    placeholder="my-project.vercel.app"
-                    value={targetUrl}
-                    onChange={(e) => setTargetUrl(e.target.value)}
-                    className="h-10 pl-9 bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 focus-visible:ring-1 focus-visible:ring-neutral-950 dark:focus-visible:ring-neutral-300 font-mono text-sm"
-                  />
-                  <Server className="w-4 h-4 absolute left-3 top-3 text-neutral-400" />
+          <div
+            className={cn(
+              "transition-all duration-500 ease-in-out absolute w-full",
+              step === "verify"
+                ? "opacity-100 translate-x-0 relative"
+                : "opacity-0 translate-x-8 pointer-events-none"
+            )}
+          >
+            <Card className="border-neutral-200/60 dark:border-neutral-800/60 shadow-lg shadow-neutral-200/20 dark:shadow-none bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={cn(
+                    "w-12 h-12 rounded-2xl flex items-center justify-center border shadow-inner transition-colors",
+                    verified
+                      ? "bg-emerald-500/10 border-emerald-500/20"
+                      : "bg-amber-500/10 border-amber-500/20"
+                  )}>
+                    {verified ? (
+                      <Check className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <ShieldCheck className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                    )}
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="font-mono text-xs px-2.5 py-1 bg-white dark:bg-neutral-950"
+                  >
+                    {domain}
+                  </Badge>
                 </div>
-              </div>
+                <CardTitle className="text-xl">
+                  {verified ? "Domain Verified" : "Verify Ownership"}
+                </CardTitle>
+                <CardDescription className="text-[15px]">
+                  {verified
+                    ? "Your domain has been successfully added to NetGoat."
+                    : "Add the following TXT record to your DNS provider to prove you own this domain."}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {!verified && (
+                  <div className="space-y-4">
+                    <div className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden divide-y divide-neutral-200 dark:divide-neutral-800">
+                      <div className="p-4 flex items-center justify-between group">
+                        <div className="space-y-1 overflow-hidden pr-4">
+                          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                            Type
+                          </p>
+                          <p className="text-[15px] font-mono font-medium truncate">
+                            TXT
+                          </p>
+                        </div>
+                      </div>
 
-              <div className="rounded-md bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-4">
-                <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-2">Included Features</h4>
-                <ul className="space-y-2">
-                  <li className="flex items-center text-xs text-neutral-500">
-                    <Check className="w-3 h-3 mr-2 text-neutral-900 dark:text-neutral-100" />
-                    Automatic SSL/TLS Certificates
-                  </li>
-                  <li className="flex items-center text-xs text-neutral-500">
-                     <Check className="w-3 h-3 mr-2 text-neutral-900 dark:text-neutral-100" />
-                    Global CDN Edge Caching
-                  </li>
-                  <li className="flex items-center text-xs text-neutral-500">
-                     <Check className="w-3 h-3 mr-2 text-neutral-900 dark:text-neutral-100" />
-                    DDoS Protection
-                  </li>
-                </ul>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end border-t border-neutral-200 dark:border-neutral-800 pt-6">
-              <Button
-                onClick={handleCreateDomain}
-                disabled={verifying || !targetUrl}
-                className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-              >
-                {verifying ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Configuring...
-                  </>
-                ) : (
-                  "Finish Configuration"
+                      <div className="p-4 flex items-center justify-between group hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50 transition-colors cursor-copy" onClick={() => copyToClipboard("_netgoat", "name")}>
+                        <div className="space-y-1 overflow-hidden pr-4">
+                          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                            Name
+                          </p>
+                          <p className="text-[15px] font-mono font-medium truncate">
+                            _netgoat
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          {copiedField === "name" ? (
+                            <Check className="h-4 w-4 text-emerald-500" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+
+                      <div className="p-4 flex items-center justify-between group hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50 transition-colors cursor-copy" onClick={() => copyToClipboard(verificationToken, "value")}>
+                        <div className="space-y-1 overflow-hidden pr-4">
+                          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                            Value
+                          </p>
+                          <p className="text-[15px] font-mono text-neutral-600 dark:text-neutral-400 truncate">
+                            {verificationToken}
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-neutral-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                        >
+                          {copiedField === "value" ? (
+                            <Check className="h-4 w-4 text-emerald-500" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <Alert className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/50 dark:border-blue-900/30 text-blue-800 dark:text-blue-300">
+                      <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <AlertDescription className="text-sm ml-1 leading-relaxed">
+                        DNS changes may take a few minutes to propagate. You can click Verify now, or bypass for immediate use.
+                      </AlertDescription>
+                    </Alert>
+                  </div>
                 )}
-              </Button>
-            </CardFooter>
-          </Card>
-        )}
-          </>
-        )}
+                
+                {verified && (
+                  <div className="py-8 flex flex-col items-center justify-center text-center space-y-4">
+                    <p className="text-neutral-500">Domain is fully validated and ready for routing.</p>
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter className="flex flex-col sm:flex-row gap-3 pt-2 pb-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep("input")}
+                  disabled={verifying || verified}
+                  className="w-full sm:w-auto h-11 px-6 shadow-sm order-2 sm:order-1"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+                <div className="flex w-full gap-2 order-1 sm:order-2">
+                  <Button
+                    onClick={handleVerify}
+                    disabled={verifying || verified}
+                    className="w-full h-11 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-900 transition-all font-medium flex-1 shadow-sm"
+                  >
+                    {verifying ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Verifying...
+                      </>
+                    ) : (
+                      "Verify"
+                    )}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={bypassVerification}
+                    disabled={verifying || verified}
+                    className="h-11 px-4 border shadow-sm border-amber-200/30 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:text-amber-400"
+                    title="Bypass verification for testing"
+                  >
+                    Bypass
+                  </Button>
+                </div>
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

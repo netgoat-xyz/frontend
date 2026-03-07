@@ -3,22 +3,26 @@
 import { Lock, ShieldCheck, RefreshCw, Copy, Check, Calendar, Server, Key } from "lucide-react";
 import { useState } from "react";
 
-export function SslCertificate() {
+export function SslCertificate({ domain }: { domain?: any }) {
   const [copiedSerial, setCopiedSerial] = useState(false);
   
+  // Try to use domain properties or fallback to mockup if not available
+  const isAuto = domain?.auto_ssl;
+  const isManual = domain?.ssl_enabled && !isAuto;
+  
   const cert = {
-    status: "active",
-    issuer: "Let's Encrypt Authority X3",
-    type: "DV (Domain Validated)",
-    domains: ["netgoat.xyz", "*.netgoat.xyz"],
-    issued: "2025-11-11",
-    expires: "2026-05-08",
+    status: (isAuto || isManual) ? "active" : "inactive",
+    issuer: isAuto ? "Let's Encrypt Authority X3" : (isManual ? "Custom SSL Certificate" : "None"),
+    type: isAuto ? "DV (Domain Validated)" : (isManual ? "Provided" : "N/A"),
+    domains: [domain?.domain || "example.com", `*.${domain?.domain || "example.com"}`],
+    issued: "2025-11-11", // Placeholder
+    expires: "2026-05-08", // Placeholder
     daysLeft: 89,
     serial: "04:8A:3F:B2:C7:E1:9D:45:A8:2B:6C:F3:D0:E4:71:89",
     fingerprint: "A3:2F:8C:D1:E5:6B:94:07:F2:3A:C8:1D:B6:E9:04:5F:7A:2C:8B:D3",
     keyType: "EC P-256",
     signatureAlg: "SHA-256 with ECDSA",
-    autoRenew: true,
+    autoRenew: isAuto || false,
   };
 
   const copySerial = () => {

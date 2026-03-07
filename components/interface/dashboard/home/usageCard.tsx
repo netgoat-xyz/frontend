@@ -3,39 +3,83 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import UsageItem from "./components/usageItem";
-
-const usageData = [
-  {
-    label: "Analytics Data points",
-    current: 1400,
-    limit: 10000,
-    displayCurrent: "1.4K",
-    displayLimit: "10K",
-  },
-  {
-    label: "Cache Limit",
-    current: 48000,
-    limit: 1000000,
-    displayCurrent: "48GB",
-    displayLimit: "10GB",
-  },
-  {
-    label: "DDoS Requests Mitigation",
-    current: 909,
-    limit: 50000,
-    displayCurrent: "450GB",
-    displayLimit: "10TB",
-  },
-];
+import { useParams } from "next/navigation";
+import { listTeamDomains } from "@/actions/teamDomains";
 
 export default function UsageCard() {
+  const params = useParams();
+  const teamSlug = params.teamName as string;
   const [usageOpen, setUsageOpen] = useState(true);
   const [animate, setAnimate] = useState(false);
+  
+  const [usageData, setUsageData] = useState([
+    {
+      label: "Analytics Data points",
+      current: 0,
+      limit: 10000,
+      displayCurrent: "0",
+      displayLimit: "10K",
+    },
+    {
+      label: "Bandwidth Used",
+      current: 0,
+      limit: 1000000,
+      displayCurrent: "0GB",
+      displayLimit: "10GB",
+    },
+    {
+      label: "Total Requests",
+      current: 0,
+      limit: 50000,
+      displayCurrent: "0",
+      displayLimit: "50K",
+    },
+  ]);
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimate(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!teamSlug) return;
+    
+    // Fetch actual data
+    listTeamDomains(teamSlug).then((domains) => {
+       const stats = domains.reduce((acc: any, d: any) => {
+         if (d.stats) {
+           acc.requests += (d.stats.total_requests || 0);
+           acc.bandwidth += (d.stats.bandwidth_used || 0);
+         }
+         return acc;
+       }, { requests: 0, bandwidth: 0 });
+
+       setUsageData([
+         {
+           label: "Analytics Data points",
+           current: Math.min(stats.requests, 10000),
+           limit: 10000,
+           displayCurrent: (stats.requests > 1000 ? (stats.requests/1000).toFixed(1) + 'K' : stats.requests.toString()),
+           displayLimit: "10K",
+         },
+         {
+           label: "Bandwidth Used",
+           current: Math.min(stats.bandwidth, 10000000000), // 10GB in bytes maybe
+           limit: 10000000000,
+           displayCurrent: (stats.bandwidth / (1024*1024)).toFixed(1) + "MB",
+           displayLimit: "10GB",
+         },
+         {
+           label: "Total Requests",
+           current: Math.min(stats.requests, 50000),
+           limit: 50000,
+           displayCurrent: stats.requests.toString(),
+           displayLimit: "50K",
+         },
+       ]);
+    }).catch(console.error);
+
+  }, [teamSlug]);
 
   return (
     <div className="rounded-xl bg-neutral-900 border border-neutral-800 overflow-hidden">

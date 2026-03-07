@@ -7,7 +7,7 @@ type Props = {
   params: {
     teamName: string
     domainName: string
-  }
+  } | Promise<{ teamName: string, domainName: string }>
 }
 
 const SslPage = async ({ params }: Props) => {
@@ -25,8 +25,8 @@ const SslPage = async ({ params }: Props) => {
   return (
     <div className="space-y-6">
       <HeaderSection domainData={domainData} />
-      <SslCertificate />
-      <SslHealthCheck />
+      <SslCertificate domain={domain} />
+      <SslHealthCheck domain={domain} />
     </div>
   );
 };

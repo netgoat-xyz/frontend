@@ -3,6 +3,7 @@ import Header from "@/components/interface/homescreen/header";
 import Footer from "@/components/interface/homescreen/footer";
 import ShaderBackground from "@/components/interface/homescreen/shader-background";
 import { getPublicStatus } from "@/actions/status";
+import { getIncidents } from "@/actions/incidents";
 import type { ServiceStatus } from "@/actions/status";
 import {
   Activity,
@@ -122,8 +123,21 @@ function StatusSkeleton() {
 }
 
 async function StatusContent() {
-  const status = await getPublicStatus();
-  const overallCfg = statusConfig[status.overall];
+  const [status, incidentsArray] = await Promise.all([
+    getPublicStatus(),
+    getIncidents()
+  ]);
+
+  // Adjust overall status if there are active severe incidents
+  let effectiveOverall = status.overall;
+  const activeIncidents = incidentsArray.filter((inc: any) => inc.active);
+  if (activeIncidents.some((inc: any) => inc.severity === "critical")) {
+    effectiveOverall = "outage";
+  } else if (activeIncidents.some((inc: any) => inc.severity === "major")) {
+    effectiveOverall = "degraded";
+  }
+
+  const overallCfg = statusConfig[effectiveOverall as "operational" | "degraded" | "outage" | "maintenance"];
   const OverallIcon = overallCfg.icon;
 
   return (
@@ -140,11 +154,11 @@ async function StatusContent() {
           </div>
           <div>
             <h2 className={`text-xl font-light ${overallCfg.color}`}>
-              {status.overall === "operational"
+              {effectiveOverall === "operational"
                 ? "All Systems Operational"
-                : status.overall === "degraded"
+                : effectiveOverall === "degraded"
                   ? "Some Systems Degraded"
-                  : status.overall === "outage"
+                  : effectiveOverall === "outage"
                     ? "Service Disruption Detected"
                     : "Scheduled Maintenance"}
             </h2>
@@ -215,12 +229,37 @@ async function StatusContent() {
         <h3 className="text-[11px] font-light text-white/30 uppercase tracking-[0.2em] mb-6">
           Recent Incidents
         </h3>
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <CheckCircle2 className="w-8 h-8 text-emerald-500/20 mb-4" />
-          <p className="text-sm text-white/30 font-light">
-            No incidents reported in the last 90 days.
-          </p>
-        </div>
+        {incidentsArray.length > 0 ? (
+          <div className="space-y-6">
+            {incidentsArray.map((inc: any) => (
+              <div key={inc._id} className="border-b border-white/5 pb-6 last:border-0 last:pb-0">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-white/90 text-sm font-medium">{inc.title}</h4>
+                  <div className="flex gap-2 items-center">
+                    <span className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-medium ${
+                      inc.active ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400'
+                    }`}>
+                      {inc.active ? "Active" : "Resolved"}
+                    </span>
+                    <span className="text-[10px] text-white/30 capitalize pr-2">{inc.status} • {inc.severity}</span>
+                  </div>
+                </div>
+                <p className="text-xs text-white/50 mb-3">{inc.description}</p>
+                <div className="text-[10px] text-white/30 font-light flex gap-4">
+                  <span>Started: {new Date(inc.createdAt).toLocaleString()}</span>
+                  {inc.resolvedAt && <span>Resolved: {new Date(inc.resolvedAt).toLocaleString()}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <CheckCircle2 className="w-8 h-8 text-emerald-500/20 mb-4" />
+            <p className="text-sm text-white/30 font-light">
+              No incidents reported. We are operating smoothly.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

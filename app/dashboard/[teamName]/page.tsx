@@ -3,12 +3,15 @@ import AlertsCard from "@/components/interface/dashboard/home/alertsCard";
 import ProjectToolbar from "@/components/interface/dashboard/home/projectToolbar";
 import DomainsSection from "@/components/interface/dashboard/home/domainsCard";
 import {getTranslations} from 'next-intl/server';
+import { getActiveAlerts } from "@/actions/alerts";
 
 export { default as generateMetadata } from "./metadata";
 
 export default async function DashboardHome({ params }: { params: Promise<{ teamName: string }> }) {
   const param = await params;
   const t = await getTranslations('Dashboard');
+  const activeAlerts = await getActiveAlerts();
+  
   return (
     <div>
       <div>
@@ -22,7 +25,7 @@ export default async function DashboardHome({ params }: { params: Promise<{ team
           </div>
           <div>
             <div className="my-6 text-neutral-100 text-sm">{t('alerts')}</div>
-            <AlertsCard />
+            <AlertsCard initialAlerts={activeAlerts} />
           </div>
         </div>
 
