@@ -22,10 +22,13 @@ export default async function DashboardLayout({
   const latestWhatsNew = await getLatestWhatsNew();
 
   return (
-    <div suppressHydrationWarning>
+    <div
+      suppressHydrationWarning
+      className="min-h-screen w-full flex flex-col bg-neutral-50 dark:bg-neutral-950 text-foreground"
+    >
       <WhatsNewPopup post={latestWhatsNew} />
       <NavigationTop />
-      <main className="p-6">{children}</main>
+      <main className="flex-1 p-6">{children}</main>
       <BelowScreenFooter />
     </div>
   );
