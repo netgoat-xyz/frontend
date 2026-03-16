@@ -2,7 +2,7 @@ import IntegrationClient from "@/components/interface/dashboard/integrations/cli
 import { generateTeamMetadata } from "../metadata"; 
 
 export async function generateMetadata({ params }: { params: any }) {
-  return generateTeamMetadata(params, "Integrations");
+  return generateTeamMetadata(params, "integrations");
 }
 
 export default function IntegrationsPage() {

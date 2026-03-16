@@ -24,7 +24,7 @@ export default async function DashboardLayout({
   return (
     <div
       suppressHydrationWarning
-      className="min-h-screen w-full flex flex-col bg-neutral-50 dark:bg-neutral-950 text-foreground"
+      className="min-h-svh w-full flex flex-col bg-neutral-50 dark:bg-neutral-950 text-foreground"
     >
       <WhatsNewPopup post={latestWhatsNew} />
       <NavigationTop />

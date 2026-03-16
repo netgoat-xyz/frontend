@@ -8,7 +8,7 @@ export default function DashboardLayout({
   return (
     <>
       <NavigationTop />
-      <main className="p-6">{children}</main>
+      <main className="min-h-svh bg-neutral-950">{children}</main>
     </>
   );
 }

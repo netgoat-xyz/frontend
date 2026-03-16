@@ -4,6 +4,7 @@ import { CacheSettings } from "@/components/interface/domains/settings/CacheSett
 import { PerformanceSettings } from "@/components/interface/domains/settings/PerformanceSettings";
 import { DangerZone } from "@/components/interface/domains/settings/DangerZone";
 import { loadDomainByRoute } from "../_lib/domain-data";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: {
@@ -14,12 +15,13 @@ type Props = {
 
 const SettingsPage = async ({ params }: Props) => {
   const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
+  const t = await getTranslations("DashboardPages.domain")
 
   if (!domain || !domainData) {
     return (
-      <div className="min-h-screen p-8">
-        <h2 className="text-2xl font-semibold">Domain not found</h2>
-        <p className="text-muted">No domain "{domainName}" found for team "{teamName}".</p>
+      <div className="min-h-svh p-4 sm:p-6 lg:p-8">
+        <h2 className="text-2xl font-semibold">{t("notFound.title")}</h2>
+        <p className="text-muted">{t("notFound.description", { domainName, teamName })}</p>
       </div>
     )
   }

@@ -7,6 +7,7 @@ import {
   MagnifyingGlassIcon,
   UserPlusIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslations } from "next-intl";
 
 interface Member {
   id: string;
@@ -42,8 +43,15 @@ const initialMembers: Member[] = [
 ];
 
 export default function TeamsPage() {
+  const t = useTranslations("DashboardPages.teamMembers");
   const [members] = useState<Member[]>(initialMembers);
   const [search, setSearch] = useState("");
+
+  const translateRole = (role: Member["role"]) => {
+    if (role === "Owner") return t("roles.owner");
+    if (role === "Billing") return t("roles.billing");
+    return t("roles.member");
+  };
 
   const filteredMembers = members.filter(
     (m) =>
@@ -57,15 +65,15 @@ export default function TeamsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white tracking-tight">
-            Team Members
+            {t("title")}
           </h1>
           <p className="text-neutral-400 mt-2 text-sm">
-            Manage your team members and their privileges.
+            {t("description")}
           </p>
         </div>
         <button className="flex items-center justify-center gap-2 bg-white text-black px-4 py-2 rounded-md font-medium text-sm hover:bg-neutral-200 transition-all active:scale-95">
           <UserPlusIcon className="size-4" />
-          Invite Member
+          {t("actions.inviteMember")}
         </button>
       </div>
 
@@ -75,7 +83,7 @@ export default function TeamsPage() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-500" />
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder={t("searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-neutral-900 border border-neutral-800 rounded-lg py-2 pl-10 pr-4 text-sm text-neutral-200 focus:outline-none focus:border-neutral-600 transition-colors"
@@ -83,7 +91,7 @@ export default function TeamsPage() {
         </div>
         <div className="h-9 w-px bg-neutral-800 hidden md:block" />
         <p className="text-xs text-neutral-500 font-medium hidden md:block">
-          {members.length} Total Members
+          {t("totalMembers", { count: members.length })}
         </p>
       </div>
 
@@ -93,10 +101,10 @@ export default function TeamsPage() {
 
     <div className="flex-1">
       <p className="text-sm font-medium text-neutral-100">
-        Invite link
+        {t("inviteLink.title")}
       </p>
       <p className="mt-1 text-xs text-neutral-500">
-        Share this link to invite people to your team.
+        {t("inviteLink.description")}
       </p>
 
       <div className="mt-3 flex items-center gap-2">
@@ -106,12 +114,12 @@ export default function TeamsPage() {
           className="flex-1 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-xs text-neutral-400 focus:outline-none"
         />
         <button className="rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-xs font-medium text-neutral-200 hover:bg-neutral-700/50 cursor-pointer transition">
-          Copy
+          {t("actions.copy")}
         </button>
       </div>
 
       <p className="mt-2 text-[11px] text-neutral-500">
-        Anyone with the link can request access.
+        {t("inviteLink.caption")}
       </p>
     </div>
   </div>
@@ -125,16 +133,16 @@ export default function TeamsPage() {
             <thead>
               <tr className="border-b border-neutral-800 bg-neutral-800">
                 <th className="px-6 py-4 text-[12px] font-medium text-neutral-500 uppercase tracking-wider">
-                  User
+                  {t("table.user")}
                 </th>
                 <th className="px-6 py-4 text-[12px] font-medium text-neutral-500 uppercase tracking-wider">
-                  Role
+                  {t("table.role")}
                 </th>
                 <th className="px-6 py-4 text-[12px] font-medium text-neutral-500 uppercase tracking-wider">
-                  Status
+                  {t("table.status")}
                 </th>
                 <th className="px-6 py-4 text-[12px] font-medium text-neutral-500 uppercase tracking-wider text-right">
-                  Actions
+                  {t("table.actions")}
                 </th>
               </tr>
             </thead>
@@ -161,17 +169,17 @@ export default function TeamsPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-xs text-neutral-400">
-                      {member.role}
+                      {translateRole(member.role)}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     {member.status === "pending" ? (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                        Pending
+                        {t("status.pending")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                        Active
+                        {t("status.active")}
                       </span>
                     )}
                   </td>

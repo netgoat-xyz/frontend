@@ -6,13 +6,16 @@ import Header from "@/components/interface/homescreen/header";
 import ShaderBackground from "@/components/interface/homescreen/shader-background";
 import Footer from "@/components/interface/homescreen/footer";
 import { Calendar, ArrowRight, BookOpen } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export const dynamic = "force-dynamic";
 
 export default function BlogPage() {
+    const t = useTranslations("HomePage");
+  
   return (
     <ShaderBackground>
-      <div className="min-h-screen w-full flex flex-col bg-transparent relative">
+      <div className="min-h-svh w-full flex flex-col bg-transparent relative">
         <Header />
 
         <main className="flex-1 container mx-auto px-4 md:px-6 pt-16 pb-24 z-10 max-w-6xl">
@@ -21,15 +24,14 @@ export default function BlogPage() {
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 backdrop-blur-sm border border-white/10">
               <BookOpen className="w-3 h-3 text-violet-300 mr-2" />
               <span className="text-white/70 text-xs font-light">
-                Engineering &amp; Updates
+                {t("blog.subtitle")}
               </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-light tracking-tight text-white">
-              Blog
+              {t("blog.title")}
             </h1>
             <p className="text-sm md:text-base max-w-md text-white/50 leading-relaxed font-light">
-              Latest news, updates, and engineering deep dives from the NetGoat
-              team.
+              {t("blog.description")}
             </p>
             <div className="w-16 h-px bg-linear-to-r from-transparent via-white/20 to-transparent mt-4" />
           </div>

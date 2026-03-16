@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import dynamic from "next/dynamic";
 import IntegrationCard from "./integrationCard";
+import { useTranslations } from "next-intl";
 
 const IntegrationModal = dynamic(() => import("./components/integrationModel"));
 
@@ -92,11 +93,22 @@ const INTEGRATIONS: Integration[] = [
 
 const IntegrationsSidebar = memo(({ 
   selectedCategory, 
-  onSelectCategory 
+  onSelectCategory,
+  t,
 }: { 
   selectedCategory: string; 
   onSelectCategory: (category: string) => void;
+  t: ReturnType<typeof useTranslations>;
 }) => {
+  const getCategoryLabel = (category: string) => {
+    if (category === "All") return t("categories.all");
+    if (category === "Cloud") return t("categories.cloud");
+    if (category === "Networking") return t("categories.networking");
+    if (category === "Monitoring") return t("categories.monitoring");
+    if (category === "Security") return t("categories.security");
+    return category;
+  };
+
   return (
     <aside className="w-full lg:w-48 shrink-0">
       <nav className="space-y-1">
@@ -122,7 +134,7 @@ const IntegrationsSidebar = memo(({
                 selectedCategory === cat ? "ml-2" : "ml-0 transition-all"
               }
             >
-              {cat}
+              {getCategoryLabel(cat)}
             </span>
           </button>
         ))}
@@ -134,6 +146,7 @@ const IntegrationsSidebar = memo(({
 IntegrationsSidebar.displayName = "IntegrationsSidebar";
 
 const IntegrationsContent = memo(({ selectedCategory }: { selectedCategory: string }) => {
+  const t = useTranslations("DashboardPages.integrations");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -175,7 +188,7 @@ const IntegrationsContent = memo(({ selectedCategory }: { selectedCategory: stri
       <div className="relative mb-8">
         <input
           type="text"
-          placeholder="Search integrations..."
+          placeholder={t("searchPlaceholder")}
           className="w-full bg-neutral-900 border border-neutral-800 rounded-lg py-2.5 px-4 text-sm text-neutral-200 focus:outline-none focus:border-neutral-600 transition-colors"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -195,7 +208,7 @@ const IntegrationsContent = memo(({ selectedCategory }: { selectedCategory: stri
 
       {filteredIntegrations.length === 0 && (
         <p className="text-neutral-500 text-center mt-10">
-          No integrations found.
+          {t("empty")}
         </p>
       )}
 
@@ -214,6 +227,7 @@ const IntegrationsContent = memo(({ selectedCategory }: { selectedCategory: stri
 IntegrationsContent.displayName = "IntegrationsContent";
 
 export default function IntegrationsPage() {
+  const t = useTranslations("DashboardPages.integrations");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   return (
@@ -221,18 +235,18 @@ export default function IntegrationsPage() {
       {/* Header Section */}
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white tracking-tight">
-          Integrations
+          {t("title")}
         </h1>
         <p className="text-neutral-400 mt-2 text-base">
-          Extend your workflow with over 100+ tools for monitoring, databases,
-          and more.
+          {t("description")}
         </p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-10">
         <IntegrationsSidebar 
           selectedCategory={selectedCategory} 
-          onSelectCategory={setSelectedCategory} 
+          onSelectCategory={setSelectedCategory}
+          t={t}
         />
         <IntegrationsContent selectedCategory={selectedCategory} />
       </div>

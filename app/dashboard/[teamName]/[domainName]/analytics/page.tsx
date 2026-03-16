@@ -3,6 +3,7 @@ import { TrafficOverview } from "@/components/interface/domains/analytics/Traffi
 import { GeoBreakdown } from "@/components/interface/domains/analytics/GeoBreakdown";
 import { HostnamesBreakdown } from "@/components/interface/domains/analytics/HostnamesBreakdown";
 import { loadDomainByRoute } from "../_lib/domain-data";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: {
@@ -13,18 +14,19 @@ type Props = {
 
 const AnalyticsPage = async ({ params }: Props) => {
   const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
+  const t = await getTranslations("DashboardPages.domain")
 
   if (!domain || !domainData) {
     return (
-      <div className="min-h-screen p-8">
-        <h2 className="text-2xl font-semibold">Domain not found</h2>
-        <p className="text-muted">No domain "{domainName}" found for team "{teamName}".</p>
+      <div className="min-h-svh p-4 sm:p-6 lg:p-8">
+        <h2 className="text-2xl font-semibold">{t("notFound.title")}</h2>
+        <p className="text-muted">{t("notFound.description", { domainName, teamName })}</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-svh">
       <HeaderSection domainData={domainData} />
 
       <div className="mx-auto space-y-6">

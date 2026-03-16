@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 type Params = Promise<{
   teamName: string;
@@ -8,21 +9,36 @@ type Params = Promise<{
 export async function generateTeamMetadata(params: Params, pageOverride?: string): Promise<Metadata> {
   const resolvedParams = await params;
   const { teamName, section } = resolvedParams;
+  const t = await getTranslations("DashboardMeta");
 
   const cleanTeam = decodeURIComponent(teamName).replace("@", "");
   const team = cleanTeam.charAt(0).toUpperCase() + cleanTeam.slice(1);
 
-  const rawPage = pageOverride 
-    ? pageOverride 
-    : (section && section.length > 0 ? section[section.length - 1] : "Overview");
+  const rawPage =
+    pageOverride
+      ? pageOverride
+      : section && section.length > 0
+        ? section[section.length - 1]
+        : "overview";
 
-  const pageTitle = rawPage
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, c => c.toUpperCase());
+  const toTitleCase = (value: string) =>
+    value
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  let pageTitle = toTitleCase(rawPage);
+  try {
+    pageTitle = t(`pages.${rawPage}` as any);
+  } catch {
+    pageTitle = toTitleCase(rawPage);
+  }
 
   return {
-    title: `Netgoat | Teams ${pageTitle}`,
-    description: `Manage ${pageTitle.toLowerCase()} for the ${team} team on NetGoat.`
+    title: t("teamsTitleTemplate", { page: pageTitle }),
+    description: t("descriptionTemplate", {
+      team,
+      page: pageTitle.toLowerCase(),
+    }),
   };
 }
 

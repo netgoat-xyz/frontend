@@ -1,8 +1,12 @@
-import { getPosts } from "@/actions/content";
+import {
+  getCategorizedGitHubReleases,
+  getReleaseDescription,
+  type GitHubRelease,
+} from "@/actions/github";
 import Header from "@/components/interface/homescreen/header";
 import Footer from "@/components/interface/homescreen/footer";
 import ShaderBackground from "@/components/interface/homescreen/shader-background";
-import Markdown from "react-markdown";
+import Link from "next/link";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -10,6 +14,8 @@ import {
   Calendar,
   Tag,
   Sparkles,
+  ArrowRight,
+  ExternalLink,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +23,7 @@ export const dynamic = "force-dynamic";
 export default function ChangelogPage() {
   return (
     <ShaderBackground>
-      <div className="min-h-screen w-full flex flex-col bg-transparent relative">
+      <div className="min-h-svh w-full flex flex-col bg-transparent relative">
         <Header />
 
         <main className="flex-1 container mx-auto px-4 md:px-6 pt-16 pb-24 z-10 max-w-3xl">
@@ -71,77 +77,130 @@ function ChangelogSkeleton() {
 }
 
 async function ChangelogContent() {
-  const { posts } = await getPosts("changelog");
+  const categorizedReleases = await getCategorizedGitHubReleases(30);
+  const hasReleases =
+    categorizedReleases["main-agent"].length > 0 ||
+    categorizedReleases.frontend.length > 0;
 
-  if (!posts || posts.length === 0) {
+  if (!hasReleases) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
           <GitCommit className="w-7 h-7 text-white/20" />
         </div>
         <p className="text-lg text-white/40 font-light mb-2">
-          No changelog entries yet
+          No GitHub releases found
         </p>
         <p className="text-sm text-white/20 font-light">
-          Check back soon for updates.
+          Publish a release to show it here.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="relative pl-8 border-l border-white/8 ml-2">
-      {posts.map((post: any, idx: number) => (
-        <div
-          key={post._id}
-          className={`relative ${idx < posts.length - 1 ? "pb-14" : "pb-0"}`}
-        >
-          {/* Timeline dot */}
-          <div className="absolute -left-9.25 top-1.5 w-2.5 h-2.5 rounded-full bg-violet-400/60 ring-[3px] ring-black shadow-lg shadow-violet-500/20" />
-
-          {/* Date + version badge */}
-          <div className="flex items-center gap-3 mb-3 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 text-xs text-white/30 font-light">
-              <Calendar className="w-3 h-3" />
-              {new Date(post.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </span>
-            {post.version && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-violet-500/10 text-violet-300 border border-violet-500/20">
-                <Tag className="w-2.5 h-2.5" />
-                {post.version}
-              </span>
-            )}
-          </div>
-
-          {/* Title */}
-          <h2 className="text-xl md:text-2xl font-light tracking-tight text-white/90 mb-4 leading-snug">
-            {post.title}
-          </h2>
-
-          {/* Cover image */}
-          {post.coverImage && (
-            <div className="w-full relative mb-5 rounded-2xl overflow-hidden border border-white/6">
-              <img
-                src={post.coverImage}
-                alt={post.title}
-                className="w-full h-auto max-h-80 object-cover"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
-            </div>
-          )}
-
-          {/* Content card */}
-          <div className="rounded-2xl border border-white/6 bg-white/2 backdrop-blur-sm p-6 md:p-8">
-            <div className="prose prose-invert prose-sm max-w-none prose-headings:font-light prose-headings:tracking-tight prose-p:text-white/50 prose-p:leading-relaxed prose-p:font-light prose-a:text-violet-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/70 prose-code:text-violet-200 prose-code:bg-white/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-li:text-white/50 prose-ul:text-white/50 prose-blockquote:border-violet-500/30 prose-blockquote:text-white/35 prose-img:rounded-xl prose-img:border prose-img:border-white/6">
-              <Markdown>{post.content}</Markdown>
-            </div>
-          </div>
-        </div>
-      ))}
+    <div className="space-y-14">
+      <ReleaseCategorySection
+        title="Main Agent"
+        subtitle="Releases from netgoat-xyz/netgoat"
+        releases={categorizedReleases["main-agent"]}
+      />
+      <ReleaseCategorySection
+        title="Frontend"
+        subtitle="Releases from netgoat-xyz/frontend"
+        releases={categorizedReleases.frontend}
+      />
     </div>
+  );
+}
+
+async function ReleaseCategorySection(props: {
+  title: string;
+  subtitle: string;
+  releases: GitHubRelease[];
+}) {
+  const { title, subtitle, releases } = props;
+  const releasesWithDescriptions = await Promise.all(
+    releases.map(async (release) => ({
+      release,
+      description: await getReleaseDescription(release),
+    })),
+  );
+
+  return (
+    <section>
+      <div className="mb-6">
+        <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white/90">
+          {title}
+        </h2>
+        <p className="text-xs md:text-sm text-white/35 font-light mt-2">{subtitle}</p>
+      </div>
+
+      {releases.length === 0 ? (
+        <div className="rounded-2xl border border-white/8 bg-white/2 p-6 text-sm text-white/45 font-light">
+          No releases published yet in this repository.
+        </div>
+      ) : (
+        <div className="relative pl-8 border-l border-white/8 ml-2">
+          {releasesWithDescriptions.map(({ release, description }, idx) => (
+            <div
+              key={release.id}
+              className={`relative ${idx < releases.length - 1 ? "pb-14" : "pb-0"}`}
+            >
+              <div className="absolute -left-9.25 top-1.5 w-2.5 h-2.5 rounded-full bg-violet-400/60 ring-[3px] ring-black shadow-lg shadow-violet-500/20" />
+
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 text-xs text-white/30 font-light">
+                  <Calendar className="w-3 h-3" />
+                  {new Date(release.publishedAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                  <Tag className="w-2.5 h-2.5" />
+                  {release.tagName}
+                </span>
+                {release.prerelease && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                    Pre-release
+                  </span>
+                )}
+              </div>
+
+              <h3 className="text-xl md:text-2xl font-light tracking-tight text-white/90 mb-4 leading-snug">
+                {release.name}
+              </h3>
+
+              <div className="rounded-2xl border border-white/6 bg-white/2 backdrop-blur-sm p-6 md:p-8 space-y-4">
+                <p className="text-sm text-white/50 leading-relaxed font-light line-clamp-4">
+                  {description}
+                </p>
+
+                <div className="flex items-center gap-4 flex-wrap">
+                  <Link
+                    href={`/changelog/${release.category}/${encodeURIComponent(release.tagName)}`}
+                    className="inline-flex items-center gap-2 text-xs font-medium text-violet-300/80 hover:text-violet-300 transition-colors"
+                  >
+                    Read full changelog
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                  <a
+                    href={release.htmlUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-white/65 transition-colors"
+                  >
+                    View on GitHub
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

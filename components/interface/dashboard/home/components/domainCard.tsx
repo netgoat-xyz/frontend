@@ -6,15 +6,27 @@ import { useState, useEffect, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import { verifyDomain } from "@/actions/domainVerification";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsCard & { onVerified?: () => void }) {
   const router = useRouter();
   const isValid = domain.status === "Valid";
   const isInvalid = domain.status === "Invalid Configuration";
+  const t = useTranslations("DashboardPages.homeDomains.card");
   const [verifying, setVerifying] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState("");
   const [copiedToken, setCopiedToken] = useState(false);
   const [localVerified, setLocalVerified] = useState(domain.verified);
+
+  const statusLabel =
+    domain.status === "Valid"
+      ? t("status.valid")
+      : domain.status === "Inactive"
+        ? t("status.inactive")
+        : t("status.invalidConfiguration");
+
+  const groupLabel =
+    domain.group === "Production" ? t("group.production") : t("group.preview");
 
   // Reset message when domain becomes verified from props
   useEffect(() => {
@@ -33,7 +45,7 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
     try {
       const result = await verifyDomain(domain.teamSlug, domain.name);
       if (result.verified) {
-        setVerificationMessage("✓ Domain verified successfully!");
+        setVerificationMessage(t("messages.verifiedSuccess"));
         setLocalVerified(true);
         // Clear message after 2 seconds before refresh
         setTimeout(() => {
@@ -44,12 +56,12 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
           }
         }, 2000);
       } else {
-        setVerificationMessage(result.message || "Verification failed. Please check your DNS records.");
+        setVerificationMessage(result.message || t("messages.verifyFailed"));
         // Clear error message after 5 seconds
         setTimeout(() => setVerificationMessage(""), 5000);
       }
     } catch (error: any) {
-      setVerificationMessage(error.message || "Failed to verify domain");
+      setVerificationMessage(error.message || t("messages.verifyRequestFailed"));
       // Clear error message after 5 seconds
       setTimeout(() => setVerificationMessage(""), 5000);
     } finally {
@@ -89,7 +101,7 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
               isInvalid ? 'text-red-400' : 
               'text-amber-400'
             }`}>
-              {domain.status}
+              {statusLabel}
             </span>
           </div>
         </div>
@@ -108,9 +120,9 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
           <div className="flex items-start space-x-2 mb-2">
             <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-neutral-300 font-medium mb-1">Domain needs verification</p>
+              <p className="text-xs text-neutral-300 font-medium mb-1">{t("verification.title")}</p>
               <p className="text-[11px] text-neutral-400 mb-2">
-                Add this TXT record to <span className="text-neutral-200 font-mono">_netgoat-verify.{domain.name}</span>
+                {t("verification.addTxt")} <span className="text-neutral-200 font-mono">_netgoat-verify.{domain.name}</span>
               </p>
               <div className="flex items-center space-x-1">
                 <code className="text-[10px] bg-neutral-900 px-2 py-1 rounded border border-neutral-700 text-neutral-300 truncate flex-1 block">
@@ -119,7 +131,7 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
                 <button
                   onClick={copyToken}
                   className="p-1.5 hover:bg-neutral-700 rounded transition-colors shrink-0"
-                  title="Copy token"
+                  title={t("actions.copyToken")}
                 >
                   {copiedToken ? (
                     <Check className="w-3 h-3 text-emerald-400" />
@@ -143,11 +155,11 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
       <div className="flex items-center justify-between mt-6">
         <div className="flex items-center space-x-4">
           <div className="flex flex-col">
-            <span className="text-[11px] text-neutral-500 uppercase tracking-wider font-medium">Group</span>
-            <span className="text-xs text-neutral-300">{domain.group}</span>
+            <span className="text-[11px] text-neutral-500 uppercase tracking-wider font-medium">{t("labels.group")}</span>
+            <span className="text-xs text-neutral-300">{groupLabel}</span>
           </div>
           <div className="flex flex-col border-l border-neutral-800 pl-4">
-            <span className="text-[11px] text-neutral-500 uppercase tracking-wider font-medium">Updated</span>
+            <span className="text-[11px] text-neutral-500 uppercase tracking-wider font-medium">{t("labels.updated")}</span>
             <span className="text-xs text-neutral-300">{domain.updatedAt}</span>
           </div>
         </div>
@@ -162,11 +174,11 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
               className="text-xs h-8 px-3 border-neutral-700 hover:bg-neutral-800"
             >
               <RefreshCw className={`w-3 h-3 mr-1.5 ${verifying ? 'animate-spin' : ''}`} />
-              {verifying ? 'Checking...' : 'Verify'}
+              {verifying ? t("actions.checking") : t("actions.verify")}
             </Button>
           )}
           <Link href={domain.pathName as any} className="text-neutral-400 hover:text-neutral-100 text-xs font-medium border border-neutral-800 px-3 py-1.5 rounded-md hover:bg-neutral-900 transition-all">
-            Edit
+            {t("actions.edit")}
           </Link>
         </div>
       </div>

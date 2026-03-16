@@ -26,7 +26,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
   return (
     <ShaderBackground>
-      <div className="min-h-screen w-full flex flex-col bg-transparent relative">
+      <div className="min-h-svh w-full flex flex-col bg-transparent relative">
         <Header />
 
         <main className="flex-1 z-10 w-full">
@@ -87,7 +87,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
           {/* Article Content */}
           <article className="container mx-auto px-4 max-w-3xl pb-24">
-            <div className="prose prose-invert prose-lg max-w-none prose-headings:font-light prose-headings:tracking-tight prose-p:text-white/60 prose-p:leading-relaxed prose-p:font-light prose-a:text-violet-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/80 prose-code:text-violet-200 prose-code:bg-white/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-blockquote:border-violet-500/30 prose-blockquote:text-white/40 prose-li:text-white/60 prose-img:rounded-xl prose-img:border prose-img:border-white/[0.06]">
+            <div className="prose prose-invert prose-lg max-w-none prose-headings:font-light prose-headings:tracking-tight prose-p:text-white/60 prose-p:leading-relaxed prose-p:font-light prose-a:text-violet-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/80 prose-code:text-violet-200 prose-code:bg-white/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-blockquote:border-violet-500/30 prose-blockquote:text-white/40 prose-li:text-white/60 prose-img:rounded-xl prose-img:border prose-img:border-white/6">
               <Markdown>{post.content}</Markdown>
             </div>
           </article>

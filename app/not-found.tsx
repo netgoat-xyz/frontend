@@ -1,9 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 export default function NotFound() {
+  const t = useTranslations('ErrorPages.notFound')
+
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black font-sans text-white antialiased">
+    <div className="relative flex min-h-svh w-full flex-col items-center justify-center overflow-hidden bg-black font-sans text-white antialiased">
       {/* Spacey Grid Background */}
       <div className="absolute inset-0 z-0 opacity-20"
         style={{
@@ -20,7 +23,7 @@ export default function NotFound() {
         <div className="group relative select-none mx-auto h-64 w-full overflow-hidden rounded-xl border border-white/10 shadow-[0_0_50px_-12px_rgba(255,255,255,0.2)] transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_80px_-20px_rgba(255,255,255,0.4)]">
           <Image
             src="https://c.tenor.com/zXCbu7b7qA8AAAAd/tenor.gif"
-            alt="Pain"
+            alt={t('imageAlt')}
             fill
             className="object-cover opacity-90 w-full transition-opacity duration-500 group-hover:opacity-100"
             unoptimized
@@ -32,10 +35,10 @@ export default function NotFound() {
             404
           </h1>
           <h2 className="text-2xl font-medium tracking-tight text-gray-200">
-            Sector Not Found
+            {t('title')}
           </h2>
           <p className="text-sm text-gray-500">
-            These are not the droids you're looking for.
+            {t('description')}
           </p>
         </div>
 
@@ -44,7 +47,7 @@ export default function NotFound() {
           href="/dashboard"
           className="rounded-full bg-white px-8 py-2.5 text-sm font-semibold text-black transition-all hover:bg-gray-200 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black"
         >
-          Return to Control Room
+          {t('action')}
         </Link>
       </div>
     </div>

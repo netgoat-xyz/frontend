@@ -7,7 +7,7 @@ export default function Footer() {
   const t = useTranslations("HomePage.footer");
 
   return (
-    <footer className="relative z-20 py-16 px-6">
+    <footer className="relative z-20 py-16 px-4 sm:px-6">
       <div className="w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent mb-12" />
 
       <div className="max-w-5xl mx-auto">
@@ -16,7 +16,7 @@ export default function Footer() {
             {t("rights")}
           </p>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             <Link
               href={"/status" as any}
               className="text-xs font-light text-white/25 hover:text-white/50 transition-colors"

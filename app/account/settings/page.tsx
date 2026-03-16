@@ -67,7 +67,8 @@ export default function SettingsPage() {
   );
 
   return (
-    <div className="mx-6">
+    <div className="min-h-svh bg-neutral-950 text-white pb-20">
+      <div className="max-w-7xl mx-auto px-6 pt-10">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white tracking-tight">
           Settings
@@ -181,6 +182,7 @@ export default function SettingsPage() {
         onClose={() => setIsModalOpen(false)}
         integration={selectedIntegration}
       />
+      </div>
     </div>
   );
 }

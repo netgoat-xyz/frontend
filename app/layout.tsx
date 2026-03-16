@@ -73,7 +73,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className={`${inter.className} transition-all transform-gpu bg-neutral-950 text-white antialiased`}
+        className={`${inter.className} min-h-svh overflow-x-hidden transition-all transform-gpu bg-neutral-950 text-white antialiased`}
       >
         <Analytics />
         <NextIntlClientProvider messages={messages}>
@@ -83,7 +83,7 @@ export default async function RootLayout({
             settings={settings}
             doNotShowBanner={["/blog", "/auth", "/", "/status"]}
           />
-          <main>{children}</main>
+          <main className="min-h-svh w-full">{children}</main>
         </NextIntlClientProvider>
         <SpeedInsights />
       </body>

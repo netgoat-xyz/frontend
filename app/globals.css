@@ -1,3 +1,4 @@
+@import "highlight.js/styles/github-dark.css";
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -147,4 +148,54 @@
 .mask-gradient-b {
   mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+
+@layer components {
+  .docs-prose {
+    @apply prose-headings:font-light prose-headings:text-white prose-headings:tracking-tight prose-p:font-light prose-p:text-white/60 prose-p:leading-relaxed prose-li:font-light prose-li:text-white/60 prose-strong:text-white/90 prose-strong:font-normal prose-code:text-white/80 prose-code:font-light prose-pre:text-white/70;
+  }
+
+  .docs-prose :where(a) {
+    @apply text-white border-b border-white/20 no-underline transition-all hover:border-white hover:text-white pb-0.5;
+  }
+
+  .docs-prose :where(hr) {
+    @apply border-white/6;
+  }
+
+  .docs-prose :where(h1) {
+    @apply text-4xl md:text-5xl tracking-tight mb-8;
+  }
+
+  .docs-prose :where(h2) {
+    @apply text-2xl md:text-3xl tracking-tight mt-12 mb-6;
+  }
+
+  .docs-prose :where(h3) {
+    @apply text-xl md:text-2xl mt-8 mb-4;
+  }
+
+  .docs-prose :where(blockquote) {
+    @apply rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-white/50 backdrop-blur-lg;
+  }
+
+  .docs-prose :where(code):not(:where(pre code)) {
+    @apply rounded-lg border border-white/6 bg-white/[0.03] px-1.5 py-0.5 text-[0.85em] font-mono shadow-sm;
+  }
+
+  .docs-prose :where(pre) {
+    @apply rounded-3xl border border-white/6 bg-black/40 shadow-2xl p-6;
+  }
+
+  .docs-prose :where(table) {
+    @apply w-full overflow-hidden rounded-2xl border border-white/6 bg-white/[0.02] backdrop-blur-xl shadow-xl;
+  }
+
+  .docs-prose :where(thead) {
+    @apply bg-white/5 border-b border-white/6;
+  }
+
+  .docs-prose :where(th, td) {
+    @apply border-b border-white/6 p-4 font-light text-white/60;
+  }
 }

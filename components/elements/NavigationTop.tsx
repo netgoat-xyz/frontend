@@ -170,8 +170,8 @@ export default function NavigationTop() {
   return (
     <div className="flex flex-col bg-neutral-950 text-white">
       <nav className="sticky top-0 z-50 w-full flex-none flex flex-col">
-        <div className="bg-neutral-900 border-b border-neutral-800 w-full h-16 px-4 md:px-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="bg-neutral-900 border-b border-neutral-800 w-full h-16 px-4 md:px-6 flex items-center justify-between min-w-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <Link href="/dashboard" aria-label="Home">
               <Image
                 src="/branding/netgoat_no_text.png"
@@ -184,7 +184,7 @@ export default function NavigationTop() {
 
             <SlashSeparator />
 
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
               {isAccount && (
                 <>
                   My Account
@@ -194,7 +194,7 @@ export default function NavigationTop() {
 
               {isAdmin && (
                 <>
-                  <span className="text-sm font-medium">Administration</span>
+                  <span className="text-sm font-medium truncate">Administration</span>
                   <NavSelectDrapdown />
                 </>
               )}
@@ -223,7 +223,7 @@ export default function NavigationTop() {
                       <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center text-[10px] font-bold">
                         {teamData?.name?.[0]?.toUpperCase() || teamName[0].toUpperCase()}
                       </div>
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-medium truncate max-w-32 sm:max-w-48">
                         {teamData?.name || decodeURIComponent(teamName)}
                       </span>
                     </>
@@ -235,7 +235,7 @@ export default function NavigationTop() {
               {!isAccount && !isAdmin && domainName && (
                 <>
                   <SlashSeparator />
-                  <span className="text-sm font-medium">
+                  <span className="text-sm font-medium truncate max-w-28 sm:max-w-44">
                     {decodeURIComponent(domainName)}
                   </span>
                 </>
@@ -243,14 +243,14 @@ export default function NavigationTop() {
 
               {!isAccount && !isAdmin && teamName && <SlashSeparator />}
               {!isAccount && !isAdmin && activeTitle !== "Teams" && (
-                <span className="text-sm font-medium text-neutral-400">
+                <span className="hidden sm:inline text-sm font-medium text-neutral-400 truncate">
                   {activeTitle}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <div className="cursor-pointer hidden md:flex items-center bg-neutral-900 border border-neutral-800 rounded-md px-3 py-1.5 w-64 text-neutral-400 focus-within:border-neutral-500 transition-colors">
               <SearchIcon />
               <input

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import IntegrationCard from "../integrations/integrationCard";
 import IntegrationModal from "../integrations/components/integrationModel";
+import { useTranslations } from "next-intl";
 
 
 interface Integration {
@@ -56,12 +57,25 @@ const categories = [
 ];
 
 export default function SettingsPage() {
+  const t = useTranslations("DashboardPages.settings");
   const [activeSection, setActiveSection] = useState("General");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIntegration, setSelectedIntegration] =
     useState<Integration | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 const [name, setName] = useState("Netgoat");
+
+  const getSectionLabel = (section: string) => {
+    if (section === "General") return t("sections.general");
+    if (section === "Billing") return t("sections.billing");
+    if (section === "Invoices") return t("sections.invoices");
+    if (section === "Members") return t("sections.members");
+    if (section === "Access Groups") return t("sections.accessGroups");
+    if (section === "Webhooks") return t("sections.webhooks");
+    if (section === "Security & Privacy") return t("sections.securityPrivacy");
+    if (section === "Apps & Integrations") return t("sections.appsIntegrations");
+    return section;
+  };
 
   const filteredIntegrations = integrations.filter((i) =>
     i.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -77,10 +91,10 @@ const [name, setName] = useState("Netgoat");
       />
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white tracking-tight">
-          Settings
+          {t("title")}
         </h1>
         <p className="text-neutral-400 mt-2">
-          Manage workspace, security, billing, and integrations.
+          {t("description")}
         </p>
       </div>
 
@@ -103,7 +117,7 @@ const [name, setName] = useState("Netgoat");
                     className="absolute left-0 w-1 h-4 bg-white rounded-r-full"
                   />
                 )}
-                <span className="ml-2">{cat}</span>
+                <span className="ml-2">{getSectionLabel(cat)}</span>
               </button>
             ))}
           </nav>
@@ -117,11 +131,11 @@ const [name, setName] = useState("Netgoat");
           {/* Main Content Area */}
           <div className="p-6">
             <h4 className="text-xl font-semibold text-white tracking-tight leading-8">
-              Team Name
+              {t("general.teamNameTitle")}
             </h4>
             
             <p className="text-[14px] leading-6 text-neutral-400 mt-2 mb-4">
-              This is your team's visible name within Netgoat. For example, the name of your company or department.
+              {t("general.teamNameDescription")}
             </p>
 
             <div className="relative max-w-sm">
@@ -140,14 +154,14 @@ const [name, setName] = useState("Netgoat");
           {/* Footer Area */}
           <footer className="bg-neutral-800/70 border-t border-neutral-700/65 px-6 py-3 flex items-center justify-between">
             <div className="text-[13px] text-neutral-500">
-              Please use 32 characters at maximum.
+              {t("general.teamNameHint")}
             </div>
             
             <button
               type="submit"
               className="bg-white text-black text-sm font-medium px-4 py-1.5 rounded-md hover:bg-neutral-200 active:scale-[0.98] transition-all"
             >
-              Save
+              {t("actions.save")}
             </button>
           </footer>
         </div>
@@ -160,7 +174,7 @@ const [name, setName] = useState("Netgoat");
               <div className="relative mb-6">
                 <input
                   type="text"
-                  placeholder="Search integrations..."
+                  placeholder={t("searchIntegrationsPlaceholder")}
                   className="w-full bg-black border border-neutral-800 rounded-lg py-2.5 px-4 text-sm text-neutral-200 focus:outline-none focus:border-neutral-600"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}

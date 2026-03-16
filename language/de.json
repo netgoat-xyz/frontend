@@ -81,6 +81,513 @@
       "rights": "© 2026 NetGoat Inc. Alle Rechte vorbehalten."
     }
   },
+  "ErrorPages": {
+    "serverError": {
+      "title": "Systemfehler",
+      "description": "Houston, wir haben ein Problem.",
+      "action": "Erneut versuchen?",
+      "imageAlt": "Serverfehler-Animation"
+    },
+    "notFound": {
+      "title": "Sektor nicht gefunden",
+      "description": "Das sind nicht die Droiden, die Sie suchen.",
+      "action": "Zuruck zum Kontrollraum",
+      "imageAlt": "Nicht-gefunden-Animation"
+    },
+    "forbidden": {
+      "title": "Zugriff verweigert",
+      "description": "Sie haben keine Berechtigung fur diesen Bereich.",
+      "action": "Bitte umkehren",
+      "imageAlt": "Animation fur verweigerten Zugriff"
+    }
+  },
+  "DashboardPages": {
+    "activity": {
+      "title": "Activity"
+    },
+    "homeToolbar": {
+      "searchPlaceholder": "Search domains...",
+      "filterLabel": "Filter domains",
+      "toggleLayout": "Toggle domain layout",
+      "filters": {
+        "all": "All domains",
+        "verified": "Verified only",
+        "needsVerification": "Needs verification"
+      },
+      "actions": {
+        "addNew": "Add New...",
+        "addSection": "Add New",
+        "domain": "Domain",
+        "group": "Group"
+      }
+    },
+    "homeDomains": {
+      "noMatchingTitle": "No matching domains",
+      "noMatchingDescription": "Adjust search or filter settings to find the domain you are looking for.",
+      "emptyTitle": "No domains yet",
+      "emptyDescription": "Add your first domain to start protecting your applications with NetGoat",
+      "time": {
+        "today": "Today",
+        "daysAgo": "{count}d ago",
+        "monthsAgo": "{count}mo ago"
+      },
+      "actions": {
+        "createDomain": "Create Domain",
+        "viewAll": "View All {count} Domains"
+      },
+      "card": {
+        "status": {
+          "valid": "Valid",
+          "inactive": "Inactive",
+          "invalidConfiguration": "Invalid Configuration"
+        },
+        "group": {
+          "production": "Production",
+          "preview": "Preview"
+        },
+        "labels": {
+          "group": "Group",
+          "updated": "Updated"
+        },
+        "verification": {
+          "title": "Domain needs verification",
+          "addTxt": "Add this TXT record to"
+        },
+        "messages": {
+          "verifiedSuccess": "✓ Domain verified successfully!",
+          "verifyFailed": "Verification failed. Please check your DNS records.",
+          "verifyRequestFailed": "Failed to verify domain"
+        },
+        "actions": {
+          "copyToken": "Copy token",
+          "checking": "Checking...",
+          "verify": "Verify",
+          "edit": "Edit"
+        }
+      }
+    },
+    "integrations": {
+      "title": "Integrations",
+      "description": "Extend your workflow with over 100+ tools for monitoring, databases, and more.",
+      "searchPlaceholder": "Search integrations...",
+      "empty": "No integrations found.",
+      "categories": {
+        "all": "All",
+        "cloud": "Cloud",
+        "networking": "Networking",
+        "monitoring": "Monitoring",
+        "security": "Security"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Manage workspace, security, billing, and integrations.",
+      "searchIntegrationsPlaceholder": "Search integrations...",
+      "sections": {
+        "general": "General",
+        "billing": "Billing",
+        "invoices": "Invoices",
+        "members": "Members",
+        "accessGroups": "Access Groups",
+        "webhooks": "Webhooks",
+        "securityPrivacy": "Security & Privacy",
+        "appsIntegrations": "Apps & Integrations"
+      },
+      "general": {
+        "teamNameTitle": "Team Name",
+        "teamNameDescription": "This is your team's visible name within Netgoat. For example, the name of your company or department.",
+        "teamNameHint": "Please use 32 characters at maximum."
+      },
+      "actions": {
+        "save": "Save"
+      }
+    },
+    "domain": {
+      "notFound": {
+        "title": "Domain not found",
+        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+      }
+    },
+    "subdomains": {
+      "notFound": {
+        "title": "Domain not found",
+        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+      },
+      "title": "Subdomains ({count})",
+      "target": "Target",
+      "requests": "{count} reqs",
+      "empty": "No subdomains configured yet.",
+      "actions": {
+        "add": "Add Subdomain"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      }
+    },
+    "reverseProxy": {
+      "notFound": {
+        "title": "Domain not found",
+        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+      },
+      "title": "Reverse Proxies (Upstreams)",
+      "fallbackTarget": "Fallback Root Target URL",
+      "empty": "No reverse proxy rules configured. Traffic routes to the default target.",
+      "fields": {
+        "ruleName": "Rule Name",
+        "routePath": "Route Path",
+        "targetUrl": "Target URL"
+      },
+      "placeholders": {
+        "ruleName": "e.g. API Target",
+        "routePath": "e.g. /api/*",
+        "targetUrl": "e.g. https://api.mybackend.com"
+      },
+      "actions": {
+        "addUpstream": "Add Upstream Target",
+        "cancel": "Cancel",
+        "saveRule": "Save Rule"
+      },
+      "status": {
+        "active": "Active",
+        "disabled": "Disabled"
+      },
+      "errors": {
+        "nameAndTargetRequired": "Name and Target URL are required",
+        "addFailed": "Failed to add reverse proxy",
+        "removeFailed": "Failed to remove"
+      },
+      "toasts": {
+        "added": "Reverse Proxy added",
+        "removed": "Removed"
+      }
+    },
+    "teamMembers": {
+      "title": "Team Members",
+      "description": "Manage your team members and their privileges.",
+      "searchPlaceholder": "Search by name or email...",
+      "totalMembers": "{count} Total Members",
+      "roles": {
+        "owner": "Owner",
+        "member": "Member",
+        "billing": "Billing"
+      },
+      "actions": {
+        "inviteMember": "Invite Member",
+        "copy": "Copy"
+      },
+      "inviteLink": {
+        "title": "Invite link",
+        "description": "Share this link to invite people to your team.",
+        "caption": "Anyone with the link can request access."
+      },
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "Pending",
+        "active": "Active"
+      }
+    },
+    "newDomain": {
+      "projectFallback": "Project",
+      "backTo": "Back to {name}",
+      "title": "Add Domain to {teamName}",
+      "steps": {
+        "domain": "Domain",
+        "verify": "Verify"
+      },
+      "input": {
+        "title": "What's your domain?",
+        "description": "Enter the exact domain you want to protect with NetGoat. You can add subdomains later.",
+        "placeholder": "e.g. yourwebsite.com"
+      },
+      "verify": {
+        "title": "Verify Ownership",
+        "description": "Add the following TXT record to your DNS provider to prove you own this domain.",
+        "verifiedTitle": "Domain Verified",
+        "verifiedDescription": "Your domain has been successfully added to NetGoat.",
+        "ready": "Domain is fully validated and ready for routing.",
+        "propagationHint": "DNS changes may take a few minutes to propagate. You can click Verify now, or bypass for immediate use.",
+        "fields": {
+          "type": "Type",
+          "name": "Name",
+          "value": "Value"
+        }
+      },
+      "actions": {
+        "continue": "Continue",
+        "back": "Back",
+        "verify": "Verify",
+        "verifying": "Verifying...",
+        "preparing": "Preparing verification...",
+        "bypass": "Bypass",
+        "bypassTitle": "Bypass verification for testing"
+      },
+      "errors": {
+        "enterDomain": "Please enter a domain name",
+        "invalidDomain": "Please enter a valid domain name (e.g. example.com)",
+        "tokenFailed": "Failed to generate verification token",
+        "verifyFailed": "Verification failed. Please check your DNS settings and try again.",
+        "propagation": "Verification failed. DNS records might take time to propagate.",
+        "createFailed": "Failed to create domain",
+        "generic": "Something went wrong"
+      },
+      "toasts": {
+        "verified": "Domain verified successfully!",
+        "added": "Domain added",
+        "bypassAdded": "Domain verified and added!",
+        "copied": "Copied to clipboard"
+      }
+    },
+    "teamDns": {
+      "title": "DNS Records",
+      "subtitle": "Manage DNS records for your domains",
+      "emptyDomainsTitle": "No domains yet",
+      "emptyRecordsTitle": "No DNS records",
+      "emptyDomains": "Add a domain first to manage DNS records",
+      "emptyRecords": "Add your first DNS record to get started",
+      "emptyFilter": "No {type} records found",
+      "zonePlaceholder": "example.com. 3600 IN A 192.0.2.1\nwww 3600 IN CNAME example.com.\nmail 3600 IN MX 10 mail.example.com.",
+      "fields": {
+        "type": "Type",
+        "name": "Name",
+        "namePlaceholder": "@ or subdomain",
+        "rootHint": "@ = root domain",
+        "value": "Value",
+        "ttl": "TTL (seconds)",
+        "ttlHint": "Default: 3600 (1 hour)",
+        "priority": "Priority",
+        "proxied": "Proxied (requests go through NetGoat)"
+      },
+      "filters": {
+        "domain": "Domain",
+        "selectDomain": "Select domain",
+        "recordType": "Record Type Filter",
+        "typeOptions": {
+          "all": "All Types",
+          "A": "A Records",
+          "AAAA": "AAAA Records",
+          "CNAME": "CNAME Records",
+          "MX": "MX Records",
+          "TXT": "TXT Records",
+          "NS": "NS Records",
+          "SRV": "SRV Records",
+          "CAA": "CAA Records"
+        }
+      },
+      "recordTypeOptions": {
+        "A": "A (IPv4)",
+        "AAAA": "AAAA (IPv6)",
+        "CNAME": "CNAME (Alias)",
+        "MX": "MX (Mail)",
+        "TXT": "TXT (Text)",
+        "NS": "NS (Name Server)",
+        "SRV": "SRV (Service)",
+        "CAA": "CAA (Certificate)"
+      },
+      "typeInfo": {
+        "a": {
+          "placeholder": "192.0.2.1",
+          "description": "IPv4 address"
+        },
+        "aaaa": {
+          "placeholder": "2001:0db8::1",
+          "description": "IPv6 address"
+        },
+        "cname": {
+          "placeholder": "example.com",
+          "description": "Canonical name (alias)"
+        },
+        "mx": {
+          "placeholder": "mail.example.com",
+          "description": "Mail server (requires priority)"
+        },
+        "txt": {
+          "placeholder": "v=spf1 include:_spf.example.com ~all",
+          "description": "Text record"
+        },
+        "ns": {
+          "placeholder": "ns1.example.com",
+          "description": "Name server"
+        },
+        "srv": {
+          "placeholder": "10 5 5060 sip.example.com",
+          "description": "Service record"
+        },
+        "caa": {
+          "placeholder": "0 issue \"letsencrypt.org\"",
+          "description": "Certificate authority"
+        }
+      },
+      "status": {
+        "proxied": "Proxied",
+        "propagated": "propagated",
+        "failed": "failed",
+        "pending": "pending"
+      },
+      "records": {
+        "groupTitle": "{type} Records ({count})",
+        "ttl": "TTL",
+        "priority": "Priority"
+      },
+      "actions": {
+        "importZone": "Import Zone File",
+        "importRecords": "Import Records",
+        "addRecord": "Add Record",
+        "addDnsRecord": "Add DNS Record",
+        "checkPropagation": "Check propagation",
+        "createDnsRecord": "Create DNS Record",
+        "updateDnsRecord": "Update DNS Record"
+      },
+      "dialogs": {
+        "import": {
+          "title": "Import DNS Zone File",
+          "description": "Paste your zone file content to bulk import DNS records"
+        },
+        "add": {
+          "title": "Add DNS Record",
+          "description": "Create a new DNS record for {domain}"
+        },
+        "edit": {
+          "title": "Edit DNS Record",
+          "description": "Update the DNS record for {domain}"
+        }
+      },
+      "errors": {
+        "selectDomain": "Please select a domain",
+        "nameValueRequired": "Name and value are required",
+        "zoneRequired": "Domain and zone file content are required",
+        "noValidRecords": "No valid DNS records found in zone file"
+      },
+      "confirm": {
+        "deleteRecord": "Delete this DNS record?"
+      },
+      "toasts": {
+        "created": "DNS record created",
+        "updated": "DNS record updated",
+        "deleted": "DNS record deleted",
+        "propagated": "DNS record has propagated",
+        "stillPropagating": "DNS record is still propagating...",
+        "imported": "Imported {success} DNS records, {failed} failed"
+      }
+    },
+    "teamWaf": {
+      "title": "WAF Rules",
+      "loading": "Loading WAF configuration...",
+      "subtitle": "Configure Web Application Firewall rules to protect your domains",
+      "emptyDomainsTitle": "No domains yet",
+      "emptyDomains": "Add a domain first to configure WAF rules",
+      "fields": {
+        "ruleName": "Rule Name",
+        "action": "Action",
+        "expression": "Expression",
+        "priority": "Priority (0-100)",
+        "target": "Target",
+        "description": "Description (Optional)",
+        "selectDomain": "Select Domain:",
+        "selectDomainPlaceholder": "Select a domain"
+      },
+      "placeholders": {
+        "ruleName": "block-sql-injection",
+        "expression": "contains(request.path, 'SELECT')",
+        "description": "Brief description of what this rule does"
+      },
+      "hints": {
+        "expressionFunctions": "Use functions like contains(), matches(), startsWith(), endsWith()",
+        "priority": "Higher = evaluated first"
+      },
+      "actionOptions": {
+        "block": "Block (deny request)",
+        "allow": "Allow (permit request)",
+        "log": "Log (allow but record)"
+      },
+      "targetOptions": {
+        "domain": "Domain-level"
+      },
+      "dialogs": {
+        "add": {
+          "title": "Add WAF Rule",
+          "description": "Create a custom WAF rule to protect against threats"
+        }
+      },
+      "actions": {
+        "addRule": "Add WAF Rule",
+        "createRule": "Create WAF Rule",
+        "addFirstRule": "Add First Rule",
+        "addSubdomainRule": "Add Subdomain Rule"
+      },
+      "tabs": {
+        "domainRules": "Domain Rules ({count})"
+      },
+      "cards": {
+        "domainRules": {
+          "title": "Domain-Level WAF Rules",
+          "description": "These rules apply to {domain} and all its subdomains"
+        },
+        "subdomainRules": {
+          "title": "WAF Rules for {domain}",
+          "description": "Subdomain-specific rules in addition to domain-level rules"
+        }
+      },
+      "labels": {
+        "priority": "Priority"
+      },
+      "empty": {
+        "domainRules": "No WAF rules configured for this domain",
+        "subdomainRules": "No subdomain-specific WAF rules"
+      },
+      "expression": {
+        "title": "WAF Expression Language",
+        "availableProperties": "Available Properties:",
+        "functionsTitle": "Functions:",
+        "properties": {
+          "path": "request.path - URL path (e.g., /api/users)",
+          "method": "request.method - HTTP method (GET, POST, etc.)",
+          "ip": "request.ip - Client IP address",
+          "country": "request.country - Country code",
+          "userAgent": "request.user_agent - User-Agent header",
+          "rate": "request.rate - Requests per second"
+        }
+      },
+      "examples": {
+        "title": "Quick Examples",
+        "sqlInjection": {
+          "name": "SQL Injection Protection"
+        },
+        "xss": {
+          "name": "XSS Protection"
+        },
+        "rateLimit": {
+          "name": "Rate Limiting"
+        },
+        "geoBlock": {
+          "name": "Geographic Block"
+        },
+        "botDetection": {
+          "name": "Bot Detection"
+        }
+      },
+      "subdomain": {
+        "rulesStillApply": "Domain-level rules still apply"
+      },
+      "errors": {
+        "selectDomain": "Please select a domain",
+        "nameExpressionRequired": "Name and expression are required"
+      },
+      "confirm": {
+        "deleteRule": "Delete WAF rule \"{ruleName}\"?"
+      },
+      "toasts": {
+        "addedToSubdomain": "WAF rule added to {subdomain}",
+        "addedToDomain": "WAF rule added to domain",
+        "deleted": "WAF rule deleted"
+      }
+    }
+  },
   "Auth": {
     "welcome_back": "Willkommen zurück",
     "create_account": "Konto erstellen",
@@ -102,5 +609,20 @@
     "usage": "Nutzung",
     "alerts": "Warnungen",
     "domains": "Domains"
+  },
+  "DashboardMeta": {
+    "titleTemplate": "{team} | Team {page}",
+    "teamsTitleTemplate": "Netgoat | Teams {page}",
+    "descriptionTemplate": "Manage {page} for the {team} team on NetGoat.",
+    "pages": {
+      "overview": "Overview",
+      "integrations": "Integrations",
+      "settings": "Settings",
+      "activity": "Activity",
+      "domains": "Domains",
+      "dns": "DNS",
+      "waf": "WAF",
+      "new": "New"
+    }
   }
 }

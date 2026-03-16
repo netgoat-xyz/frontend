@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 import { Globe, Plus, Edit, Trash2, RefreshCw, Upload, Check, AlertCircle, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type DNSRecordType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'TXT' | 'NS' | 'SRV' | 'CAA'
 
@@ -34,6 +35,7 @@ interface DNSRecord {
 }
 
 export default function DNSPage() {
+  const t = useTranslations('DashboardPages.teamDns')
   const params = useParams()
   const searchParams = useSearchParams()
   const teamSlug = params.teamName as string
@@ -105,12 +107,12 @@ export default function DNSPage() {
 
   const handleCreateRecord = async () => {
     if (!selectedDomain) {
-      toast.error('Please select a domain')
+      toast.error(t('errors.selectDomain'))
       return
     }
 
     if (!newRecord.name || !newRecord.value) {
-      toast.error('Name and value are required')
+      toast.error(t('errors.nameValueRequired'))
       return
     }
 
@@ -126,7 +128,7 @@ export default function DNSPage() {
         priority: newRecord.priority,
         proxied: newRecord.proxied
       })
-      toast.success('DNS record created')
+      toast.success(t('toasts.created'))
       setNewRecord({ name: '@', type: 'A', value: '', ttl: 3600, priority: 10, proxied: true })
       setCreateOpen(false)
       await loadDNSRecords()
@@ -149,7 +151,7 @@ export default function DNSPage() {
         priority: editingRecord.priority,
         proxied: editingRecord.proxied
       })
-      toast.success('DNS record updated')
+      toast.success(t('toasts.updated'))
       setEditingRecord(null)
       await loadDNSRecords()
     } catch (error: any) {
@@ -160,12 +162,12 @@ export default function DNSPage() {
   }
 
   const handleDeleteRecord = async (recordId: string) => {
-    if (!confirm('Delete this DNS record?')) return
+    if (!confirm(t('confirm.deleteRecord'))) return
 
     try {
       setLoading(true)
       await deleteDNSRecord(teamSlug, recordId)
-      toast.success('DNS record deleted')
+      toast.success(t('toasts.deleted'))
       await loadDNSRecords()
     } catch (error: any) {
       toast.error(error.message)
@@ -178,9 +180,9 @@ export default function DNSPage() {
     try {
       const result = await checkDNSPropagation(teamSlug, recordId)
       if (result.propagated) {
-        toast.success('DNS record has propagated')
+        toast.success(t('toasts.propagated'))
       } else {
-        toast.info('DNS record is still propagating...')
+        toast.info(t('toasts.stillPropagating'))
       }
       await loadDNSRecords()
     } catch (error: any) {
@@ -258,7 +260,7 @@ export default function DNSPage() {
 
   const handleBulkImport = async () => {
     if (!selectedDomain || !zoneFileContent.trim()) {
-      toast.error('Domain and zone file content are required')
+      toast.error(t('errors.zoneRequired'))
       return
     }
 
@@ -266,12 +268,12 @@ export default function DNSPage() {
       setLoading(true)
       const parsedRecords = parseZoneFile(zoneFileContent)
       if (parsedRecords.length === 0) {
-        toast.error('No valid DNS records found in zone file')
+        toast.error(t('errors.noValidRecords'))
         setLoading(false)
         return
       }
       const result = await bulkImportDNS(teamSlug, selectedDomain._id, parsedRecords)
-      toast.success(`Imported ${result.success} DNS records${result.failed > 0 ? `, ${result.failed} failed` : ''}`)
+      toast.success(t('toasts.imported', { success: result.success, failed: result.failed }))
       if (result.errors.length > 0) {
         console.error('Import errors:', result.errors)
       }
@@ -286,14 +288,20 @@ export default function DNSPage() {
   }
 
   const recordTypeInfo: Record<DNSRecordType, { placeholder: string; description: string }> = {
-    A: { placeholder: '192.0.2.1', description: 'IPv4 address' },
-    AAAA: { placeholder: '2001:0db8::1', description: 'IPv6 address' },
-    CNAME: { placeholder: 'example.com', description: 'Canonical name (alias)' },
-    MX: { placeholder: 'mail.example.com', description: 'Mail server (requires priority)' },
-    TXT: { placeholder: 'v=spf1 include:_spf.example.com ~all', description: 'Text record' },
-    NS: { placeholder: 'ns1.example.com', description: 'Name server' },
-    SRV: { placeholder: '10 5 5060 sip.example.com', description: 'Service record' },
-    CAA: { placeholder: '0 issue "letsencrypt.org"', description: 'Certificate authority' }
+    A: { placeholder: t('typeInfo.a.placeholder'), description: t('typeInfo.a.description') },
+    AAAA: { placeholder: t('typeInfo.aaaa.placeholder'), description: t('typeInfo.aaaa.description') },
+    CNAME: { placeholder: t('typeInfo.cname.placeholder'), description: t('typeInfo.cname.description') },
+    MX: { placeholder: t('typeInfo.mx.placeholder'), description: t('typeInfo.mx.description') },
+    TXT: { placeholder: t('typeInfo.txt.placeholder'), description: t('typeInfo.txt.description') },
+    NS: { placeholder: t('typeInfo.ns.placeholder'), description: t('typeInfo.ns.description') },
+    SRV: { placeholder: t('typeInfo.srv.placeholder'), description: t('typeInfo.srv.description') },
+    CAA: { placeholder: t('typeInfo.caa.placeholder'), description: t('typeInfo.caa.description') }
+  }
+
+  const translatePropagationStatus = (status: DNSRecord['propagation_status']) => {
+    if (status === 'propagated') return t('status.propagated')
+    if (status === 'failed') return t('status.failed')
+    return t('status.pending')
   }
 
   const filteredRecords = filterType === 'all'
@@ -310,15 +318,15 @@ export default function DNSPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">DNS Records</h1>
-          <p className="text-muted-foreground mt-2">Manage DNS records for your domains</p>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground mt-2">{t('subtitle')}</p>
         </div>
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Globe className="w-12 h-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No domains yet</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('emptyDomainsTitle')}</h3>
             <p className="text-muted-foreground text-center mb-4">
-              Add a domain first to manage DNS records
+              {t('emptyDomains')}
             </p>
           </CardContent>
         </Card>
@@ -331,9 +339,9 @@ export default function DNSPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">DNS Records</h1>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground mt-2">
-            Manage DNS records for your domains
+            {t('subtitle')}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -341,19 +349,19 @@ export default function DNSPage() {
             <DialogTrigger>
               <Button variant="outline">
                 <Upload className="w-4 h-4 mr-2" />
-                Import Zone File
+                {t('actions.importZone')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-150">
               <DialogHeader>
-                <DialogTitle>Import DNS Zone File</DialogTitle>
+                <DialogTitle>{t('dialogs.import.title')}</DialogTitle>
                 <DialogDescription>
-                  Paste your zone file content to bulk import DNS records
+                  {t('dialogs.import.description')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <Textarea
-                  placeholder="example.com. 3600 IN A 192.0.2.1&#10;www 3600 IN CNAME example.com.&#10;mail 3600 IN MX 10 mail.example.com."
+                  placeholder={t('zonePlaceholder')}
                   rows={12}
                   value={zoneFileContent}
                   onChange={(e) => setZoneFileContent(e.target.value)}
@@ -361,7 +369,7 @@ export default function DNSPage() {
                 />
                 <Button onClick={handleBulkImport} disabled={loading} className="w-full">
                   {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
-                  Import Records
+                  {t('actions.importRecords')}
                 </Button>
               </div>
             </DialogContent>
@@ -371,20 +379,20 @@ export default function DNSPage() {
             <DialogTrigger>
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
-                Add Record
+                {t('actions.addRecord')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-150">
               <DialogHeader>
-                <DialogTitle>Add DNS Record</DialogTitle>
+                <DialogTitle>{t('dialogs.add.title')}</DialogTitle>
                 <DialogDescription>
-                  Create a new DNS record for {selectedDomain?.domain}
+                  {t('dialogs.add.description', { domain: selectedDomain?.domain || '' })}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="record-type">Type</Label>
+                    <Label htmlFor="record-type">{t('fields.type')}</Label>
                     <Select
                       value={newRecord.type}
                       onValueChange={(v) => v && setNewRecord({ ...newRecord, type: v as DNSRecordType })}
@@ -393,14 +401,14 @@ export default function DNSPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="A">A (IPv4)</SelectItem>
-                        <SelectItem value="AAAA">AAAA (IPv6)</SelectItem>
-                        <SelectItem value="CNAME">CNAME (Alias)</SelectItem>
-                        <SelectItem value="MX">MX (Mail)</SelectItem>
-                        <SelectItem value="TXT">TXT (Text)</SelectItem>
-                        <SelectItem value="NS">NS (Name Server)</SelectItem>
-                        <SelectItem value="SRV">SRV (Service)</SelectItem>
-                        <SelectItem value="CAA">CAA (Certificate)</SelectItem>
+                        <SelectItem value="A">{t('recordTypeOptions.A')}</SelectItem>
+                        <SelectItem value="AAAA">{t('recordTypeOptions.AAAA')}</SelectItem>
+                        <SelectItem value="CNAME">{t('recordTypeOptions.CNAME')}</SelectItem>
+                        <SelectItem value="MX">{t('recordTypeOptions.MX')}</SelectItem>
+                        <SelectItem value="TXT">{t('recordTypeOptions.TXT')}</SelectItem>
+                        <SelectItem value="NS">{t('recordTypeOptions.NS')}</SelectItem>
+                        <SelectItem value="SRV">{t('recordTypeOptions.SRV')}</SelectItem>
+                        <SelectItem value="CAA">{t('recordTypeOptions.CAA')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -408,21 +416,21 @@ export default function DNSPage() {
                     </p>
                   </div>
                   <div>
-                    <Label htmlFor="record-name">Name</Label>
+                    <Label htmlFor="record-name">{t('fields.name')}</Label>
                     <Input
                       id="record-name"
-                      placeholder="@ or subdomain"
+                      placeholder={t('fields.namePlaceholder')}
                       value={newRecord.name}
                       onChange={(e) => setNewRecord({ ...newRecord, name: e.target.value })}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      @ = root domain
+                      {t('fields.rootHint')}
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="record-value">Value</Label>
+                  <Label htmlFor="record-value">{t('fields.value')}</Label>
                   <Input
                     id="record-value"
                     placeholder={recordTypeInfo[newRecord.type].placeholder}
@@ -433,7 +441,7 @@ export default function DNSPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="record-ttl">TTL (seconds)</Label>
+                    <Label htmlFor="record-ttl">{t('fields.ttl')}</Label>
                     <Input
                       id="record-ttl"
                       type="number"
@@ -441,12 +449,12 @@ export default function DNSPage() {
                       onChange={(e) => setNewRecord({ ...newRecord, ttl: parseInt(e.target.value) || 3600 })}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Default: 3600 (1 hour)
+                      {t('fields.ttlHint')}
                     </p>
                   </div>
                   {(newRecord.type === 'MX' || newRecord.type === 'SRV') && (
                     <div>
-                      <Label htmlFor="record-priority">Priority</Label>
+                      <Label htmlFor="record-priority">{t('fields.priority')}</Label>
                       <Input
                         id="record-priority"
                         type="number"
@@ -464,12 +472,12 @@ export default function DNSPage() {
                     onCheckedChange={(checked) => setNewRecord({ ...newRecord, proxied: checked })}
                   />
                   <Label htmlFor="proxied" className="cursor-pointer">
-                    Proxied (requests go through NetGoat)
+                    {t('fields.proxied')}
                   </Label>
                 </div>
 
                 <Button onClick={handleCreateRecord} disabled={loading} className="w-full">
-                  Create DNS Record
+                  {t('actions.createDnsRecord')}
                 </Button>
               </div>
             </DialogContent>
@@ -482,7 +490,7 @@ export default function DNSPage() {
         <CardContent className="pt-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="mb-2 block">Domain</Label>
+              <Label className="mb-2 block">{t('filters.domain')}</Label>
               <Select
                 value={selectedDomain?._id}
                 onValueChange={(domainId) => {
@@ -491,7 +499,7 @@ export default function DNSPage() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select domain" />
+                  <SelectValue placeholder={t('filters.selectDomain')} />
                 </SelectTrigger>
                 <SelectContent>
                   {domains.map((domain) => (
@@ -503,21 +511,21 @@ export default function DNSPage() {
               </Select>
             </div>
             <div>
-              <Label className="mb-2 block">Record Type Filter</Label>
+              <Label className="mb-2 block">{t('filters.recordType')}</Label>
               <Select value={filterType} onValueChange={(v) => v && setFilterType(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="A">A Records</SelectItem>
-                  <SelectItem value="AAAA">AAAA Records</SelectItem>
-                  <SelectItem value="CNAME">CNAME Records</SelectItem>
-                  <SelectItem value="MX">MX Records</SelectItem>
-                  <SelectItem value="TXT">TXT Records</SelectItem>
-                  <SelectItem value="NS">NS Records</SelectItem>
-                  <SelectItem value="SRV">SRV Records</SelectItem>
-                  <SelectItem value="CAA">CAA Records</SelectItem>
+                  <SelectItem value="all">{t('filters.typeOptions.all')}</SelectItem>
+                  <SelectItem value="A">{t('filters.typeOptions.A')}</SelectItem>
+                  <SelectItem value="AAAA">{t('filters.typeOptions.AAAA')}</SelectItem>
+                  <SelectItem value="CNAME">{t('filters.typeOptions.CNAME')}</SelectItem>
+                  <SelectItem value="MX">{t('filters.typeOptions.MX')}</SelectItem>
+                  <SelectItem value="TXT">{t('filters.typeOptions.TXT')}</SelectItem>
+                  <SelectItem value="NS">{t('filters.typeOptions.NS')}</SelectItem>
+                  <SelectItem value="SRV">{t('filters.typeOptions.SRV')}</SelectItem>
+                  <SelectItem value="CAA">{t('filters.typeOptions.CAA')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -536,13 +544,13 @@ export default function DNSPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Globe className="w-12 h-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No DNS records</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('emptyRecordsTitle')}</h3>
             <p className="text-muted-foreground text-center mb-4">
-              {filterType !== 'all' ? `No ${filterType} records found` : 'Add your first DNS record to get started'}
+              {filterType !== 'all' ? t('emptyFilter', { type: filterType }) : t('emptyRecords')}
             </p>
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
-              Add DNS Record
+              {t('actions.addDnsRecord')}
             </Button>
           </CardContent>
         </Card>
@@ -551,7 +559,7 @@ export default function DNSPage() {
           {Object.entries(groupedRecords).map(([type, records]) => (
             <Card key={type}>
               <CardHeader>
-                <CardTitle className="text-lg">{type} Records ({records.length})</CardTitle>
+                <CardTitle className="text-lg">{t('records.groupTitle', { type, count: records.length })}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -563,7 +571,7 @@ export default function DNSPage() {
                             <code className="font-mono text-sm font-semibold">{record.name}</code>
                             <Badge variant="outline">{record.type}</Badge>
                             {record.proxied && (
-                              <Badge variant="secondary">Proxied</Badge>
+                              <Badge variant="secondary">{t('status.proxied')}</Badge>
                             )}
                             <Badge variant={
                               record.propagation_status === 'propagated' ? 'default' :
@@ -571,13 +579,13 @@ export default function DNSPage() {
                             }>
                               {record.propagation_status === 'propagated' && <Check className="w-3 h-3 mr-1" />}
                               {record.propagation_status === 'failed' && <AlertCircle className="w-3 h-3 mr-1" />}
-                              {record.propagation_status}
+                              {translatePropagationStatus(record.propagation_status)}
                             </Badge>
                           </div>
                           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                             <span>→ <code className="font-mono">{record.value}</code></span>
-                            <span>TTL: {record.ttl}s</span>
-                            {record.priority && <span>Priority: {record.priority}</span>}
+                            <span>{t('records.ttl')}: {record.ttl}s</span>
+                            {record.priority && <span>{t('records.priority')}: {record.priority}</span>}
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -585,7 +593,7 @@ export default function DNSPage() {
                             size="sm"
                             variant="ghost"
                             onClick={() => handleCheckPropagation(record._id)}
-                            title="Check propagation"
+                            title={t('actions.checkPropagation')}
                           >
                             <RefreshCw className="w-4 h-4" />
                           </Button>
@@ -618,20 +626,20 @@ export default function DNSPage() {
       <Dialog open={!!editingRecord} onOpenChange={(open) => !open && setEditingRecord(null)}>
         <DialogContent className="sm:max-w-150">
           <DialogHeader>
-            <DialogTitle>Edit DNS Record</DialogTitle>
+            <DialogTitle>{t('dialogs.edit.title')}</DialogTitle>
             <DialogDescription>
-              Update the DNS record for {selectedDomain?.domain}
+              {t('dialogs.edit.description', { domain: selectedDomain?.domain || '' })}
             </DialogDescription>
           </DialogHeader>
           {editingRecord && (
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Type</Label>
+                  <Label>{t('fields.type')}</Label>
                   <Input value={editingRecord.type} disabled className="bg-muted" />
                 </div>
                 <div>
-                  <Label htmlFor="edit-name">Name</Label>
+                  <Label htmlFor="edit-name">{t('fields.name')}</Label>
                   <Input
                     id="edit-name"
                     value={editingRecord.name}
@@ -641,7 +649,7 @@ export default function DNSPage() {
               </div>
 
               <div>
-                <Label htmlFor="edit-value">Value</Label>
+                <Label htmlFor="edit-value">{t('fields.value')}</Label>
                 <Input
                   id="edit-value"
                   value={editingRecord.value}
@@ -651,7 +659,7 @@ export default function DNSPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="edit-ttl">TTL (seconds)</Label>
+                  <Label htmlFor="edit-ttl">{t('fields.ttl')}</Label>
                   <Input
                     id="edit-ttl"
                     type="number"
@@ -661,7 +669,7 @@ export default function DNSPage() {
                 </div>
                 {(editingRecord.type === 'MX' || editingRecord.type === 'SRV') && (
                   <div>
-                    <Label htmlFor="edit-priority">Priority</Label>
+                    <Label htmlFor="edit-priority">{t('fields.priority')}</Label>
                     <Input
                       id="edit-priority"
                       type="number"
@@ -679,12 +687,12 @@ export default function DNSPage() {
                   onCheckedChange={(checked) => setEditingRecord({ ...editingRecord, proxied: checked })}
                 />
                 <Label htmlFor="edit-proxied" className="cursor-pointer">
-                  Proxied (requests go through NetGoat)
+                  {t('fields.proxied')}
                 </Label>
               </div>
 
               <Button onClick={handleUpdateRecord} disabled={loading} className="w-full">
-                Update DNS Record
+                {t('actions.updateDnsRecord')}
               </Button>
             </div>
           )}

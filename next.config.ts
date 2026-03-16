@@ -1,34 +1,46 @@
 import createNextIntlPlugin from "next-intl/plugin";
+import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
-let commitHash = 'unknown';
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+});
+
+let commitHash = "unknown";
 try {
-  commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString().trim();
-} catch (e) {
-  console.warn('Could not get commit hash', e);
-}
+  commitHash = require("child_process")
+    .execSync("git rev-parse --short HEAD")
+    .toString()
+    .trim();
+} catch {}
 
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_COMMIT_HASH: commitHash,
   },
+
+  pageExtensions: ["ts", "tsx"], 
+
   devIndicators: false,
-  allowedDevOrigins: ["demo.netgoat.xyz", "127.0.0.1"],
+
+  allowedDevOrigins: ["demo.netgoat.xyz", "127.0.0.1", "192.168.50.35"],
+
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
   },
+
   experimental: {
     authInterrupts: true,
   },
+
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "tapback.co",
-        pathname: "/api/avatar/**",
-      },
+      { protocol: "https", hostname: "tapback.co", pathname: "/api/avatar/**" },
       {
         protocol: "https",
         hostname: "cdn.discordapp.com",
@@ -49,13 +61,9 @@ const nextConfig: NextConfig = {
         hostname: "gitlab.com",
         pathname: "/uploads/-/system/user/avatar/**",
       },
-      {
-        protocol: "https",
-        hostname: "gitlab.com",
-        pathname: "/avatar/**",
-      },
+      { protocol: "https", hostname: "gitlab.com", pathname: "/avatar/**" },
     ],
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withMDX(withNextIntl(nextConfig));

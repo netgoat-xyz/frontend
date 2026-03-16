@@ -3,6 +3,7 @@ import { TrafficCard } from '@/components/interface/domains/overview/TrafficCard
 import { SecurityStatusCards } from '@/components/interface/domains/overview/SecurityStatusCards';
 import { QuickActionsCard } from '@/components/interface/domains/overview/QuickActionsCard';
 import { loadDomainByRoute } from './_lib/domain-data'
+import { getTranslations } from 'next-intl/server'
 
 type Props = {
   params: {
@@ -13,12 +14,13 @@ type Props = {
 
 const DomainDashboard = async ({ params }: Props) => {
   const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
+  const t = await getTranslations('DashboardPages.domain')
   
   if (!domain || !domainData) {
     return (
-      <div className="min-h-screen p-8">
-        <h2 className="text-2xl font-semibold">Domain not found</h2>
-        <p className="text-muted">No domain "{domainName}" found for team "{teamName}".</p>
+      <div className="min-h-svh p-4 sm:p-6 lg:p-8">
+        <h2 className="text-2xl font-semibold">{t('notFound.title')}</h2>
+        <p className="text-muted">{t('notFound.description', { domainName, teamName })}</p>
       </div>
     )
   }
@@ -35,7 +37,7 @@ const DomainDashboard = async ({ params }: Props) => {
   const cacheEnabled = domain.settings?.cache_enabled ?? true;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-svh">
       <HeaderSection domainData={domainData} />
 
       <div className="mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">

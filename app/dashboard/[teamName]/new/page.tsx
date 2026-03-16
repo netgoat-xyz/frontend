@@ -34,8 +34,10 @@ import {
 import { getTeam } from "@/actions/teams";
 import { createDomainForTeam } from "@/actions/teamDomains";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export default function NewDomainPage() {
+  const t = useTranslations("DashboardPages.newDomain");
   const params = useParams();
   const router = useRouter();
   const teamSlug = params.teamName as string;
@@ -61,14 +63,14 @@ export default function NewDomainPage() {
 
   const handleNextToVerify = async () => {
     if (!domain) {
-      toast.error("Please enter a domain name");
+      toast.error(t("errors.enterDomain"));
       return;
     }
     
     // Basic domain validation
     const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
     if (!domainRegex.test(domain) && domain !== "localhost") {
-      toast.error("Please enter a valid domain name (e.g. example.com)");
+      toast.error(t("errors.invalidDomain"));
       return;
     }
 
@@ -81,10 +83,10 @@ export default function NewDomainPage() {
         setVerificationToken(result.token);
         setStep("verify");
       } else {
-        throw new Error("Failed to generate verification token");
+        throw new Error(t("errors.tokenFailed"));
       }
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+      toast.error(error.message || t("errors.generic"));
     } finally {
       setVerifying(false);
     }
@@ -100,7 +102,7 @@ export default function NewDomainPage() {
       
       if (result.success) {
         setVerified(true);
-        toast.success("Domain verified successfully!");
+        toast.success(t("toasts.verified"));
         
         // Auto-create domain and navigate to its dashboard upon success
         await createDomainForTeam(teamSlug, {
@@ -110,13 +112,13 @@ export default function NewDomainPage() {
           verification_token: verificationToken,
         });
 
-        toast.success("Domain added");
+        toast.success(t("toasts.added"));
         router.push(`/dashboard/${teamSlug}/${domain}`);
       } else {
-        toast.error("Verification failed. Please check your DNS settings and try again.");
+        toast.error(t("errors.verifyFailed"));
       }
     } catch (error) {
-      toast.error("Verification failed. DNS records might take time to propagate.");
+      toast.error(t("errors.propagation"));
     } finally {
       setVerifying(false);
     }
@@ -135,10 +137,10 @@ export default function NewDomainPage() {
         auto_ssl: true,
         verification_token: verificationToken,
       });
-      toast.success("Domain verified and added!");
+      toast.success(t("toasts.bypassAdded"));
       router.push(`/dashboard/${teamSlug}/${domain}`);
     } catch (error: any) {
-      toast.error(error.message || "Failed to create domain");
+      toast.error(error.message || t("errors.createFailed"));
     } finally {
       setVerifying(false);
     }
@@ -147,18 +149,18 @@ export default function NewDomainPage() {
   const copyToClipboard = async (text: string, field: string) => {
     await navigator.clipboard.writeText(text);
     setCopiedField(field);
-    toast.success("Copied to clipboard");
+    toast.success(t("toasts.copied"));
     setTimeout(() => setCopiedField(null), 2000);
   };
 
   const steps = [
-    { id: "input", label: "Domain" },
-    { id: "verify", label: "Verify" },
+    { id: "input", label: t("steps.domain") },
+    { id: "verify", label: t("steps.verify") },
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-50/50 dark:bg-neutral-950 py-12 px-4">
-      <div className="max-w-[580px] mx-auto space-y-8">
+    <div className="min-h-svh bg-neutral-50/50 dark:bg-neutral-950 py-10 sm:py-12 px-4">
+      <div className="max-w-145 mx-auto space-y-8">
         {/* Navigation */}
         <div>
           <Link
@@ -166,7 +168,7 @@ export default function NewDomainPage() {
             className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-1.5" />
-            Back to {loadingTeam ? "Project" : teamData?.name || "Project"}
+            {t("backTo", { name: loadingTeam ? t("projectFallback") : teamData?.name || t("projectFallback") })}
           </Link>
           {loadingTeam ? (
             <>
@@ -175,7 +177,7 @@ export default function NewDomainPage() {
             </>
           ) : (
             <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-              Add Domain to {teamData?.name}
+              {t("title", { teamName: teamData?.name })}
             </h1>
           )}
         </div>
@@ -248,10 +250,9 @@ export default function NewDomainPage() {
                 <div className="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-4 border border-indigo-500/20 shadow-inner">
                   <Globe className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <CardTitle className="text-xl">What's your domain?</CardTitle>
+                <CardTitle className="text-xl">{t("input.title")}</CardTitle>
                 <CardDescription className="text-[15px]">
-                  Enter the exact domain you want to protect with NetGoat. You
-                  can add subdomains later.
+                  {t("input.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -262,7 +263,7 @@ export default function NewDomainPage() {
                     </div>
                     <Input
                       id="domain"
-                      placeholder="e.g. yourwebsite.com"
+                      placeholder={t("input.placeholder")}
                       value={domain}
                       onChange={(e) =>
                         setDomain(e.target.value.toLowerCase().trim())
@@ -290,11 +291,11 @@ export default function NewDomainPage() {
                   {verifying ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Preparing verification...
+                      {t("actions.preparing")}
                     </>
                   ) : (
                     <>
-                      Continue
+                      {t("actions.continue")}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </>
                   )}
@@ -334,12 +335,12 @@ export default function NewDomainPage() {
                   </Badge>
                 </div>
                 <CardTitle className="text-xl">
-                  {verified ? "Domain Verified" : "Verify Ownership"}
+                  {verified ? t("verify.verifiedTitle") : t("verify.title")}
                 </CardTitle>
                 <CardDescription className="text-[15px]">
                   {verified
-                    ? "Your domain has been successfully added to NetGoat."
-                    : "Add the following TXT record to your DNS provider to prove you own this domain."}
+                    ? t("verify.verifiedDescription")
+                    : t("verify.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -349,7 +350,7 @@ export default function NewDomainPage() {
                       <div className="p-4 flex items-center justify-between group">
                         <div className="space-y-1 overflow-hidden pr-4">
                           <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                            Type
+                            {t("verify.fields.type")}
                           </p>
                           <p className="text-[15px] font-mono font-medium truncate">
                             TXT
@@ -360,7 +361,7 @@ export default function NewDomainPage() {
                       <div className="p-4 flex items-center justify-between group hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50 transition-colors cursor-copy" onClick={() => copyToClipboard("_netgoat", "name")}>
                         <div className="space-y-1 overflow-hidden pr-4">
                           <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                            Name
+                            {t("verify.fields.name")}
                           </p>
                           <p className="text-[15px] font-mono font-medium truncate">
                             _netgoat
@@ -382,7 +383,7 @@ export default function NewDomainPage() {
                       <div className="p-4 flex items-center justify-between group hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50 transition-colors cursor-copy" onClick={() => copyToClipboard(verificationToken, "value")}>
                         <div className="space-y-1 overflow-hidden pr-4">
                           <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                            Value
+                            {t("verify.fields.value")}
                           </p>
                           <p className="text-[15px] font-mono text-neutral-600 dark:text-neutral-400 truncate">
                             {verificationToken}
@@ -405,7 +406,7 @@ export default function NewDomainPage() {
                     <Alert className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/50 dark:border-blue-900/30 text-blue-800 dark:text-blue-300">
                       <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       <AlertDescription className="text-sm ml-1 leading-relaxed">
-                        DNS changes may take a few minutes to propagate. You can click Verify now, or bypass for immediate use.
+                        {t("verify.propagationHint")}
                       </AlertDescription>
                     </Alert>
                   </div>
@@ -413,7 +414,7 @@ export default function NewDomainPage() {
                 
                 {verified && (
                   <div className="py-8 flex flex-col items-center justify-center text-center space-y-4">
-                    <p className="text-neutral-500">Domain is fully validated and ready for routing.</p>
+                    <p className="text-neutral-500">{t("verify.ready")}</p>
                   </div>
                 )}
               </CardContent>
@@ -425,7 +426,7 @@ export default function NewDomainPage() {
                   className="w-full sm:w-auto h-11 px-6 shadow-sm order-2 sm:order-1"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
+                  {t("actions.back")}
                 </Button>
                 <div className="flex w-full gap-2 order-1 sm:order-2">
                   <Button
@@ -436,10 +437,10 @@ export default function NewDomainPage() {
                     {verifying ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Verifying...
+                        {t("actions.verifying")}
                       </>
                     ) : (
-                      "Verify"
+                      t("actions.verify")
                     )}
                   </Button>
                   <Button
@@ -447,9 +448,9 @@ export default function NewDomainPage() {
                     onClick={bypassVerification}
                     disabled={verifying || verified}
                     className="h-11 px-4 border shadow-sm border-amber-200/30 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:text-amber-400"
-                    title="Bypass verification for testing"
+                    title={t("actions.bypassTitle")}
                   >
-                    Bypass
+                    {t("actions.bypass")}
                   </Button>
                 </div>
               </CardFooter>

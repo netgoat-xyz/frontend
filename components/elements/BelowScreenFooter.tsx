@@ -46,7 +46,7 @@ export default function BelowScreenFooter() {
 
   return (
     <footer className="relative bottom-0 mt-auto w-full z-20 max-w-full py-10 px-4 sm:px-6 lg:px-8 mx-auto bg-neutral-900/85 filter backdrop-blur border-t border-neutral-800/95">
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-10">
         <div className="col-span-full hidden lg:col-span-1 lg:block">
           <a
             className="flex-none font-semibold text-xl text-neutral-200 focus:outline-hidden focus:opacity-80"
@@ -220,8 +220,8 @@ export default function BelowScreenFooter() {
       </div>
 
       <div className="pt-5 mt-5 border-t border-gray-200 dark:border-neutral-700">
-        <div className="sm:flex sm:justify-between sm:items-center">
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="sm:flex sm:justify-between sm:items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
             <div className="relative inline-flex">
               <button
                 ref={langTriggerRef}
@@ -256,7 +256,7 @@ export default function BelowScreenFooter() {
                 </div>
               </Dropdown>
             </div>
-            <div className="space-x-4 text-sm">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
               <a
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="#"
@@ -292,7 +292,7 @@ export default function BelowScreenFooter() {
               </p>
             </div>
 
-            <div className="space-x-4">
+            <div className="flex flex-wrap items-center gap-4">
               <a
                 className="inline-block text-gray-500 dark:text-neutral-400 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="#"

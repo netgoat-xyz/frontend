@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 export default function Error({
   error,
@@ -10,12 +11,14 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('ErrorPages.forbidden')
+
   useEffect(() => {
     console.error(error)
   }, [error])
 
   return (
-    <div className="relative flex min-h-screen w-screen flex-col items-center justify-center overflow-hidden bg-black font-sans text-white antialiased">
+    <div className="relative flex min-h-svh w-full flex-col items-center justify-center overflow-hidden bg-black font-sans text-white antialiased">
       {/* Spacey Grid Background */}
       <div className="absolute inset-0 z-0 opacity-20"
         style={{
@@ -32,7 +35,7 @@ export default function Error({
         <div className="group relative mx-auto h-64 w-full overflow-hidden rounded-xl border border-white/10 shadow-[0_0_50px_-12px_rgba(255,255,255,0.2)] transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_80px_-20px_rgba(255,255,255,0.4)]">
           <Image
             src="https://c.tenor.com/qkPV6_DL-NAAAAAd/tenor.gif"
-            alt="Server Error Animation"
+            alt={t('imageAlt')}
             fill
             className="object-cover opacity-90 transition-opacity duration-500 group-hover:opacity-100"
             unoptimized
@@ -45,10 +48,10 @@ export default function Error({
             403
           </h1>
           <h2 className="text-2xl font-medium tracking-tight text-gray-200">
-            Access Denied
+            {t('title')}
           </h2>
           <p className="text-sm text-gray-500">
-            Nah, go away this is off limits.
+            {t('description')}
           </p>
         </div>
 
@@ -56,7 +59,7 @@ export default function Error({
           onClick={() => reset()}
           className="rounded-full bg-white px-8 py-2.5 text-sm font-semibold text-black transition-all hover:bg-gray-200 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black"
         >
-          Turn Back Around
+          {t('action')}
         </button>
       </div>
     </div>

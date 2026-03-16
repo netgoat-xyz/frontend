@@ -6,10 +6,10 @@ export default function TermsPage() {
   return (
     <ShaderBackground>
         <Header />
-      <div className="flex min-h-svh flex-col p-6 md:p-10 max-w-4xl mx-auto bg-card/25 filter backdrop-blur-md overflow-hidden rounded-xl mt-10 border border-border/50 shadow-xl">
+        <div className="flex min-h-svh flex-col p-6 md:p-10 max-w-4xl mx-auto md:bg-card/25 md:backdrop-blur-md overflow-hidden md:rounded-xl mt-10 md:border md:border-border/50 md:shadow-xl">
         <div className="w-full mb-8 border-b pb-6">
           <h1 className="text-4xl font-bold mb-2">Terms of Service & Licensing</h1>
-          <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p className="text-muted-foreground">Last updated: Mar 17, 2026</p>
         </div>
         
         <div className="prose dark:prose-invert text-foreground w-full max-w-none">
@@ -57,3 +57,4 @@ export default function TermsPage() {
     </ShaderBackground>
   );
 }
+

@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import React from "react";
 
 import Header from "@/components/interface/homescreen/header";
 import HeroContent from "@/components/interface/homescreen/hero-content";
@@ -42,7 +41,7 @@ export default async function ShaderShowcase() {
   return (
     <ShaderBackground>
       {/* Hero — full viewport */}
-      <div className="relative h-screen flex flex-col">
+      <div className="relative min-h-svh flex flex-col">
         <Header />
         <div className="grow relative w-full">
           <HeroContent />

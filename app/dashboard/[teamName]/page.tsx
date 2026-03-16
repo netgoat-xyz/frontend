@@ -1,7 +1,6 @@
 import UsageCard from "@/components/interface/dashboard/home/usageCard";
 import AlertsCard from "@/components/interface/dashboard/home/alertsCard";
-import ProjectToolbar from "@/components/interface/dashboard/home/projectToolbar";
-import DomainsSection from "@/components/interface/dashboard/home/domainsCard";
+import DashboardDomainsPanel from "@/components/interface/dashboard/home/dashboardDomainsPanel";
 import {getTranslations} from 'next-intl/server';
 import { getActiveAlerts } from "@/actions/alerts";
 
@@ -14,9 +13,6 @@ export default async function DashboardHome({ params }: { params: Promise<{ team
   
   return (
     <div>
-      <div>
-        <ProjectToolbar params={param} />
-      </div>
       <div className="flex flex-col md:flex-row w-full md:space-x-8 space-y-6 md:space-y-0">
         <div className="w-full md:w-[30%] min-w-0">
           <div>
@@ -33,7 +29,9 @@ export default async function DashboardHome({ params }: { params: Promise<{ team
           <div className="flex justify-between items-center my-6">
             <h2 className="text-neutral-100 text-sm font-medium">{t('domains')}</h2>
           </div>
-          <DomainsSection />
+          <div>
+            <DashboardDomainsPanel params={param} />
+          </div>
         </div>
       </div>
     </div>

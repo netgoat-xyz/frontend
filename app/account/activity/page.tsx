@@ -58,8 +58,8 @@ export default function AccountActivityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="min-h-svh bg-neutral-950 text-white pb-20">
+      <div className="max-w-7xl mx-auto px-6 pt-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -88,14 +88,14 @@ export default function AccountActivityPage() {
                   className="p-6 hover:bg-neutral-800/50 transition-colors"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1">
+                    <div className="shrink-0 mt-1">
                       <div
                         className={`w-3 h-3 rounded-full ${getColorClass(
                           activity.color
                         )}`}
                       ></div>
                     </div>
-                    <div className="flex-grow">
+                    <div className="grow">
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="text-white font-medium">

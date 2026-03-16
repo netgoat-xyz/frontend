@@ -12,23 +12,24 @@ const FlipBlock = ({ value, label }: { value: number; label: string }) => {
   const formattedValue = value.toString().padStart(2, "0");
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-16 md:w-20 h-16 md:h-20 flex items-center justify-center overflow-hidden mb-2 [perspective:1000px]">
+    <div className="flex flex-col items-center flex-1 min-w-15 md:min-w-20">
+      <div className="relative w-full h-12 md:h-20 flex items-center justify-center overflow-hidden perspective-[1000px]">
         <AnimatePresence mode="popLayout">
           <motion.div
             key={value}
-            initial={{ rotateX: -90, y: 20, opacity: 0 }}
-            animate={{ rotateX: 0, y: 0, opacity: 1 }}
-            exit={{ rotateX: 90, y: -20, opacity: 0 }}
-            transition={{ duration: 0.4, type: "spring", bounce: 0 }}
-            className="absolute inset-0 flex items-center justify-center text-5xl md:text-6xl font-light tabular-nums"
-            style={{ transformOrigin: "center" }}
+            initial={{ rotateX: -90, opacity: 0 }}
+            animate={{ rotateX: 0, opacity: 1 }}
+            exit={{ rotateX: 90, opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="text-3xl md:text-6xl font-light tabular-nums text-white"
           >
             {formattedValue}
           </motion.div>
         </AnimatePresence>
       </div>
-      <div className="text-[10px] text-white/50 uppercase tracking-widest font-medium w-full text-center">{label}</div>
+      <div className="text-[9px] md:text-[10px] text-white/40 uppercase tracking-[0.2em] mt-1">
+        {label}
+      </div>
     </div>
   );
 };
@@ -37,11 +38,7 @@ export default function HeroContent() {
   const t = useTranslations("HomePage");
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState({
-    months: 0,
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
+    months: 0, days: 0, hours: 0, minutes: 0, seconds: 0
   });
   const [isLaunched, setIsLaunched] = useState(false);
 
@@ -54,17 +51,13 @@ export default function HeroContent() {
         setIsLaunched(true);
       } else {
         setIsLaunched(false);
-        
-        // Calculate exact months and days difference to prevent approximations
         const nowDate = new Date();
         const targetDateObj = new Date(TARGET_DATE);
         
         let months = (targetDateObj.getFullYear() - nowDate.getFullYear()) * 12 + (targetDateObj.getMonth() - nowDate.getMonth());
-        
         const tempDate = new Date(nowDate);
         tempDate.setMonth(tempDate.getMonth() + months);
         
-        // If adding the months exceeds the target time, subtract one month
         if (tempDate.getTime() > TARGET_DATE) {
           months--;
           tempDate.setMonth(tempDate.getMonth() - 1);
@@ -87,82 +80,73 @@ export default function HeroContent() {
   }, []);
 
   return (
-    <main className="absolute inset-0 z-20 flex items-center justify-center">
-      <div className="text-center max-w-3xl mx-auto px-6">
-        {/* Beta Badge */}
+    <main className="absolute inset-0 z-20 flex items-center justify-center overflow-x-hidden">
+      <div className="text-center max-w-3xl mx-auto px-5 py-10">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center mb-8"
+          className="flex justify-center mb-6 md:mb-8"
         >
-          <div
-            className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 relative"
-            style={{ filter: "url(#glass-effect)" }}
-          >
-            <div className="absolute top-0 left-2 right-2 h-px bg-linear-to-r from-transparent via-white/20 to-transparent rounded-full" />
-            <span className="text-white/80 text-[11px] font-light tracking-wide relative z-10">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10">
+            <span className="text-white/80 text-[10px] md:text-[11px] font-light tracking-widest uppercase">
               {t("public_beta")}
             </span>
           </div>
         </motion.div>
 
-        {/* Main Heading */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.35 }}
-          className="text-6xl md:text-8xl tracking-tight font-light text-white mb-6 leading-[1.05]"
+          className="text-6xl sm:text-6xl md:text-8xl tracking-tight font-light text-white mb-4 md:mb-6 leading-[1.1]"
         >
           {t("sub_header")}
         </motion.h1>
 
-        {/* Description */}
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-sm md:text-base font-light text-white/50 mb-10 leading-relaxed max-w-lg mx-auto"
+          className="text-sm md:text-base font-light text-white/50 mb-8 md:mb-12 leading-relaxed max-w-md mx-auto"
         >
           {t("detailed")}
         </motion.p>
 
-        {/* Buttons / Countdown */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.65 }}
-          className="flex items-center justify-center gap-4"
         >
           {isLaunched ? (
-            <>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => router.push("/auth")}
-                className="group px-8 py-3 rounded-full bg-white text-black font-normal text-sm transition-all duration-300 hover:shadow-lg hover:shadow-white/10 cursor-pointer flex items-center gap-2"
+                className="w-full sm:w-auto group px-8 py-4 rounded-full bg-white text-black font-medium text-sm transition-all active:scale-95 flex items-center justify-center gap-2"
               >
                 {t("get_started_button")}
-                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
               <button
-                onClick={() => {
-                  const el = document.getElementById("content-start");
-                  el?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="px-8 py-3 rounded-full bg-white/5 text-white/70 font-normal text-sm border border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300 cursor-pointer backdrop-blur-sm"
+                onClick={() => document.getElementById("content-start")?.scrollIntoView({ behavior: "smooth" })}
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/5 text-white/70 font-medium text-sm border border-white/10 active:bg-white/10 backdrop-blur-sm"
               >
                 Learn more
               </button>
-            </>
+            </div>
           ) : (
-            <div className="flex gap-4 sm:gap-6 md:gap-8 items-center justify-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 sm:px-10 sm:py-8 text-white shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+            <div className="inline-grid grid-cols-3 sm:flex sm:flex-row gap-4 sm:gap-6 md:gap-8 items-center justify-center bg-white/5 backdrop-blur-2xl border border-white/10 rounded-lg md:rounded-md p-5 md:px-10 md:py-8 text-white shadow-2xl">
               <FlipBlock value={timeLeft.months} label="Months" />
-              <div className="w-px h-16 bg-white/10 rounded-full" />
+              <div className="hidden sm:block w-px h-12 bg-white/10" />
               <FlipBlock value={timeLeft.days} label="Days" />
-              <div className="w-px h-16 bg-white/10 rounded-full" />
+              <div className="hidden sm:block w-px h-12 bg-white/10" />
               <FlipBlock value={timeLeft.hours} label="Hours" />
-              <div className="w-px h-16 bg-white/10 rounded-full" />
+              
+              {/* Divider visible only on larger screens when it's a single row */}
+              <div className="hidden sm:block w-px h-12 bg-white/10" />
+              
               <FlipBlock value={timeLeft.minutes} label="Mins" />
-              <div className="w-px h-16 bg-white/10 rounded-full" />
+              <div className="hidden sm:block w-px h-12 bg-white/10" />
               <FlipBlock value={timeLeft.seconds} label="Secs" />
             </div>
           )}

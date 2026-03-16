@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import { Shield, Plus, Trash2, AlertTriangle, Check, Info } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface WAFRule {
   name: string
@@ -25,6 +26,7 @@ interface WAFRule {
 }
 
 export default function WAFPage() {
+  const t = useTranslations('DashboardPages.teamWaf')
   const params = useParams()
   const searchParams = useSearchParams()
   const teamSlug = params.teamName as string
@@ -72,12 +74,12 @@ export default function WAFPage() {
 
   const handleCreateRule = async () => {
     if (!selectedDomain) {
-      toast.error('Please select a domain')
+      toast.error(t('errors.selectDomain'))
       return
     }
 
     if (!newRule.name || !newRule.expression) {
-      toast.error('Name and expression are required')
+      toast.error(t('errors.nameExpressionRequired'))
       return
     }
 
@@ -86,10 +88,10 @@ export default function WAFPage() {
       
       if (selectedSubdomain) {
         await addSubdomainWAFRule(teamSlug, selectedDomain._id, selectedSubdomain, newRule)
-        toast.success(`WAF rule added to ${selectedSubdomain}.${selectedDomain.domain}`)
+        toast.success(t('toasts.addedToSubdomain', { subdomain: `${selectedSubdomain}.${selectedDomain.domain}` }))
       } else {
         await addDomainWAFRule(teamSlug, selectedDomain._id, newRule)
-        toast.success('WAF rule added to domain')
+        toast.success(t('toasts.addedToDomain'))
       }
 
       setNewRule({ name: '', expression: '', action: 'BLOCK', priority: 10, description: '' })
@@ -105,7 +107,7 @@ export default function WAFPage() {
   const handleDeleteRule = async (ruleName: string, subdomain?: string) => {
     if (!selectedDomain) return
 
-    if (!confirm(`Delete WAF rule "${ruleName}"?`)) return
+    if (!confirm(t('confirm.deleteRule', { ruleName }))) return
 
     try {
       setLoading(true)
@@ -116,7 +118,7 @@ export default function WAFPage() {
         await removeDomainWAFRule(teamSlug, selectedDomain._id, ruleName)
       }
 
-      toast.success('WAF rule deleted')
+      toast.success(t('toasts.deleted'))
       await loadDomains()
     } catch (error: any) {
       toast.error(error.message)
@@ -127,31 +129,31 @@ export default function WAFPage() {
 
   const ruleExamples = [
     {
-      name: 'SQL Injection Protection',
+      name: t('examples.sqlInjection.name'),
       expression: "contains(request.path, 'SELECT') || contains(request.path, 'UNION') || contains(request.path, 'DROP')",
       action: 'BLOCK' as const,
       priority: 10
     },
     {
-      name: 'XSS Protection',
+      name: t('examples.xss.name'),
       expression: "contains(request.path, '<script>') || contains(request.query_string, '<script>')",
       action: 'BLOCK' as const,
       priority: 9
     },
     {
-      name: 'Rate Limiting',
+      name: t('examples.rateLimit.name'),
       expression: "request.rate > 100",
       action: 'BLOCK' as const,
       priority: 5
     },
     {
-      name: 'Geographic Block',
+      name: t('examples.geoBlock.name'),
       expression: "request.country == 'CN' || request.country == 'RU'",
       action: 'BLOCK' as const,
       priority: 8
     },
     {
-      name: 'Bot Detection',
+      name: t('examples.botDetection.name'),
       expression: "contains(request.user_agent, 'bot') || contains(request.user_agent, 'crawler')",
       action: 'LOG' as const,
       priority: 3
@@ -173,7 +175,7 @@ export default function WAFPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading WAF configuration...</p>
+          <p className="text-muted-foreground">{t('loading')}</p>
         </div>
       </div>
     )
@@ -183,15 +185,15 @@ export default function WAFPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">WAF Rules</h1>
-          <p className="text-muted-foreground mt-2">Web Application Firewall configuration</p>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground mt-2">{t('subtitle')}</p>
         </div>
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Shield className="w-12 h-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No domains yet</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('emptyDomainsTitle')}</h3>
             <p className="text-muted-foreground text-center mb-4">
-              Add a domain first to configure WAF rules
+              {t('emptyDomains')}
             </p>
           </CardContent>
         </Card>
@@ -204,69 +206,69 @@ export default function WAFPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">WAF Rules</h1>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground mt-2">
-            Configure Web Application Firewall rules to protect your domains
+            {t('subtitle')}
           </p>
         </div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
-              Add WAF Rule
+              {t('actions.addRule')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Add WAF Rule</DialogTitle>
+              <DialogTitle>{t('dialogs.add.title')}</DialogTitle>
               <DialogDescription>
-                Create a custom WAF rule to protect against threats
+                {t('dialogs.add.description')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="rule-name">Rule Name</Label>
+                  <Label htmlFor="rule-name">{t('fields.ruleName')}</Label>
                   <Input
                     id="rule-name"
-                    placeholder="block-sql-injection"
+                    placeholder={t('placeholders.ruleName')}
                     value={newRule.name}
                     onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="action">Action</Label>
+                  <Label htmlFor="action">{t('fields.action')}</Label>
                   <Select value={newRule.action} onValueChange={(v: any) => setNewRule({ ...newRule, action: v })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BLOCK">Block (deny request)</SelectItem>
-                      <SelectItem value="ALLOW">Allow (permit request)</SelectItem>
-                      <SelectItem value="LOG">Log (allow but record)</SelectItem>
+                      <SelectItem value="BLOCK">{t('actionOptions.block')}</SelectItem>
+                      <SelectItem value="ALLOW">{t('actionOptions.allow')}</SelectItem>
+                      <SelectItem value="LOG">{t('actionOptions.log')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="expression">Expression</Label>
+                <Label htmlFor="expression">{t('fields.expression')}</Label>
                 <Textarea
                   id="expression"
-                  placeholder="contains(request.path, 'SELECT')"
+                  placeholder={t('placeholders.expression')}
                   rows={4}
                   value={newRule.expression}
                   onChange={(e) => setNewRule({ ...newRule, expression: e.target.value })}
                   className="font-mono text-sm"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Use functions like contains(), matches(), startsWith(), endsWith()
+                  {t('hints.expressionFunctions')}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="priority">Priority (0-100)</Label>
+                  <Label htmlFor="priority">{t('fields.priority')}</Label>
                   <Input
                     id="priority"
                     type="number"
@@ -275,16 +277,16 @@ export default function WAFPage() {
                     value={newRule.priority}
                     onChange={(e) => setNewRule({ ...newRule, priority: parseInt(e.target.value) || 0 })}
                   />
-                  <p className="text-xs text-muted-foreground mt-1">Higher = evaluated first</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t('hints.priority')}</p>
                 </div>
                 <div>
-                  <Label htmlFor="target">Target</Label>
+                  <Label htmlFor="target">{t('fields.target')}</Label>
                   <Select value={selectedSubdomain || 'domain'} onValueChange={(v) => setSelectedSubdomain(v === 'domain' ? null : v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="domain">Domain-level</SelectItem>
+                      <SelectItem value="domain">{t('targetOptions.domain')}</SelectItem>
                       {selectedDomain?.subdomains?.map((sub: any) => (
                         <SelectItem key={sub.subdomain} value={sub.subdomain}>
                           {sub.full_domain}
@@ -296,10 +298,10 @@ export default function WAFPage() {
               </div>
 
               <div>
-                <Label htmlFor="description">Description (Optional)</Label>
+                <Label htmlFor="description">{t('fields.description')}</Label>
                 <Input
                   id="description"
-                  placeholder="Brief description of what this rule does"
+                  placeholder={t('placeholders.description')}
                   value={newRule.description}
                   onChange={(e) => setNewRule({ ...newRule, description: e.target.value })}
                 />
@@ -307,7 +309,7 @@ export default function WAFPage() {
 
               {/* Examples */}
               <div className="border-t pt-4">
-                <Label className="mb-2 block">Quick Examples</Label>
+                <Label className="mb-2 block">{t('examples.title')}</Label>
                 <div className="grid gap-2">
                   {ruleExamples.map((example) => (
                     <Button
@@ -329,7 +331,7 @@ export default function WAFPage() {
               </div>
 
               <Button onClick={handleCreateRule} disabled={loading} className="w-full">
-                Create WAF Rule
+                {t('actions.createRule')}
               </Button>
             </div>
           </DialogContent>
@@ -340,7 +342,7 @@ export default function WAFPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center space-x-4">
-            <Label className="min-w-fit">Select Domain:</Label>
+            <Label className="min-w-fit">{t('fields.selectDomain')}</Label>
             <Select
               value={selectedDomain?._id}
               onValueChange={(domainId) => {
@@ -350,7 +352,7 @@ export default function WAFPage() {
               }}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a domain" />
+                <SelectValue placeholder={t('fields.selectDomainPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {domains.map((domain) => (
@@ -368,7 +370,7 @@ export default function WAFPage() {
         <Tabs defaultValue="domain" className="space-y-4">
           <TabsList>
             <TabsTrigger value="domain">
-              Domain Rules ({selectedDomain.waf_rules?.length || 0})
+              {t('tabs.domainRules', { count: selectedDomain.waf_rules?.length || 0 })}
             </TabsTrigger>
             {selectedDomain.subdomains?.map((sub: any) => (
               <TabsTrigger key={sub.subdomain} value={sub.subdomain}>
@@ -380,9 +382,9 @@ export default function WAFPage() {
           <TabsContent value="domain" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Domain-Level WAF Rules</CardTitle>
+                <CardTitle>{t('cards.domainRules.title')}</CardTitle>
                 <CardDescription>
-                  These rules apply to {selectedDomain.domain} and all its subdomains
+                  {t('cards.domainRules.description', { domain: selectedDomain.domain })}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -403,7 +405,7 @@ export default function WAFPage() {
                                   {rule.action}
                                 </Badge>
                                 <Badge variant="outline">
-                                  Priority: {rule.priority}
+                                  {t('labels.priority')}: {rule.priority}
                                 </Badge>
                               </div>
                               {rule.description && (
@@ -427,9 +429,9 @@ export default function WAFPage() {
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
                     <Shield className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No WAF rules configured for this domain</p>
+                    <p>{t('empty.domainRules')}</p>
                     <Button className="mt-4" variant="outline" onClick={() => setCreateOpen(true)}>
-                      Add First Rule
+                      {t('actions.addFirstRule')}
                     </Button>
                   </div>
                 )}
@@ -441,20 +443,20 @@ export default function WAFPage() {
               <CardHeader>
                 <CardTitle className="text-sm flex items-center">
                   <Info className="w-4 h-4 mr-2" />
-                  WAF Expression Language
+                  {t('expression.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm space-y-2">
-                <p><strong>Available Properties:</strong></p>
+                <p><strong>{t('expression.availableProperties')}</strong></p>
                 <ul className="list-disc list-inside space-y-1 ml-2 text-muted-foreground">
-                  <li><code>request.path</code> - URL path (e.g., /api/users)</li>
-                  <li><code>request.method</code> - HTTP method (GET, POST, etc.)</li>
-                  <li><code>request.ip</code> - Client IP address</li>
-                  <li><code>request.country</code> - Country code</li>
-                  <li><code>request.user_agent</code> - User-Agent header</li>
-                  <li><code>request.rate</code> - Requests per second</li>
+                  <li>{t('expression.properties.path')}</li>
+                  <li>{t('expression.properties.method')}</li>
+                  <li>{t('expression.properties.ip')}</li>
+                  <li>{t('expression.properties.country')}</li>
+                  <li>{t('expression.properties.userAgent')}</li>
+                  <li>{t('expression.properties.rate')}</li>
                 </ul>
-                <p className="mt-4"><strong>Functions:</strong></p>
+                <p className="mt-4"><strong>{t('expression.functionsTitle')}</strong></p>
                 <ul className="list-disc list-inside space-y-1 ml-2 text-muted-foreground font-mono text-xs">
                   <li>contains(string, substring)</li>
                   <li>matches(string, regex)</li>
@@ -469,9 +471,9 @@ export default function WAFPage() {
             <TabsContent key={subdomain.subdomain} value={subdomain.subdomain} className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>WAF Rules for {subdomain.full_domain}</CardTitle>
+                  <CardTitle>{t('cards.subdomainRules.title', { domain: subdomain.full_domain })}</CardTitle>
                   <CardDescription>
-                    Subdomain-specific rules in addition to domain-level rules
+                    {t('cards.subdomainRules.description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -492,7 +494,7 @@ export default function WAFPage() {
                                     {rule.action}
                                   </Badge>
                                   <Badge variant="outline">
-                                    Priority: {rule.priority}
+                                    {t('labels.priority')}: {rule.priority}
                                   </Badge>
                                 </div>
                                 <code className="text-xs bg-muted px-2 py-1 rounded font-mono block mt-2">
@@ -512,8 +514,8 @@ export default function WAFPage() {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
-                      <p>No subdomain-specific WAF rules</p>
-                      <p className="text-sm mt-2">Domain-level rules still apply</p>
+                      <p>{t('empty.subdomainRules')}</p>
+                      <p className="text-sm mt-2">{t('subdomain.rulesStillApply')}</p>
                       <Button
                         className="mt-4"
                         variant="outline"
@@ -522,7 +524,7 @@ export default function WAFPage() {
                           setCreateOpen(true)
                         }}
                       >
-                        Add Subdomain Rule
+                        {t('actions.addSubdomainRule')}
                       </Button>
                     </div>
                   )}

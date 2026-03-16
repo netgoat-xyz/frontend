@@ -2,7 +2,15 @@
 
 import os from "os";
 
+export type ServiceKey =
+  | "webApplication"
+  | "api"
+  | "documentation"
+  | "edgeNetwork"
+  | "authentication";
+
 export interface ServiceStatus {
+  key: ServiceKey;
   name: string;
   description: string;
   status: "operational" | "degraded" | "outage" | "maintenance";
@@ -59,29 +67,34 @@ export async function getPublicStatus(): Promise<SystemStatus> {
 
   const services: ServiceStatus[] = [
     {
+      key: "webApplication",
       name: "Web Application",
       description: "Frontend dashboard and marketing site",
       status: appCheck.ok ? "operational" : "outage",
       latency: appCheck.latency,
     },
     {
+      key: "api",
       name: "API",
       description: "External REST API and agent communication",
       status: apiCheck.ok ? "operational" : "outage",
       latency: apiCheck.latency,
     },
     {
+      key: "documentation",
       name: "Documentation",
       description: "Developer documentation and guides",
       status: docsCheck.ok ? "operational" : "outage",
       latency: docsCheck.latency,
     },
     {
+      key: "edgeNetwork",
       name: "Edge Network",
       description: "Global reverse proxy and WAF nodes",
       status: "operational",
     },
     {
+      key: "authentication",
       name: "Authentication",
       description: "User authentication and session management",
       status: appCheck.ok ? "operational" : "degraded",
