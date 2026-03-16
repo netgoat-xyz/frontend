@@ -1,0 +1,53 @@
+# Installation
+
+Deploying the Netgoat suite is most seamlessly done via Docker and Docker Compose. This ensures all components — the Frontend Control Plane, Edge Proxy Engine, and Distributed Data Store — are configured with the required internal networking.
+
+> ⚠️ **WARNING:** This is a place holder, some commands MAY NOT work exactly as written in your specific environment depending on Docker networking configurations.
+
+## Quick Start (Docker Compose)
+
+The easiest way to get started is using the bundled `docker-compose.yml`.
+
+1. Clone the repository to your host instance.
+2. Initialize environment variables.
+
+```bash
+git clone https://github.com/netgoat-xyz/netgoat.git
+cd netgoat
+
+# Create a sample .env file for the frontend
+cp frontend/.env.example frontend/.env
+```
+
+3. Spin up the cluster using Docker Compose:
+
+```bash
+docker-compose up -d --build
+```
+
+This will initialize:
+- **Frontend Admin Panel:** `http://localhost:3000`
+- **MongoDB Instance:** Internal port `27017`
+- **Control Plane Websocket Engine:** `http://localhost:8080`
+- **Edge Proxy DB & Router Engine:** Listens on `:80` and `:443`
+- **Distributed Data Store Nodes:** Internal TCP ports.
+
+## Standalone Docker 
+
+If you prefer to run specific components individually (useful for scaling just the Edge Proxies):
+
+### Edge Proxy
+
+```bash
+docker build -t netgoat-edge -f WhiteDiamond/Dockerfile .
+docker run -d --network host --name edge-proxy netgoat-edge
+```
+
+### Control Plane
+
+```bash
+docker build -t netgoat-control -f PinkDiamond/Dockerfile .
+docker run -d -p 8080:8080 -e MONGO_URI="mongodb://localhost" --name control-plane netgoat-control
+```
+
+*Be sure to link your network to the backend services according to your deployment topology.*

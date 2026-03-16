@@ -1,0 +1,47 @@
+# Edge Proxy Engine
+
+The absolute physical workhorse of the stack. The Edge Proxy sits at the very edge of your network, directly fielding incoming user HTTP/HTTPS requests and active WebSocket streams.
+
+**Technology Stack:**
+- **Language:** Go (Golang)
+- **Database:** Local SQLite Cache
+- **SSL Management:** Automated ACME Providers (e.g. Let's Encrypt) 
+
+## Main Features
+
+By dropping heavy interpreted paradigms, the new routing engine handles thousands of concurrent proxy hits without breaking a sweat utilizing native OS capabilities and gorountines. 
+
+- **WAF & Anti-DDoS:** Fast path parsing for bad actors checking parameters and malformed headers safely.
+- **Dynamic Routing:** Per-domain logic cached directly in memory and SQLite. Load Balancing occurs dynamically.
+- **Auto SSL:** Automatic TLS termination for active domains parsing Let's Encrypt seamlessly via `acme/autocert`.
+- **Zero Trust:** Cloudflare origin validation handling keeps unwanted internet noise away from exposing application layers.
+- **Fallback Resilience:** Automatically falls back onto the local configuration cache if the WebSocket connecting it to your central Control Plane errors out.
+
+## Resilient Fallback Mechanics
+
+This guarantees Edge Proxies remain completely intact regardless of core failures further down your private stack.
+
+```go
+// Inside the Edge Proxy: Simplified Fallback Sync Loop
+func (p *ProxyAgent) syncLoop() {
+    for {
+        msg, err := p.wsClient.ReadMessage()
+        if err != nil {
+             log.Warn().Msg("Disconnected from Control Plane. Switching to Fallback Mode.")
+             
+             // Activate Fallback safely
+             p.EnableFallbackCache(true)
+             
+             // Wait intelligently before trying to recover
+             time.Sleep(ExponentialBackoff(retryCount))
+             continue
+        }
+        
+        // Disable fallback once natively connected & write incoming sync to cache
+        p.EnableFallbackCache(false)
+        p.UpdateConfig(msg)
+    }
+}
+```
+
+Whenever offline mode triggers, it reads purely from its local SQLite replica, meaning active external traffic keeps completing without end users realizing maintenance is occurring locally behind the curtains.

@@ -1,0 +1,30 @@
+# Translations & Internationalization (i18n)
+
+Netgoat natively supports multiple languages. We rely on community contributions to keep these translations accurate and up to date for engineers around the world!
+
+## Supported Languages
+
+Our language files are located in the `frontend/language` folder. Currently, we support the following base locales:
+
+- `en` (English)
+- `de` (German)
+- `es` (Spanish)
+- `id` (Indonesian)
+- `ms` (Malay)
+- `zh` (Chinese)
+
+## How to Contribute
+
+Each translation dictionary is stored as a simple JSON file mapping English keys to the target language (e.g., `de.json`).
+
+```json
+{
+  "dashboard.overview": "Übersicht"
+}
+```
+
+If you find a typo, or want to add a completely new language (like `fr.json` for French):
+1. **Fork** the repository.
+2. Add or edit strings in your language's JSON file.
+3. Make sure to update `frontend/i18n/request.ts` (if required) and test locally.
+4. Open a **Pull Request** and tag the translation team!

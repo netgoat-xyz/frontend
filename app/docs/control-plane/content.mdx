@@ -1,0 +1,45 @@
+# Control Plane
+
+The Control Plane forms the reliable bridge between the central MongoDB source and our decentralized Edge Nodes. It monitors state changes seamlessly and propagates those differences in real-time.
+
+**Technology Stack:**
+- **Runtime:** Node.js, Express
+- **State Networking:** WebSockets (ws packet streams)
+- **Caching:** Standard SQLite
+
+## The Sync Strategy
+
+Instead of edge nodes constantly polling an external database, which can easily bottleneck the primary Database when operating globally, the Control Plane establishes a highly parallel **Change Stream** connection to the Main Database.
+
+### Action Plan
+1. Watch MongoDB for new proxy configurations, WAF rules, and routing conditions.
+2. Persist the latest synced changes immediately into a local robust **SQLite** database for lightning-fast state recall upon unexpected process restarts. 
+3. Push differential updates instantly over an encrypted **WebSocket Stream** to all connected Edge Proxy Nodes efficiently.
+
+## Core Code Implementation
+
+Here is an abstract representation showing how the Control Plane captures document changes and effectively relays them back out:
+
+```typescript
+// Control Plane: MongoDB Change Stream Example
+db.collection('domains').watch().on('change', async (change) => {
+  if (change.operationType === 'insert') {
+    const newDomain = change.fullDocument;
+    
+    // 1. Sync to local SQLite to survive system partitions
+    await sqlite.run(
+       'INSERT INTO domains (id, host, status) VALUES (?, ?, ?)', 
+       [newDomain._id, newDomain.host, newDomain.status]
+    );
+    
+    // 2. Broadcast immediately over WebSocket to active Edge Proxy limits
+    wsServer.broadcast({ 
+        type: 'DOMAIN_SYNC', 
+        action: 'CREATED', 
+        payload: newDomain 
+    });
+  }
+});
+```
+
+This ensures extreme scalability—deploying ten or hundred Edge proxies puts completely **zero additional load** on your core Database. All load belongs localized strictly to the resilient Control Plane WebSocket cluster.

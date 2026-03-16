@@ -1,0 +1,39 @@
+# Distributed Data Store
+
+For high-speed horizontal communication (like shared Rate Limiting buckets and synchronized active Load Balancer states), the Edge Proxy nodes demand something infinitely faster than SQLite and fundamentally decoupled from the general Control Plane. 
+
+Enter the internal **Distributed Data Store** — our custom-built, sharded, thread-safe TCP database engineered strictly for this engine.
+
+**Technology Stack:**
+- **Language:** Go (Golang)
+- **Networking:** Custom TCP Streaming and TLS Links
+
+## Database Features
+
+- **Multicore Concurrency:** Defaults to utilizing 24 keyspace shards out of the box so memory locks never bottleneck packet parsing globally.
+- **Peer Replication:** Implements multi-primary transparent peer replication. Run three Edge data nodes worldwide and they push state synchronously via automated TLS internal links.
+- **Asynchronous Durability:** Write-Ahead Logging (WAL) mechanisms keep your rate-limits safe across restarts without freezing memory read loops for writing bounds to disk locally.
+- **Smart Adaptive Eviction:** Internal caching cleans up old rate limits quickly dynamically clearing stale IP addresses matching default time-to-live settings globally.
+
+## Using the CLI
+
+Because the Data Store communicates via TCP JSON lines organically, administration interactions act akin to traditional enterprise engines.
+
+```bash
+# Example Distributed DB Interaction via Internal CLI
+db_cli> table_create ratelimits
+OK
+
+db_cli> use ratelimits
+SELECTED 'ratelimits'
+
+db_cli/ratelimits> set limit_ip_192_168_1 50
+OK
+ 
+db_cli/ratelimits> get limit_ip_192_168_1
+{"value": 50}
+
+# View clustered TLS peers working harmoniously
+db_cli/ratelimits> cluster_status
+{"peers": 3, "latency": "5ms"}
+```

@@ -1,0 +1,38 @@
+# System Architecture & Documentation
+
+Welcome to the internal documentation. This system is a high-performance, self-hostable reverse proxy and edge routing engine designed to act as a resilient layer on top of Cloudflare, or as a standalone traffic manager.
+
+## 🏗️ Core Architecture Overview
+
+The system is highly distributed, decoupled, and designed for maximum fault tolerance. The core architecture relies on **four main components**, communicating strictly over typed APIs, WebSockets, and encrypted internal TCP links.
+
+1. **Frontend & Admin:** Next.js based dashboard mapping user changes to MongoDB.
+2. **Control Plane:** A central configuration broadcasting network bridging MongoDB to our Edge nodes.
+3. **Edge Proxy Engine:** High-speed Go reverse-proxy handling external client requests and Web Application Firewalls.
+4. **Distributed Data Store:** A custom sharded TCP Key/Value database linking proxies together globally for rate parity.
+
+---
+
+## 🚀 Architectural Resilience
+
+Our edge proxy model is fundamentally decoupled. This ensures zero single points of failure exist when it involves active request routing.
+
+> **Why decoupled?**
+> If your MongoDB goes down, the **Control Plane** complains but continues using its local SQLite cache. If the **Control Plane** physically crashes or restarts, your **Edge Proxy Nodes** sense the disconnection, switch seamlessly into fallback mode, and serve traffic perfectly from their own local SQLite databases, guaranteeing **zero runtime downtime**.
+
+## 🛡️ Common Integration Flows
+
+### Changing a Routing Target
+When an administrator needs to change an upstream proxy origin, the system reacts instantaneously:
+1. Administrator alters a destination via the Next.js `Frontend Dashboard`.
+2. The Frontend pushes changes securely to the central `MongoDB` instance.
+3. The `Control Plane` catches the operation seamlessly via change streams, backing it to SQLite.
+4. The `Control Plane` beams a binary diff packet over WebSocket directly to all active `Edge Proxy` instances.
+5. The `Edge Proxy` patches its active-memory and locks it onto its own localized SQLite cache. This entire process takes `~10-50ms`.
+
+### Handling Incoming User Traffic
+1. A regular user visits `proxy.domain.com`.
+2. The connection hits the `Edge Proxy`.
+3. The proxy maps the request immediately against the Local SQLite cache (`~0.5ms latency`).
+4. Rate limiting counters are actively mutated inside the `Distributed Data Store`.
+5. Edge Proxy determines safe passage via parsed WAF Rules and successfully beams traffic proxy data to the upstream server via Load Balanced round-robining.

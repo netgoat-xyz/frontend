@@ -1,0 +1,83 @@
+# API Reference
+
+The Netgoat Control Plane exposes a comprehensive set of RESTful endpoints to manage configurations programmatically, enabling seamless CI/CD integration and infrastructure-as-code deployments.
+
+## Authentication
+
+All API endpoints (except public health checks) require an API key passed via the `Authorization` header.
+
+```http
+Authorization: Bearer ng_live_xxxxxxxxx
+```
+
+## Endpoints
+
+### 1. Domains
+
+**GET `/api/v1/domains`**
+List all domains managed by the control plane.
+
+- **Returns:** Code `200 OK`
+```json
+{
+  "domains": [
+    {
+      "id": "dom_123",
+      "name": "example.com",
+      "status": "active",
+      "ssl": "provisioned"
+    }
+  ],
+  "count": 1
+}
+```
+
+**POST `/api/v1/domains`**
+Create a new domain.
+
+- **Body:**
+```json
+{
+  "name": "newdomain.com",
+  "teamId": "team_123"
+}
+```
+
+### 2. DNS Records
+
+**GET `/api/v1/dns/:domainId`**
+List all DNS records for a specific domain.
+
+**POST `/api/v1/dns/:domainId`**
+Create a DNS record.
+
+- **Body:**
+```json
+{
+  "type": "A",
+  "name": "api",
+  "content": "192.168.1.10",
+  "ttl": 3600,
+  "proxied": true
+}
+```
+
+### 3. Edge Proxy Configurations
+
+**GET `/api/v1/proxy/rules`**
+Fetch global WAF and routing rules currently being synchronized to edge nodes via websockets.
+
+**POST `/api/v1/proxy/purge`**
+Force an Edge Cache Purge across all global datastore nodes.
+
+- **Body:**
+```json
+{
+  "paths": ["/static/*", "/assets/hero.png"],
+  "domain": "example.com"
+}
+```
+
+## Rate Limiting
+
+The API operates under the identical Distributed Data Store logic powering the Edge proxies. Standard bounds are **1000 requests per minute per IP**, tracked across the cluster.
