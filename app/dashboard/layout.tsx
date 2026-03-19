@@ -4,7 +4,12 @@ import { redirect } from "next/dist/client/components/navigation";
 import { headers } from "next/dist/server/request/headers";
 import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
 import { getLatestWhatsNew } from "@/actions/content";
-import WhatsNewPopup from "@/components/elements/WhatsNewPopup";
+import dynamic from "next/dynamic";
+
+const WhatsNewPopup = dynamic(
+  () => import("@/components/elements/WhatsNewPopup"),
+  { loading: () => null }
+);
 
 export default async function DashboardLayout({
   children,

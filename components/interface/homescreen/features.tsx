@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Zap, Shield, Network } from "lucide-react";
 
 export default function Features() {

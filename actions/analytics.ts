@@ -65,109 +65,100 @@ export async function getDashboardStats(
   if (timeRange === "30d") startDate.setDate(now.getDate() - 30);
 
   const matchStage = { timestamp: { $gte: startDate } };
-
-  // 1. Total Visitors (Unique Visitor IDs)
-  const uniqueVisitors = await Analytics.distinct("visitorId", {
-    ...matchStage,
-    type: "pageview",
-  });
-
-  // 2. Total Page Views
-  const totalPageViews = await Analytics.countDocuments({
-    ...matchStage,
-    type: "pageview",
-  });
-
-  // 3. Top Pages
-  const topPages = await Analytics.aggregate([
-    { $match: { ...matchStage, type: "pageview" } },
-    { $group: { _id: "$path", count: { $sum: 1 } } },
-    { $sort: { count: -1 } },
-    { $limit: 5 },
-  ]);
-
-  // 4. Web Vitals (Avg LCP)
-  const avgLCP = await Analytics.aggregate([
-    { $match: { ...matchStage, type: "web-vital", metricName: "LCP" } },
-    { $group: { _id: null, avg: { $avg: "$metricValue" } } },
-  ]);
-
-  // 4b. Top Referrers
-  const topReferrers = await Analytics.aggregate([
-    {
-      $match: {
-        ...matchStage,
-        type: "pageview",
-        referrer: { $nin: [null, ""] },
-      },
-    },
-    { $group: { _id: "$referrer", count: { $sum: 1 } } },
-    { $sort: { count: -1 } },
-    { $limit: 5 },
-  ]);
-
-  // 5. Views Over Time (for chart)
-  const viewsOverTime = await Analytics.aggregate([
-    { $match: { ...matchStage, type: "pageview" } },
-    {
-      $group: {
-        _id: {
-          $dateToString: {
-            format: timeRange === "24h" ? "%H:00" : "%Y-%m-%d",
-            date: "$timestamp",
-          },
+  const [
+    uniqueVisitors,
+    totalPageViews,
+    topPages,
+    avgLCP,
+    topReferrers,
+    viewsOverTime,
+    visitorPageCounts,
+    pagesPerformance,
+    deviceStats,
+  ] = await Promise.all([
+    Analytics.distinct("visitorId", {
+      ...matchStage,
+      type: "pageview",
+    }),
+    Analytics.countDocuments({
+      ...matchStage,
+      type: "pageview",
+    }),
+    Analytics.aggregate([
+      { $match: { ...matchStage, type: "pageview" } },
+      { $group: { _id: "$path", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+    ]),
+    Analytics.aggregate([
+      { $match: { ...matchStage, type: "web-vital", metricName: "LCP" } },
+      { $group: { _id: null, avg: { $avg: "$metricValue" } } },
+    ]),
+    Analytics.aggregate([
+      {
+        $match: {
+          ...matchStage,
+          type: "pageview",
+          referrer: { $nin: [null, ""] },
         },
-        count: { $sum: 1 },
       },
-    },
-    { $sort: { _id: 1 } },
+      { $group: { _id: "$referrer", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+    ]),
+    Analytics.aggregate([
+      { $match: { ...matchStage, type: "pageview" } },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: timeRange === "24h" ? "%H:00" : "%Y-%m-%d",
+              date: "$timestamp",
+            },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]),
+    Analytics.aggregate([
+      { $match: { ...matchStage, type: "pageview" } },
+      { $group: { _id: "$visitorId", count: { $sum: 1 } } },
+    ]),
+    Analytics.aggregate([
+      { $match: { ...matchStage, type: "web-vital" } },
+      {
+        $group: {
+          _id: { path: "$path", metric: "$metricName" },
+          avgValue: { $avg: "$metricValue" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.path",
+          metrics: {
+            $push: {
+              name: "$_id.metric",
+              value: "$avgValue",
+              count: "$count",
+            },
+          },
+          totalSamples: { $sum: "$count" },
+        },
+      },
+      { $sort: { totalSamples: -1 } },
+    ]),
+    Analytics.aggregate([
+      { $match: { ...matchStage, type: "pageview" } },
+      { $group: { _id: "$device", count: { $sum: 1 } } },
+    ]),
   ]);
 
-  // 6. Calculate Bounce Rate (Visitors with only 1 pageview)
-  // This is expensive on large datasets, simplified here
-  const visitorPageCounts = await Analytics.aggregate([
-    { $match: { ...matchStage, type: "pageview" } },
-    { $group: { _id: "$visitorId", count: { $sum: 1 } } },
-  ]);
-
+  // Calculate bounce rate (single-page sessions / total sessions)
   const totalSessions = visitorPageCounts.length;
-  const singlePageSessions = visitorPageCounts.filter(
-    (v) => v.count === 1,
-  ).length;
-  const bounceRate =
-    totalSessions > 0 ? (singlePageSessions / totalSessions) * 100 : 0;
-
-  // 7. Per-Page Web Vitals
-  const pagesPerformance = await Analytics.aggregate([
-    { $match: { ...matchStage, type: "web-vital" } },
-    {
-      $group: {
-        _id: { path: "$path", metric: "$metricName" },
-        avgValue: { $avg: "$metricValue" },
-        count: { $sum: 1 },
-      },
-    },
-    {
-      $group: {
-        _id: "$_id.path",
-        metrics: {
-          $push: {
-            name: "$_id.metric",
-            value: "$avgValue",
-            count: "$count",
-          },
-        },
-        totalSamples: { $sum: "$count" },
-      },
-    },
-    { $sort: { totalSamples: -1 } },
-  ]);
-
-  // 8. Device Stats
-  const deviceStats = await Analytics.aggregate([
-    { $match: { ...matchStage, type: "pageview" } },
-    { $group: { _id: "$device", count: { $sum: 1 } } },
-  ]);
+  const singlePageSessions = visitorPageCounts.filter((v) => v.count === 1).length;
+  const bounceRate = totalSessions > 0 ? (singlePageSessions / totalSessions) * 100 : 0;
 
   return {
     visitors: uniqueVisitors.length,

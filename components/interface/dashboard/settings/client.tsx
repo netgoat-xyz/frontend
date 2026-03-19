@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useState } from "react";
 import IntegrationCard from "../integrations/integrationCard";
 import IntegrationModal from "../integrations/components/integrationModel";

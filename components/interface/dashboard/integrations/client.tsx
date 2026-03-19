@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import dynamic from "next/dynamic";
 import IntegrationCard from "./integrationCard";

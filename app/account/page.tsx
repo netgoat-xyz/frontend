@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Loader2, Camera } from "lucide-react";
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -122,14 +122,15 @@ export default function SettingsPage() {
         onClose={() => setIsModalOpen(false)}
         integration={selectedIntegration}
       />
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white tracking-tight">
-          Settings
-        </h1>
-        <p className="text-neutral-400 mt-2">
-          Manage workspace, security, billing, and integrations.
-        </p>
-      </div>
+      <div className="max-w-7xl mx-auto px-6 pt-10">
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-white tracking-tight">
+            Settings
+          </h1>
+          <p className="text-neutral-400 mt-2">
+            Manage workspace, security, billing, and integrations.
+          </p>
+        </div>
 
       <div className="flex flex-col lg:flex-row gap-10">
         <aside className="w-full lg:w-56 shrink-0">
@@ -146,8 +147,8 @@ export default function SettingsPage() {
               >
                 {activeSection === cat && (
                   <motion.div
-                    layoutId="settings-pill"
-                    className="absolute left-0 w-1 h-4 bg-white rounded-r-full"
+                    layoutId="user-settings-pill"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-white rounded-r-full"
                   />
                 )}
                 <span className="ml-2">{cat}</span>
@@ -271,6 +272,7 @@ export default function SettingsPage() {
             </>
           )}
         </main>
+      </div>
       </div>
     </div>
   );

@@ -1,9 +1,21 @@
 import type React from "react";
-import Link from "next/link";
+import dynamic from "next/dynamic";
 
 import ShaderBackground from "@/components/interface/homescreen/shader-background";
 import Header from "@/components/interface/homescreen/header";
-import DocsSidebar from "./sidebar";
+
+const DocsSidebar = dynamic(() => import("./sidebar"), {
+  loading: () => (
+    <aside className="hidden sticky h-auto w-full shrink-0 md:block" aria-hidden="true">
+      <div className="sticky top-10 space-y-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+        <div className="h-3 w-24 rounded bg-white/15" />
+        <div className="h-8 w-full rounded-lg bg-white/10" />
+        <div className="h-8 w-full rounded-lg bg-white/10" />
+        <div className="h-8 w-5/6 rounded-lg bg-white/10" />
+      </div>
+    </aside>
+  ),
+});
 
 export default function DocsLayout({
   children,

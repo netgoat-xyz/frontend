@@ -78,9 +78,15 @@ function ChangelogSkeleton() {
 
 async function ChangelogContent() {
   const categorizedReleases = await getCategorizedGitHubReleases(30);
+
+  const [mainAgentReleases, frontendReleases] = await Promise.all([
+    getReleasesWithDescriptions(categorizedReleases["main-agent"]),
+    getReleasesWithDescriptions(categorizedReleases.frontend),
+  ]);
+
   const hasReleases =
-    categorizedReleases["main-agent"].length > 0 ||
-    categorizedReleases.frontend.length > 0;
+    mainAgentReleases.length > 0 ||
+    frontendReleases.length > 0;
 
   if (!hasReleases) {
     return (
@@ -103,29 +109,32 @@ async function ChangelogContent() {
       <ReleaseCategorySection
         title="Main Agent"
         subtitle="Releases from netgoat-xyz/netgoat"
-        releases={categorizedReleases["main-agent"]}
+        releases={mainAgentReleases}
       />
       <ReleaseCategorySection
         title="Frontend"
         subtitle="Releases from netgoat-xyz/frontend"
-        releases={categorizedReleases.frontend}
+        releases={frontendReleases}
       />
     </div>
   );
 }
 
-async function ReleaseCategorySection(props: {
-  title: string;
-  subtitle: string;
-  releases: GitHubRelease[];
-}) {
-  const { title, subtitle, releases } = props;
-  const releasesWithDescriptions = await Promise.all(
+async function getReleasesWithDescriptions(releases: GitHubRelease[]) {
+  return Promise.all(
     releases.map(async (release) => ({
       release,
       description: await getReleaseDescription(release),
     })),
   );
+}
+
+function ReleaseCategorySection(props: {
+  title: string;
+  subtitle: string;
+  releases: Array<{ release: GitHubRelease; description: string }>;
+}) {
+  const { title, subtitle, releases } = props;
 
   return (
     <section>
@@ -142,7 +151,7 @@ async function ReleaseCategorySection(props: {
         </div>
       ) : (
         <div className="relative pl-8 border-l border-white/8 ml-2">
-          {releasesWithDescriptions.map(({ release, description }, idx) => (
+          {releases.map(({ release, description }, idx) => (
             <div
               key={release.id}
               className={`relative ${idx < releases.length - 1 ? "pb-14" : "pb-0"}`}

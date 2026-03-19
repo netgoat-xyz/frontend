@@ -7,8 +7,18 @@ import ShaderBackground from "@/components/interface/homescreen/shader-backgroun
 import Footer from "@/components/interface/homescreen/footer";
 import { Calendar, ArrowRight, BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
+
+interface BlogPost {
+  _id: string;
+  slug: string;
+  title: string;
+  content?: string;
+  createdAt: string;
+  coverImage?: string;
+}
 
 export default function BlogPage() {
     const t = useTranslations("HomePage");
@@ -84,7 +94,8 @@ function BlogSkeleton() {
 }
 
 async function BlogPostsList() {
-  const { posts } = await getPosts("blog");
+  const t = await getTranslations("HomePage.blog");
+  const { posts } = (await getPosts("blog")) as { posts: BlogPost[] };
 
   if (!posts || posts.length === 0) {
     return (
@@ -92,9 +103,9 @@ async function BlogPostsList() {
         <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
           <BookOpen className="w-7 h-7 text-white/20" />
         </div>
-        <p className="text-lg text-white/40 font-light mb-2">No posts yet</p>
+        <p className="text-lg text-white/40 font-light mb-2">{t("empty.title")}</p>
         <p className="text-sm text-white/20 font-light">
-          Check back soon for updates.
+          {t("empty.description")}
         </p>
       </div>
     );
@@ -121,7 +132,7 @@ async function BlogPostsList() {
   return (
     <div className="space-y-16">
       {/* Featured Post */}
-      <Link href={`/blog/${featured.slug}` as any} className="group block">
+      <Link href={`/blog/${featured.slug}`} className="group block">
         <article className="rounded-2xl border border-white/6 bg-white/2 hover:bg-white/4 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-white/12 hover:shadow-2xl hover:shadow-violet-500/5">
           <div className="grid md:grid-cols-2 gap-0">
             {/* Image */}
@@ -138,7 +149,7 @@ async function BlogPostsList() {
             <div className="p-8 md:p-10 flex flex-col justify-center space-y-4">
               <div className="flex items-center gap-3">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-violet-500/10 text-violet-300 border border-violet-500/20">
-                  Featured
+                  {t("labels.featured")}
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs text-white/30">
                   <Calendar className="w-3 h-3" />
@@ -166,7 +177,7 @@ async function BlogPostsList() {
 
               <div className="pt-2">
                 <span className="inline-flex items-center gap-2 text-xs font-medium text-violet-300/70 group-hover:text-violet-300 transition-colors">
-                  Read article
+                  {t("actions.readArticle")}
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                 </span>
               </div>
@@ -178,10 +189,10 @@ async function BlogPostsList() {
       {/* Remaining Posts Grid */}
       {rest.length > 0 && (
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {rest.map((post: any) => (
+          {rest.map((post) => (
             <Link
               key={post._id}
-              href={`/blog/${post.slug}` as any}
+              href={`/blog/${post.slug}`}
               className="group block h-full"
             >
               <article className="h-full flex flex-col rounded-2xl border border-white/6 bg-white/2 hover:bg-white/4 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-white/12 hover:shadow-2xl hover:shadow-violet-500/5">
@@ -221,7 +232,7 @@ async function BlogPostsList() {
 
                   <div className="pt-2 mt-auto">
                     <span className="inline-flex items-center gap-2 text-xs font-medium text-violet-300/50 group-hover:text-violet-300 transition-all">
-                      Read more
+                      {t("actions.readMore")}
                       <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>

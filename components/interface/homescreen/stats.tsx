@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useEffect, useState, useMemo } from "react";
 import { Counter } from "@/components/ui/counter";
 import { getGitHubStats } from "@/actions/github";

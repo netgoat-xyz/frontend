@@ -9,6 +9,7 @@
     "home": "Beranda",
     "blogs": "Blog",
     "docs": "Dokumen",
+    "status": "Status",
     "source_code": "Kode Sumber",
     "discord": "Discord",
     "public_beta": "✨ Beta Publik - Segera Hadir...",
@@ -79,7 +80,29 @@
     },
     "footer": {
       "rights": "© 2026 NetGoat Inc. Semua hak dilindungi."
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Berita terbaru, pembaruan, dan pembahasan teknis mendalam dari tim NetGoat.",
+      "subtitle": "Rekayasa & Pembaruan",
+      "labels": {
+        "featured": "Unggulan"
+      },
+      "actions": {
+        "readArticle": "Baca artikel",
+        "readMore": "Baca selengkapnya"
+      },
+      "empty": {
+        "title": "Belum ada postingan",
+        "description": "Kembali lagi segera untuk pembaruan."
+      }
     }
+  },
+  "ChangelogDetail": {
+    "back": "Kembali ke Changelog",
+    "preRelease": "Pra-rilis",
+    "githubRelease": "Rilis GitHub",
+    "emptyReleaseNotes": "Tidak ada catatan rilis yang disediakan untuk rilis ini."
   },
   "ErrorPages": {
     "serverError": {
@@ -585,6 +608,286 @@
         "addedToSubdomain": "WAF rule added to {subdomain}",
         "addedToDomain": "WAF rule added to domain",
         "deleted": "WAF rule deleted"
+      }
+    },
+    "admin": {
+      "dashboard": {
+        "title": "Admin Dashboard",
+        "subtitle": "Overview of your system's performance and activity.",
+        "toasts": {
+          "fetchFailed": "Failed to fetch admin data"
+        },
+        "actions": {
+          "refreshing": "Refreshing...",
+          "refreshData": "Refresh Data"
+        },
+        "cards": {
+          "totalUsers": {
+            "title": "Total Users",
+            "description": "Registered accounts"
+          },
+          "activeSessions": {
+            "title": "Active Sessions",
+            "description": "Currently online users"
+          },
+          "systemLoad": {
+            "title": "System Load",
+            "description": "Average CPU usage"
+          },
+          "securityEvents": {
+            "title": "Security Events",
+            "description": "Events requiring attention"
+          }
+        },
+        "activityMap": {
+          "title": "System Activity Map",
+          "description": "Visual metrics over time.",
+          "pending": "Chart integration pending"
+        },
+        "quickActions": {
+          "title": "Quick Actions",
+          "description": "Manage common administrative tasks.",
+          "manageUsers": "Manage Users",
+          "securityLogs": "Security Logs",
+          "systemSettings": "System Settings"
+        }
+      },
+      "logs": {
+        "title": "Logs",
+        "subtitle": "View and manage your server logs in real-time.",
+        "liveServerLogs": "Live Server Logs",
+        "description": "Realtime logs captured from the server instance.",
+        "empty": "No logs captured yet...",
+        "badges": {
+          "live": "Live",
+          "paused": "Paused"
+        },
+        "actions": {
+          "toggleRequestFilter": "Toggle Request Filter",
+          "requests": "Requests"
+        }
+      },
+      "system": {
+        "title": "System Information",
+        "subtitle": "Server specifications and status.",
+        "confirmRestart": "Are you sure you want to trigger a system restart?",
+        "toasts": {
+          "fetchFailed": "Failed to fetch system specs",
+          "restartSent": "Restart signal sent",
+          "restartFailed": "Failed to restart system"
+        },
+        "actions": {
+          "restartSystem": "Restart System"
+        },
+        "hardware": {
+          "title": "Hardware Details",
+          "description": "Current hardware allocation and usage metrics.",
+          "fields": {
+            "os": "OS",
+            "cpuModel": "CPU Model",
+            "cpuCores": "CPU Cores",
+            "memoryTotal": "Memory (Total)",
+            "memoryFree": "Memory (Free)",
+            "uptime": "Uptime"
+          }
+        }
+      },
+      "users": {
+        "title": "User Management",
+        "subtitle": "Manage your users, roles, and access.",
+        "searchPlaceholder": "Search users...",
+        "yes": "Yes",
+        "no": "No",
+        "toasts": {
+          "fetchFailed": "Failed to fetch users",
+          "updateSuccess": "User updated successfully",
+          "updateFailed": "Failed to update user"
+        },
+        "directory": {
+          "title": "Directory",
+          "description": "Search explicitly or browse dynamically."
+        },
+        "table": {
+          "user": "User",
+          "role": "Role",
+          "status": "Status",
+          "created": "Created",
+          "actions": "Actions"
+        },
+        "status": {
+          "active": "Active",
+          "banned": "Banned"
+        },
+        "pagination": {
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "editUser": {
+          "title": "Edit User",
+          "description": "Make changes to the user profile."
+        },
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "role": "Role",
+          "selectRole": "Select role",
+          "banned": "Banned"
+        },
+        "roles": {
+          "user": "User",
+          "admin": "Admin"
+        },
+        "actions": {
+          "saveChanges": "Save Changes"
+        }
+      },
+      "alerts": {
+        "title": "Dashboard Alerts",
+        "confirmDelete": "Are you sure?",
+        "empty": "No alerts generated yet.",
+        "hasAction": "Has Action: {actionText}",
+        "created": "Created: {date}",
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "toasts": {
+          "createSuccess": "Alert created successfully",
+          "createFailed": "Failed to create alert",
+          "statusUpdated": "Alert status updated",
+          "statusFailed": "Failed to update status",
+          "deleteSuccess": "Alert deleted",
+          "deleteFailed": "Failed to delete alert"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "createAlert": "Create Alert",
+          "saveAlert": "Save Alert"
+        },
+        "newAlert": {
+          "title": "New Alert"
+        },
+        "fields": {
+          "title": "Title",
+          "titlePlaceholder": "Alert title...",
+          "messageBody": "Message Body",
+          "bodyPlaceholder": "Details of the alert...",
+          "variant": "Variant",
+          "actionText": "Action Text (optional)",
+          "actionTextPlaceholder": "E.g., Read More"
+        },
+        "variants": {
+          "blue": "Blue (Info)",
+          "yellow": "Yellow (Warning)",
+          "red": "Red (Critical)"
+        }
+      },
+      "incidents": {
+        "title": "Incident Announcements",
+        "confirmDelete": "Are you sure?",
+        "empty": "No incidents reported yet.",
+        "started": "Started: {date}",
+        "severityBadge": "{severity} Severity",
+        "toasts": {
+          "createSuccess": "Incident created",
+          "createFailed": "Failed to create incident",
+          "updateSuccess": "Incident updated",
+          "updateFailed": "Failed to update incident",
+          "deleteSuccess": "Incident deleted",
+          "deleteFailed": "Failed to delete incident"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "postIncident": "Post Incident",
+          "createAnnouncement": "Create Announcement"
+        },
+        "newIncident": {
+          "title": "New Incident"
+        },
+        "fields": {
+          "title": "Title",
+          "titlePlaceholder": "E.g. API taking longer than expected",
+          "description": "Description",
+          "descriptionPlaceholder": "What is going on?",
+          "status": "Status",
+          "severity": "Severity"
+        },
+        "badges": {
+          "active": "Active",
+          "resolved": "Resolved"
+        },
+        "statuses": {
+          "investigating": "Investigating",
+          "identified": "Identified",
+          "monitoring": "Monitoring",
+          "resolved": "Resolved",
+          "markResolved": "Mark Resolved"
+        },
+        "severity": {
+          "minor": "Minor",
+          "major": "Major",
+          "critical": "Critical"
+        }
+      },
+      "analytics": {
+        "title": "Analytics",
+        "subtitle": "Self-hosted insights and performance metrics.",
+        "selectRange": "Select Range",
+        "ranges": {
+          "24h": "Last 24 Hours",
+          "7d": "Last 7 Days",
+          "30d": "Last 30 Days"
+        },
+        "cards": {
+          "totalVisitors": {
+            "title": "Total Visitors",
+            "description": "Unique devices"
+          },
+          "pageViews": {
+            "title": "Page Views",
+            "description": "Total page loads"
+          },
+          "bounceRate": {
+            "title": "Bounce Rate",
+            "description": "Single page sessions"
+          },
+          "avgLcp": {
+            "title": "Avg LCP",
+            "description": "Largest Contentful Paint"
+          }
+        },
+        "overview": {
+          "title": "Overview"
+        },
+        "devices": {
+          "title": "Devices",
+          "description": "By type",
+          "visitors": "Visitors",
+          "labels": {
+            "mobile": "Mobile",
+            "tablet": "Tablet",
+            "desktop": "Desktop"
+          }
+        },
+        "topPages": {
+          "title": "Top Pages",
+          "description": "Most visited paths."
+        },
+        "topReferrers": {
+          "title": "Top Referrers",
+          "description": "Main sources of traffic."
+        },
+        "pageSpeed": {
+          "title": "Page Speed Insights",
+          "description": "Performance metrics per page (Average values).",
+          "legend": {
+            "lcp": "LCP (ms)",
+            "fid": "FID (ms)",
+            "cls": "CLS (x1000)"
+          }
+        },
+        "noData": "No data available",
+        "noWebVitals": "No web vitals data collected yet."
       }
     }
   },

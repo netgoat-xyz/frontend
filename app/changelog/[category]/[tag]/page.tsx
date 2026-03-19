@@ -18,6 +18,7 @@ import {
   ExternalLink,
   FlaskConical,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ function isValidCategory(value: string): value is GitHubReleaseCategory {
 }
 
 export default async function ChangelogDetailPage(props: ChangelogDetailPageProps) {
+  const translationsPromise = getTranslations("ChangelogDetail");
   const params = await props.params;
   const categoryParam = decodeURIComponent(params.category);
   const tag = decodeURIComponent(params.tag);
@@ -38,7 +40,10 @@ export default async function ChangelogDetailPage(props: ChangelogDetailPageProp
     notFound();
   }
 
-  const release = await getGitHubReleaseByTag(tag, categoryParam);
+  const [t, release] = await Promise.all([
+    translationsPromise,
+    getGitHubReleaseByTag(tag, categoryParam),
+  ]);
 
   if (!release) {
     notFound();
@@ -56,7 +61,7 @@ export default async function ChangelogDetailPage(props: ChangelogDetailPageProp
               className="inline-flex items-center gap-2 text-xs text-white/30 hover:text-white/60 transition-colors group"
             >
               <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-              Back to Changelog
+              {t("back")}
             </Link>
           </div>
 
@@ -73,7 +78,7 @@ export default async function ChangelogDetailPage(props: ChangelogDetailPageProp
                 {release.prerelease && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-amber-500/10 text-amber-300 border border-amber-500/20">
                     <FlaskConical className="w-2.5 h-2.5" />
-                    Pre-release
+                    {t("preRelease")}
                   </span>
                 )}
               </div>
@@ -104,7 +109,7 @@ export default async function ChangelogDetailPage(props: ChangelogDetailPageProp
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-violet-300/80 hover:text-violet-300 transition-colors"
                 >
-                  GitHub Release
+                  {t("githubRelease")}
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -122,7 +127,7 @@ export default async function ChangelogDetailPage(props: ChangelogDetailPageProp
                     {release.body}
                   </Markdown>
                 ) : (
-                  <p className="text-white/50">No release notes were provided for this release.</p>
+                  <p className="text-white/50">{t("emptyReleaseNotes")}</p>
                 )}
               </div>
             </div>

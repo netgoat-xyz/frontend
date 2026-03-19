@@ -9,10 +9,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { PlusCircle, Trash2, Edit2 } from "lucide-react";
+import { PlusCircle, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-export default function IncidentsClient({ initialIncidents }: { initialIncidents: any[] }) {
-  const [incidents, setIncidents] = useState(initialIncidents);
+type IncidentStatus = "investigating" | "identified" | "monitoring" | "resolved";
+type IncidentSeverity = "minor" | "major" | "critical";
+
+interface IncidentItem {
+  _id: string;
+  title: string;
+  description: string;
+  status: IncidentStatus;
+  severity: IncidentSeverity;
+  active: boolean;
+  createdAt: string;
+}
+
+export default function IncidentsClient({ initialIncidents }: { initialIncidents: IncidentItem[] }) {
+  const t = useTranslations("DashboardPages.admin.incidents");
+  const [incidents] = useState<IncidentItem[]>(initialIncidents);
   const [isCreating, setIsCreating] = useState(false);
   const [newIncident, setNewIncident] = useState({
     title: "",
@@ -24,96 +39,96 @@ export default function IncidentsClient({ initialIncidents }: { initialIncidents
   const handleCreate = async () => {
     try {
       await createIncident(newIncident);
-      toast.success("Incident created");
+      toast.success(t("toasts.createSuccess"));
       setIsCreating(false);
       window.location.reload();
     } catch {
-      toast.error("Failed to create incident");
+      toast.error(t("toasts.createFailed"));
     }
   };
 
-  const handleUpdate = async (id: string, updates: any) => {
+  const handleUpdate = async (id: string, updates: { status: IncidentStatus }) => {
     try {
       await updateIncidentStarted(id, updates);
-      toast.success("Incident updated");
+      toast.success(t("toasts.updateSuccess"));
       window.location.reload();
     } catch {
-      toast.error("Failed to update incident");
+      toast.error(t("toasts.updateFailed"));
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
+    if (!confirm(t("confirmDelete"))) return;
     try {
       await deleteIncident(id);
-      toast.success("Incident deleted");
+      toast.success(t("toasts.deleteSuccess"));
       window.location.reload();
     } catch {
-      toast.error("Failed to delete incident");
+      toast.error(t("toasts.deleteFailed"));
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Incident Announcements</h2>
+        <h2 className="text-xl font-semibold">{t("title")}</h2>
         <Button onClick={() => setIsCreating(!isCreating)}>
           <PlusCircle className="mr-2 h-4 w-4" />
-          {isCreating ? "Cancel" : "Post Incident"}
+          {isCreating ? t("actions.cancel") : t("actions.postIncident")}
         </Button>
       </div>
 
       {isCreating && (
         <Card>
           <CardHeader>
-            <CardTitle>New Incident</CardTitle>
+            <CardTitle>{t("newIncident.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Title</label>
+              <label className="text-sm font-medium">{t("fields.title")}</label>
               <Input 
                 value={newIncident.title} 
                 onChange={(e) => setNewIncident({ ...newIncident, title: e.target.value })}
-                placeholder="E.g. API taking longer than expected"
+                placeholder={t("fields.titlePlaceholder")}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Description</label>
+              <label className="text-sm font-medium">{t("fields.description")}</label>
               <Textarea 
                 value={newIncident.description}
                 onChange={(e) => setNewIncident({ ...newIncident, description: e.target.value })}
-                placeholder="What is going on?"
+                placeholder={t("fields.descriptionPlaceholder")}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
+                <label className="text-sm font-medium">{t("fields.status")}</label>
                 <Select 
                   value={newIncident.status ?? "investigating"} 
                   onValueChange={(val) => setNewIncident({ ...newIncident, status: val ?? "investigating" })}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="investigating">Investigating</SelectItem>
-                    <SelectItem value="identified">Identified</SelectItem>
-                    <SelectItem value="monitoring">Monitoring</SelectItem>
-                    <SelectItem value="resolved">Resolved</SelectItem>
+                    <SelectItem value="investigating">{t("statuses.investigating")}</SelectItem>
+                    <SelectItem value="identified">{t("statuses.identified")}</SelectItem>
+                    <SelectItem value="monitoring">{t("statuses.monitoring")}</SelectItem>
+                    <SelectItem value="resolved">{t("statuses.resolved")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Severity</label>
+                <label className="text-sm font-medium">{t("fields.severity")}</label>
                 <Select value={newIncident.severity} onValueChange={(val) => setNewIncident({ ...newIncident, severity: val ?? "minor" })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="minor">Minor</SelectItem>
-                    <SelectItem value="major">Major</SelectItem>
-                    <SelectItem value="critical">Critical</SelectItem>
+                    <SelectItem value="minor">{t("severity.minor")}</SelectItem>
+                    <SelectItem value="major">{t("severity.major")}</SelectItem>
+                    <SelectItem value="critical">{t("severity.critical")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <Button onClick={handleCreate} className="w-full">Create Announcement</Button>
+            <Button onClick={handleCreate} className="w-full">{t("actions.createAnnouncement")}</Button>
           </CardContent>
         </Card>
       )}
@@ -126,30 +141,30 @@ export default function IncidentsClient({ initialIncidents }: { initialIncidents
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-semibold">{inc.title}</h3>
                   {inc.active ? (
-                    <Badge variant="destructive">Active</Badge>
+                    <Badge variant="destructive">{t("badges.active")}</Badge>
                   ) : (
-                    <Badge variant="secondary">Resolved</Badge>
+                    <Badge variant="secondary">{t("badges.resolved")}</Badge>
                   )}
-                  <Badge variant="outline" className="capitalize">{inc.status}</Badge>
-                  <Badge variant="outline" className="capitalize">{inc.severity} Severity</Badge>
+                  <Badge variant="outline" className="capitalize">{t(`statuses.${inc.status}`)}</Badge>
+                  <Badge variant="outline" className="capitalize">{t("severityBadge", { severity: t(`severity.${inc.severity}`) })}</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">{inc.description}</p>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Started: {new Date(inc.createdAt).toLocaleString()}
+                  {t("started", { date: new Date(inc.createdAt).toLocaleString() })}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 {inc.active && (
                   <Select 
                     value={inc.status} 
-                    onValueChange={(val) => handleUpdate(inc._id, { status: val })}
+                    onValueChange={(val) => handleUpdate(inc._id, { status: (val ?? "investigating") as IncidentStatus })}
                   >
                     <SelectTrigger className="w-35"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="investigating">Investigating</SelectItem>
-                      <SelectItem value="identified">Identified</SelectItem>
-                      <SelectItem value="monitoring">Monitoring</SelectItem>
-                      <SelectItem value="resolved">Mark Resolved</SelectItem>
+                      <SelectItem value="investigating">{t("statuses.investigating")}</SelectItem>
+                      <SelectItem value="identified">{t("statuses.identified")}</SelectItem>
+                      <SelectItem value="monitoring">{t("statuses.monitoring")}</SelectItem>
+                      <SelectItem value="resolved">{t("statuses.markResolved")}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
@@ -162,7 +177,7 @@ export default function IncidentsClient({ initialIncidents }: { initialIncidents
         ))}
         {incidents.length === 0 && !isCreating && (
           <div className="py-8 text-center text-muted-foreground border rounded-lg border-dashed">
-            No incidents reported yet.
+            {t("empty")}
           </div>
         )}
       </div>

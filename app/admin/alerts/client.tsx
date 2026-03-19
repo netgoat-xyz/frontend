@@ -11,9 +11,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { PlusCircle, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-export default function AlertsClient({ initialAlerts }: { initialAlerts: any[] }) {
-  const [alerts, setAlerts] = useState(initialAlerts);
+type AlertVariant = "blue" | "yellow" | "red";
+
+interface AlertItem {
+  _id: string;
+  title: string;
+  body: string;
+  variant: AlertVariant;
+  actionText?: string;
+  active: boolean;
+  createdAt: string;
+}
+
+const alertVariantLabelKey: Record<AlertVariant, "variants.blue" | "variants.yellow" | "variants.red"> = {
+  blue: "variants.blue",
+  yellow: "variants.yellow",
+  red: "variants.red",
+};
+
+export default function AlertsClient({ initialAlerts }: { initialAlerts: AlertItem[] }) {
+  const t = useTranslations("DashboardPages.admin.alerts");
+  const [alerts] = useState<AlertItem[]>(initialAlerts);
   const [isCreating, setIsCreating] = useState(false);
   const [newAlert, setNewAlert] = useState({
     title: "",
@@ -25,92 +45,92 @@ export default function AlertsClient({ initialAlerts }: { initialAlerts: any[] }
   const handleCreate = async () => {
     try {
       await createAlert(newAlert);
-      toast.success("Alert created successfully");
+      toast.success(t("toasts.createSuccess"));
       setIsCreating(false);
       window.location.reload();
     } catch {
-      toast.error("Failed to create alert");
+      toast.error(t("toasts.createFailed"));
     }
   };
 
   const handleToggleActive = async (id: string, currentActive: boolean) => {
     try {
       await toggleAlertActive(id, !currentActive);
-      toast.success("Alert status updated");
+      toast.success(t("toasts.statusUpdated"));
       window.location.reload();
     } catch {
-      toast.error("Failed to update status");
+      toast.error(t("toasts.statusFailed"));
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
+    if (!confirm(t("confirmDelete"))) return;
     try {
       await deleteAlert(id);
-      toast.success("Alert deleted");
+      toast.success(t("toasts.deleteSuccess"));
       window.location.reload();
     } catch {
-      toast.error("Failed to delete alert");
+      toast.error(t("toasts.deleteFailed"));
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Dashboard Alerts</h2>
+        <h2 className="text-xl font-semibold">{t("title")}</h2>
         <Button onClick={() => setIsCreating(!isCreating)}>
           <PlusCircle className="mr-2 h-4 w-4" />
-          {isCreating ? "Cancel" : "Create Alert"}
+          {isCreating ? t("actions.cancel") : t("actions.createAlert")}
         </Button>
       </div>
 
       {isCreating && (
         <Card>
           <CardHeader>
-            <CardTitle>New Alert</CardTitle>
+            <CardTitle>{t("newAlert.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Title</label>
+              <label className="text-sm font-medium">{t("fields.title")}</label>
               <Input 
                 value={newAlert.title} 
                 onChange={(e) => setNewAlert({ ...newAlert, title: e.target.value })}
-                placeholder="Alert title..."
+                placeholder={t("fields.titlePlaceholder")}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Message Body</label>
+              <label className="text-sm font-medium">{t("fields.messageBody")}</label>
               <Textarea 
                 value={newAlert.body}
                 onChange={(e) => setNewAlert({ ...newAlert, body: e.target.value })}
-                placeholder="Details of the alert..."
+                placeholder={t("fields.bodyPlaceholder")}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Variant</label>
+                <label className="text-sm font-medium">{t("fields.variant")}</label>
                 <Select 
                   value={newAlert.variant} 
                   onValueChange={(val) => setNewAlert({ ...newAlert, variant: val ?? "blue" })}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="blue">Blue (Info)</SelectItem>
-                    <SelectItem value="yellow">Yellow (Warning)</SelectItem>
-                    <SelectItem value="red">Red (Critical)</SelectItem>
+                    <SelectItem value="blue">{t("variants.blue")}</SelectItem>
+                    <SelectItem value="yellow">{t("variants.yellow")}</SelectItem>
+                    <SelectItem value="red">{t("variants.red")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Action Text (optional)</label>
+                <label className="text-sm font-medium">{t("fields.actionText")}</label>
                 <Input 
                   value={newAlert.actionText} 
                   onChange={(e) => setNewAlert({ ...newAlert, actionText: e.target.value })}
-                  placeholder="E.g., Read More"
+                  placeholder={t("fields.actionTextPlaceholder")}
                 />
               </div>
             </div>
-            <Button onClick={handleCreate} className="w-full">Save Alert</Button>
+            <Button onClick={handleCreate} className="w-full">{t("actions.saveAlert")}</Button>
           </CardContent>
         </Card>
       )}
@@ -123,15 +143,15 @@ export default function AlertsClient({ initialAlerts }: { initialAlerts: any[] }
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-semibold">{alert.title}</h3>
                   <Badge variant={alert.variant === "red" ? "destructive" : alert.variant === "yellow" ? "outline" : "secondary"} className="capitalize">
-                    {alert.variant}
+                    {t(alertVariantLabelKey[alert.variant])}
                   </Badge>
                   {alert.actionText && (
-                    <Badge variant="outline">Has Action: {alert.actionText}</Badge>
+                    <Badge variant="outline">{t("hasAction", { actionText: alert.actionText })}</Badge>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">{alert.body}</p>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Created: {new Date(alert.createdAt).toLocaleString()}
+                  {t("created", { date: new Date(alert.createdAt).toLocaleString() })}
                 </p>
               </div>
               <div className="flex items-center gap-4">
@@ -140,7 +160,7 @@ export default function AlertsClient({ initialAlerts }: { initialAlerts: any[] }
                     checked={alert.active}
                     onCheckedChange={() => handleToggleActive(alert._id, alert.active)}
                   />
-                  <span className="text-sm text-muted-foreground">{alert.active ? "Active" : "Inactive"}</span>
+                  <span className="text-sm text-muted-foreground">{alert.active ? t("status.active") : t("status.inactive")}</span>
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => handleDelete(alert._id)}>
                   <Trash2 className="h-4 w-4 text-red-500" />
@@ -151,7 +171,7 @@ export default function AlertsClient({ initialAlerts }: { initialAlerts: any[] }
         ))}
         {alerts.length === 0 && !isCreating && (
           <div className="py-8 text-center text-muted-foreground border rounded-lg border-dashed">
-            No alerts generated yet.
+            {t("empty")}
           </div>
         )}
       </div>

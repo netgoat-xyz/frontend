@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Terminal, Settings, Globe, Shield } from "lucide-react";
 
 export default function HowItWorks() {
