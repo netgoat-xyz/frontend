@@ -3,12 +3,24 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
+function truncateWithEllipsis(text: string, maxLength: number): string {
+  const normalized = text.trim();
+
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  const truncated = normalized.slice(0, maxLength).trimEnd().replace(/,+$/g, '');
+  return `${truncated}...`;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
     const title = searchParams.get('title') || 'Engineering Post';
     const description = searchParams.get('description') || '';
+    const displayDescription = truncateWithEllipsis(description, 170);
     const date = searchParams.get('date') || '';
 
     return new ImageResponse(
@@ -64,7 +76,7 @@ export async function GET(request: NextRequest) {
               {title}
             </h1>
 
-            {description && (
+            {displayDescription && (
               <p style={{
                 fontSize: '22px',
                 color: 'rgba(255, 255, 255, 0.4)',
@@ -77,7 +89,7 @@ export async function GET(request: NextRequest) {
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
               }}>
-                {description}
+                {displayDescription}
               </p>
             )}
           </div>

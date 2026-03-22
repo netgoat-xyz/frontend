@@ -1,0 +1,1013 @@
+{
+  "HomePage": {
+    "calm": "落ち着き",
+    "networking": "ネットワーキング",
+    "sub_header": "シンプルなネットワーキング。",
+    "detailed": "安全でスケーラブル、使いやすいネットワーキングソリューション。",
+    "pricing_button": "価格",
+    "get_started_button": "始める",
+    "home": "ホーム",
+    "blogs": "ブログ",
+    "status": "ステータス",
+    "docs": "ドキュメント",
+    "source_code": "ソースコード",
+    "discord": "Discord",
+    "public_beta": "✨ パブリックベータ - 近日公開...",
+    "netgoat": "NetGoat",
+    "login": "ログイン",
+    "features": {
+      "speed": {
+        "title": "超高速",
+        "description": "グローバルな低遅延接続に特化して最適化されています。"
+      },
+      "security": {
+        "title": "ゼロトラスト",
+        "description": "きめ細かいアクセス制御によるデフォルト拒否ポリシー。"
+      },
+      "scalability": {
+        "title": "無限のスケーラビリティ",
+        "description": "1つから100万ノードまで摩擦なく拡張可能。"
+      }
+    },
+    "bento": {
+      "network": {
+        "title": "グローバルエッジネットワーク",
+        "desc": " 最小遅延のために世界35カ所以上に展開されています。"
+      },
+      "analytics": {
+        "title": "リアルタイム分析",
+        "desc": "トラフィックフローを即座に確認できます。"
+      },
+      "security": {
+        "title": "DDoS保護",
+        "desc": "レイヤー3/4および7の緩和が含まれています。"
+      },
+      "api": {
+        "title": "APIファースト設計",
+        "desc": "堅牢なAPIですべてを自動化します。"
+      },
+      "community": {
+        "title": "コミュニティ主導",
+        "desc": "オープンソースコンポーネントと活発なコミュニティ。"
+      }
+    },
+    "testimonials": {
+      "title": "世界中の開発者から信頼されています"
+    },
+    "how_it_works": {
+      "title": "使い方",
+      "step1": {
+        "title": "接続",
+        "desc": "任意のデバイスに軽量エージェントをインストールします。"
+      },
+      "step2": {
+        "title": "設定",
+        "desc": "ロジックとセキュリティポリシーを定義します。"
+      },
+      "step3": {
+        "title": "制御",
+        "desc": "リアルタイムでトラフィックを監視し、アクセスを管理します。"
+      }
+    },
+    "stats": {
+      "commits": "総コミット数",
+      "stars": "GitHubスター",
+      "contributors": "貢献者"
+    },
+    "cta": {
+      "title": "ネットワークを保護する準備はできましたか？",
+      "button": "無料で始める"
+    },
+    "footer": {
+      "rights": "© 2026 NetGoat OSS財団. All rights reserved."
+    },
+    "blog": {
+      "title": "ブログ",
+      "description": "NetGoatチームからの最新ニュース、アップデート、技術的な深掘り。",
+      "subtitle": "エンジニアリング＆アップデート",
+      "labels": {
+        "featured": "おすすめ"
+      },
+      "actions": {
+        "readArticle": "記事を読む",
+        "readMore": "続きを読む"
+      },
+      "empty": {
+        "title": "まだ投稿がありません",
+        "description": "アップデートは後日ご確認ください。"
+      }
+    },
+    "statusPage": {
+      "title": "システムステータス",
+      "description": "NetGoatのインフラストラクチャとサービスのリアルタイムの健全性。",
+      "statuses": {
+        "operational": "稼働中",
+        "degraded": "パフォーマンス低下",
+        "outage": "停止",
+        "maintenance": "メンテナンス中"
+      },
+      "labels": {
+        "lastChecked": "最終確認",
+        "services": "サービス",
+        "infrastructure": "インフラストラクチャ",
+        "recentIncidents": "最近のインシデント",
+        "uptime": "稼働時間",
+        "servicesHealthy": "サービス正常",
+        "avgResponse": "平均応答"
+      },
+      "incidents": {
+        "active": "進行中",
+        "resolved": "解決済み",
+        "started": "開始",
+        "resolvedAt": "解決済み",
+        "none": "報告されたインシデントはありません。正常に稼働しています。"
+      },
+      "incidentStatus": {
+        "investigating": "調査中",
+        "identified": "特定済み",
+        "monitoring": "監視中",
+        "resolved": "解決済み"
+      },
+      "incidentSeverity": {
+        "critical": "重大",
+        "major": "主要",
+        "minor": "軽微",
+        "low": "低"
+      },
+      "services": {
+        "webApplication": {
+          "name": "Webアプリケーション",
+          "description": "フロントエンドダッシュボードとマーケティングサイト"
+        },
+        "api": {
+          "name": "API",
+          "description": "外部REST APIとエージェント通信"
+        },
+        "documentation": {
+          "name": "ドキュメント",
+          "description": "開発者ドキュメントとガイド"
+        },
+        "edgeNetwork": {
+          "name": "エッジネットワーク",
+          "description": "グローバルリバースプロキシとWAFノード"
+        },
+        "authentication": {
+          "name": "認証",
+          "description": "ユーザー認証とセッション管理"
+        }
+      },
+      "components": {
+        "api": {
+          "title": "API",
+          "description": "すべてのNetGoatサービスを支える中核API。"
+        },
+        "dashboard": {
+          "title": "ダッシュボード",
+          "description": "フロントエンドダッシュボードとマーケティングサイト。"
+        },
+        "agent": {
+          "title": "エージェント",
+          "description": "デバイスで実行される軽量クライアント。"
+        },
+        "network": {
+          "title": "エッジネットワーク",
+          "description": "すべてのノードを接続する分散ネットワークインフラストラクチャ。"
+        },
+        "authentication": {
+          "title": "認証サービス",
+          "description": "ユーザー認証とアクセス制御を処理します。"
+        }
+      }
+    }
+  },
+  "ErrorPages": {
+    "serverError": {
+      "title": "システム障害",
+      "description": "ヒューストン、問題が発生しました。",
+      "action": "再試行？",
+      "imageAlt": "サーバーエラーアニメーション"
+    },
+    "notFound": {
+      "title": "セクターが見つかりません",
+      "description": "これらは探しているドロイドではありません。",
+      "action": "コントロールルームに戻る",
+      "imageAlt": "見つからないアニメーション"
+    },
+    "forbidden": {
+      "title": "アクセス拒否",
+      "description": "このセクターにアクセスする権限がありません。",
+      "action": "引き返す",
+      "imageAlt": "アクセス拒否アニメーション"
+    }
+  },
+  "ChangelogDetail": {
+    "back": "変更履歴に戻る",
+    "preRelease": "プレリリース",
+    "githubRelease": "GitHubリリース",
+    "emptyReleaseNotes": "このリリースのリリースノートは提供されていません。"
+  },
+  "DashboardPages": {
+    "activity": {
+      "title": "アクティビティ"
+    },
+    "homeToolbar": {
+      "searchPlaceholder": "ドメインを検索...",
+      "filterLabel": "ドメインをフィルタ",
+      "toggleLayout": "ドメインレイアウトを切り替え",
+      "filters": {
+        "all": "すべてのドメイン",
+        "verified": "検証済みのみ",
+        "needsVerification": "検証が必要"
+      },
+      "actions": {
+        "addNew": "新規追加...",
+        "addSection": "新規追加",
+        "domain": "ドメイン",
+        "group": "グループ"
+      }
+    },
+    "homeDomains": {
+      "noMatchingTitle": "一致するドメインがありません",
+      "noMatchingDescription": "検索またはフィルタ設定を調整して、お探しのドメインを見つけてください。",
+      "emptyTitle": "まだドメインがありません",
+      "emptyDescription": "NetGoatでアプリケーションの保護を開始するには、最初のドメインを追加してください",
+      "time": {
+        "today": "今日",
+        "daysAgo": "{count}日前",
+        "monthsAgo": "{count}ヶ月前"
+      },
+      "actions": {
+        "createDomain": "ドメインを作成",
+        "viewAll": "すべての{count}ドメインを表示"
+      },
+      "card": {
+        "status": {
+          "valid": "有効",
+          "inactive": "非アクティブ",
+          "invalidConfiguration": "無効な設定"
+        },
+        "group": {
+          "production": "本番",
+          "preview": "プレビュー"
+        },
+        "labels": {
+          "group": "グループ",
+          "updated": "更新済み"
+        },
+        "verification": {
+          "title": "ドメインの検証が必要です",
+          "addTxt": "このTXTレコードを追加してください"
+        },
+        "messages": {
+          "verifiedSuccess": "✓ ドメインが正常に検証されました！",
+          "verifyFailed": "検証に失敗しました。DNSレコードを確認してください。",
+          "verifyRequestFailed": "ドメインの検証に失敗しました"
+        },
+        "actions": {
+          "copyToken": "トークンをコピー",
+          "checking": "確認中...",
+          "verify": "検証",
+          "edit": "編集"
+        }
+      }
+    },
+    "integrations": {
+      "title": "統合",
+      "description": "監視、データベースなど、100以上のツールでワークフローを拡張します。",
+      "searchPlaceholder": "統合を検索...",
+      "empty": "統合が見つかりません。",
+      "categories": {
+        "all": "すべて",
+        "cloud": "クラウド",
+        "networking": "ネットワーキング",
+        "monitoring": "監視",
+        "security": "セキュリティ"
+      }
+    },
+    "settings": {
+      "title": "設定",
+      "description": "ワークスペース、セキュリティ、請求、統合を管理します。",
+      "searchIntegrationsPlaceholder": "統合を検索...",
+      "sections": {
+        "general": "一般",
+        "billing": "請求",
+        "invoices": "請求書",
+        "members": "メンバー",
+        "accessGroups": "アクセスグループ",
+        "webhooks": "Webhooks",
+        "securityPrivacy": "セキュリティとプライバシー",
+        "appsIntegrations": "アプリと統合"
+      },
+      "general": {
+        "teamNameTitle": "チーム名",
+        "teamNameDescription": "これはNetgoat内でのチームの表示名です。例えば、会社名や部署名です。",
+        "teamNameHint": "最大32文字まで使用してください。"
+      },
+      "actions": {
+        "save": "保存"
+      }
+    },
+    "domain": {
+      "notFound": {
+        "title": "ドメインが見つかりません",
+        "description": "チーム \"{teamName}\" のドメイン \"{domainName}\" が見つかりません。"
+      }
+    },
+    "subdomains": {
+      "notFound": {
+        "title": "ドメインが見つかりません",
+        "description": "チーム \"{teamName}\" のドメイン \"{domainName}\" が見つかりません。"
+      },
+      "title": "サブドメイン ({count})",
+      "target": "ターゲット",
+      "requests": "{count} リクエスト",
+      "empty": "まだサブドメインが設定されていません。",
+      "actions": {
+        "add": "サブドメインを追加"
+      },
+      "status": {
+        "active": "アクティブ",
+        "inactive": "非アクティブ"
+      }
+    },
+    "reverseProxy": {
+      "notFound": {
+        "title": "ドメインが見つかりません",
+        "description": "チーム \"{teamName}\" のドメイン \"{domainName}\" が見つかりません。"
+      },
+      "title": "リバースプロキシ（アップストリーム）",
+      "fallbackTarget": "フォールバックルートターゲットURL",
+      "empty": "リバースプロキシルールが設定されていません。トラフィックはデフォルトターゲットにルーティングされます。",
+      "fields": {
+        "ruleName": "ルール名",
+        "routePath": "ルートパス",
+        "targetUrl": "ターゲットURL"
+      },
+      "placeholders": {
+        "ruleName": "例：APIターゲット",
+        "routePath": "例：/api/*",
+        "targetUrl": "例：https://api.mybackend.com"
+      },
+      "actions": {
+        "addUpstream": "アップストリームターゲットを追加",
+        "cancel": "キャンセル",
+        "saveRule": "ルールを保存"
+      },
+      "status": {
+        "active": "アクティブ",
+        "disabled": "無効"
+      },
+      "errors": {
+        "nameAndTargetRequired": "名前とターゲットURLが必要です",
+        "addFailed": "リバースプロキシの追加に失敗しました",
+        "removeFailed": "削除に失敗しました"
+      },
+      "toasts": {
+        "added": "リバースプロキシを追加しました",
+        "removed": "削除しました"
+      }
+    },
+    "teamMembers": {
+      "title": "チームメンバー",
+      "description": "チームメンバーとその権限を管理します。",
+      "searchPlaceholder": "名前またはメールで検索...",
+      "totalMembers": "合計 {count} 名のメンバー",
+      "roles": {
+        "owner": "オーナー",
+        "member": "メンバー",
+        "billing": "請求"
+      },
+      "actions": {
+        "inviteMember": "メンバーを招待",
+        "copy": "コピー"
+      },
+      "inviteLink": {
+        "title": "招待リンク",
+        "description": "このリンクを共有して、チームに人を招待します。",
+        "caption": "リンクを持っている人は誰でもアクセスをリクエストできます。"
+      },
+      "table": {
+        "user": "ユーザー",
+        "role": "ロール",
+        "status": "ステータス",
+        "actions": "アクション"
+      },
+      "status": {
+        "pending": "保留中",
+        "active": "アクティブ"
+      }
+    },
+    "newDomain": {
+      "projectFallback": "プロジェクト",
+      "backTo": "{name} に戻る",
+      "title": "{teamName} にドメインを追加",
+      "steps": {
+        "domain": "ドメイン",
+        "verify": "検証"
+      },
+      "input": {
+        "title": "ドメインは何ですか？",
+        "description": "NetGoatで保護したい正確なドメインを入力してください。サブドメインは後で追加できます。",
+        "placeholder": "例：yourwebsite.com"
+      },
+      "verify": {
+        "title": "所有権を検証",
+        "description": "このドメインを所有していることを証明するために、以下のTXTレコードをDNSプロバイダーに追加してください。",
+        "verifiedTitle": "ドメイン検証済み",
+        "verifiedDescription": "ドメインがNetGoatに正常に追加されました。",
+        "ready": "ドメインは完全に検証され、ルーティングの準備ができています。",
+        "propagationHint": "DNSの変更が反映されるまで数分かかる場合があります。今すぐ検証をクリックするか、すぐに使用するためにバイパスできます。",
+        "fields": {
+          "type": "タイプ",
+          "name": "名前",
+          "value": "値"
+        }
+      },
+      "actions": {
+        "continue": "続行",
+        "back": "戻る",
+        "verify": "検証",
+        "verifying": "検証中...",
+        "preparing": "検証を準備中...",
+        "bypass": "バイパス",
+        "bypassTitle": "テスト用に検証をバイパス"
+      },
+      "errors": {
+        "enterDomain": "ドメイン名を入力してください",
+        "invalidDomain": "有効なドメイン名を入力してください（例：example.com）",
+        "tokenFailed": "検証トークンの生成に失敗しました",
+        "verifyFailed": "検証に失敗しました。DNS設定を確認して再試行してください。",
+        "propagation": "検証に失敗しました。DNSレコードが反映されるまで時間がかかる場合があります。",
+        "createFailed": "ドメインの作成に失敗しました",
+        "generic": "問題が発生しました"
+      },
+      "toasts": {
+        "verified": "ドメインが正常に検証されました！",
+        "added": "ドメインを追加しました",
+        "bypassAdded": "ドメインを検証して追加しました！",
+        "copied": "クリップボードにコピーしました"
+      }
+    },
+    "teamDns": {
+      "title": "DNSレコード",
+      "subtitle": "ドメインのDNSレコードを管理",
+      "emptyDomainsTitle": "まだドメインがありません",
+      "emptyRecordsTitle": "DNSレコードがありません",
+      "emptyDomains": "DNSレコードを管理するには、まずドメインを追加してください",
+      "emptyRecords": "最初のDNSレコードを追加して開始",
+      "emptyFilter": "{type} レコードが見つかりません",
+      "zonePlaceholder": "example.com. 3600 IN A 192.0.2.1\nwww 3600 IN CNAME example.com.\nmail 3600 IN MX 10 mail.example.com.",
+      "fields": {
+        "type": "タイプ",
+        "name": "名前",
+        "namePlaceholder": "@ またはサブドメイン",
+        "rootHint": "@ = ルートドメイン",
+        "value": "値",
+        "ttl": "TTL（秒）",
+        "ttlHint": "デフォルト：3600（1時間）",
+        "priority": "優先度",
+        "proxied": "プロキシ（リクエストはNetGoat経由）"
+      },
+      "filters": {
+        "domain": "ドメイン",
+        "selectDomain": "ドメインを選択",
+        "recordType": "レコードタイプフィルタ",
+        "typeOptions": {
+          "all": "すべてのタイプ",
+          "A": "Aレコード",
+          "AAAA": "AAAAレコード",
+          "CNAME": "CNAMEレコード",
+          "MX": "MXレコード",
+          "TXT": "TXTレコード",
+          "NS": "NSレコード",
+          "SRV": "SRVレコード",
+          "CAA": "CAAレコード"
+        }
+      },
+      "recordTypeOptions": {
+        "A": "A (IPv4)",
+        "AAAA": "AAAA (IPv6)",
+        "CNAME": "CNAME (エイリアス)",
+        "MX": "MX (メール)",
+        "TXT": "TXT (テキスト)",
+        "NS": "NS (ネームサーバー)",
+        "SRV": "SRV (サービス)",
+        "CAA": "CAA (証明書)"
+      },
+      "typeInfo": {
+        "a": {
+          "placeholder": "192.0.2.1",
+          "description": "IPv4アドレス"
+        },
+        "aaaa": {
+          "placeholder": "2001:0db8::1",
+          "description": "IPv6アドレス"
+        },
+        "cname": {
+          "placeholder": "example.com",
+          "description": "正規名（エイリアス）"
+        },
+        "mx": {
+          "placeholder": "mail.example.com",
+          "description": "メールサーバー（優先度が必要）"
+        },
+        "txt": {
+          "placeholder": "v=spf1 include:_spf.example.com ~all",
+          "description": "テキストレコード"
+        },
+        "ns": {
+          "placeholder": "ns1.example.com",
+          "description": "ネームサーバー"
+        },
+        "srv": {
+          "placeholder": "10 5 5060 sip.example.com",
+          "description": "サービスレコード"
+        },
+        "caa": {
+          "placeholder": "0 issue \"letsencrypt.org\"",
+          "description": "認証局"
+        }
+      },
+      "status": {
+        "proxied": "プロキシ済み",
+        "propagated": "反映済み",
+        "failed": "失敗",
+        "pending": "保留中"
+      },
+      "records": {
+        "groupTitle": "{type} レコード ({count})",
+        "ttl": "TTL",
+        "priority": "優先度"
+      },
+      "actions": {
+        "importZone": "ゾーンファイルをインポート",
+        "importRecords": "レコードをインポート",
+        "addRecord": "レコードを追加",
+        "addDnsRecord": "DNSレコードを追加",
+        "checkPropagation": "反映状況を確認",
+        "createDnsRecord": "DNSレコードを作成",
+        "updateDnsRecord": "DNSレコードを更新"
+      },
+      "dialogs": {
+        "import": {
+          "title": "DNSゾーンファイルをインポート",
+          "description": "ゾーンファイルの内容を貼り付けて、DNSレコードを一括インポート"
+        },
+        "add": {
+          "title": "DNSレコードを追加",
+          "description": "{domain} の新しいDNSレコードを作成"
+        },
+        "edit": {
+          "title": "DNSレコードを編集",
+          "description": "{domain} のDNSレコードを更新"
+        }
+      },
+      "errors": {
+        "selectDomain": "ドメインを選択してください",
+        "nameValueRequired": "名前と値が必要です",
+        "zoneRequired": "ドメインとゾーンファイルの内容が必要です",
+        "noValidRecords": "ゾーンファイルに有効なDNSレコードが見つかりません"
+      },
+      "confirm": {
+        "deleteRecord": "このDNSレコードを削除しますか？"
+      },
+      "toasts": {
+        "created": "DNSレコードを作成しました",
+        "updated": "DNSレコードを更新しました",
+        "deleted": "DNSレコードを削除しました",
+        "propagated": "DNSレコードが反映されました",
+        "stillPropagating": "DNSレコードはまだ反映中です...",
+        "imported": "{success} 件のDNSレコードをインポート、{failed} 件失敗"
+      }
+    },
+    "teamWaf": {
+      "title": "WAFルール",
+      "loading": "WAF設定を読み込み中...",
+      "subtitle": "ドメインを保護するためのWebアプリケーションファイアウォールルールを設定",
+      "emptyDomainsTitle": "まだドメインがありません",
+      "emptyDomains": "WAFルールを設定するには、まずドメインを追加してください",
+      "fields": {
+        "ruleName": "ルール名",
+        "action": "アクション",
+        "expression": "式",
+        "priority": "優先度 (0-100)",
+        "target": "ターゲット",
+        "description": "説明（オプション）",
+        "selectDomain": "ドメインを選択：",
+        "selectDomainPlaceholder": "ドメインを選択"
+      },
+      "placeholders": {
+        "ruleName": "block-sql-injection",
+        "expression": "contains(request.path, 'SELECT')",
+        "description": "このルールの簡単な説明"
+      },
+      "hints": {
+        "expressionFunctions": "contains()、matches()、startsWith()、endsWith() などの関数を使用",
+        "priority": "高い = 先に評価"
+      },
+      "actionOptions": {
+        "block": "ブロック（リクエストを拒否）",
+        "allow": "許可（リクエストを許可）",
+        "log": "ログ（許可するが記録）"
+      },
+      "targetOptions": {
+        "domain": "ドメインレベル"
+      },
+      "dialogs": {
+        "add": {
+          "title": "WAFルールを追加",
+          "description": "脅威から保護するためのカスタムWAFルールを作成"
+        }
+      },
+      "actions": {
+        "addRule": "WAFルールを追加",
+        "createRule": "WAFルールを作成",
+        "addFirstRule": "最初のルールを追加",
+        "addSubdomainRule": "サブドメインルールを追加"
+      },
+      "tabs": {
+        "domainRules": "ドメインルール ({count})"
+      },
+      "cards": {
+        "domainRules": {
+          "title": "ドメインレベルWAFルール",
+          "description": "これらのルールは {domain} とそのすべてのサブドメインに適用されます"
+        },
+        "subdomainRules": {
+          "title": "{domain} のWAFルール",
+          "description": "ドメインレベルルールに加えてサブドメイン固有のルール"
+        }
+      },
+      "labels": {
+        "priority": "優先度"
+      },
+      "empty": {
+        "domainRules": "このドメインにWAFルールが設定されていません",
+        "subdomainRules": "サブドメイン固有のWAFルールがありません"
+      },
+      "expression": {
+        "title": "WAF式言語",
+        "availableProperties": "利用可能なプロパティ：",
+        "functionsTitle": "関数：",
+        "properties": {
+          "path": "request.path - URLパス（例：/api/users）",
+          "method": "request.method - HTTPメソッド（GET、POSTなど）",
+          "ip": "request.ip - クライアントIPアドレス",
+          "country": "request.country - 国コード",
+          "userAgent": "request.user_agent - User-Agentヘッダー",
+          "rate": "request.rate - 1秒あたりのリクエスト数"
+        }
+      },
+      "examples": {
+        "title": "クイック例",
+        "sqlInjection": {
+          "name": "SQLインジェクション保護"
+        },
+        "xss": {
+          "name": "XSS保護"
+        },
+        "rateLimit": {
+          "name": "レート制限"
+        },
+        "geoBlock": {
+          "name": "地理的ブロック"
+        },
+        "botDetection": {
+          "name": "ボット検出"
+        }
+      },
+      "subdomain": {
+        "rulesStillApply": "ドメインレベルルールは引き続き適用されます"
+      },
+      "errors": {
+        "selectDomain": "ドメインを選択してください",
+        "nameExpressionRequired": "名前と式が必要です"
+      },
+      "confirm": {
+        "deleteRule": "WAFルール \"{ruleName}\" を削除しますか？"
+      },
+      "toasts": {
+        "addedToSubdomain": "WAFルールが {subdomain} に追加されました",
+        "addedToDomain": "WAFルールがドメインに追加されました",
+        "deleted": "WAFルールを削除しました"
+      }
+    },
+    "admin": {
+      "dashboard": {
+        "title": "管理者ダッシュボード",
+        "subtitle": "システムのパフォーマンスとアクティビティの概要。",
+        "toasts": {
+          "fetchFailed": "管理者データの取得に失敗しました"
+        },
+        "actions": {
+          "refreshing": "更新中...",
+          "refreshData": "データを更新"
+        },
+        "cards": {
+          "totalUsers": {
+            "title": "総ユーザー数",
+            "description": "登録済みアカウント"
+          },
+          "activeSessions": {
+            "title": "アクティブセッション",
+            "description": "現在オンラインのユーザー"
+          },
+          "systemLoad": {
+            "title": "システム負荷",
+            "description": "平均CPU使用率"
+          },
+          "securityEvents": {
+            "title": "セキュリティイベント",
+            "description": "注意が必要なイベント"
+          }
+        },
+        "activityMap": {
+          "title": "システムアクティビティマップ",
+          "description": "時間経過による視覚的指標。",
+          "pending": "チャート統合保留中"
+        },
+        "quickActions": {
+          "title": "クイックアクション",
+          "description": "一般的な管理タスクを管理します。",
+          "manageUsers": "ユーザーを管理",
+          "securityLogs": "セキュリティログ",
+          "systemSettings": "システム設定"
+        }
+      },
+      "logs": {
+        "title": "ログ",
+        "subtitle": "リアルタイムでサーバーログを表示・管理します。",
+        "liveServerLogs": "ライブサーバーログ",
+        "description": "サーバーインスタンスからキャプチャされたリアルタイムログ。",
+        "empty": "まだログがキャプチャされていません...",
+        "badges": {
+          "live": "ライブ",
+          "paused": "一時停止"
+        },
+        "actions": {
+          "toggleRequestFilter": "リクエストフィルタを切り替え",
+          "requests": "リクエスト"
+        }
+      },
+      "system": {
+        "title": "システム情報",
+        "subtitle": "サーバーの仕様とステータス。",
+        "confirmRestart": "システムの再起動をトリガーしてもよろしいですか？",
+        "toasts": {
+          "fetchFailed": "システム仕様の取得に失敗しました",
+          "restartSent": "再起動シグナルを送信しました",
+          "restartFailed": "システムの再起動に失敗しました"
+        },
+        "actions": {
+          "restartSystem": "システムを再起動"
+        },
+        "hardware": {
+          "title": "ハードウェア詳細",
+          "description": "現在のハードウェア割り当てと使用状況指標。",
+          "fields": {
+            "os": "OS",
+            "cpuModel": "CPUモデル",
+            "cpuCores": "CPUコア",
+            "memoryTotal": "メモリ（合計）",
+            "memoryFree": "メモリ（空き）",
+            "uptime": "稼働時間"
+          }
+        }
+      },
+      "users": {
+        "title": "ユーザー管理",
+        "subtitle": "ユーザー、ロール、アクセスを管理します。",
+        "searchPlaceholder": "ユーザーを検索...",
+        "yes": "はい",
+        "no": "いいえ",
+        "toasts": {
+          "fetchFailed": "ユーザーの取得に失敗しました",
+          "updateSuccess": "ユーザーを正常に更新しました",
+          "updateFailed": "ユーザーの更新に失敗しました"
+        },
+        "directory": {
+          "title": "ディレクトリ",
+          "description": "明示的に検索するか、動的に閲覧します。"
+        },
+        "table": {
+          "user": "ユーザー",
+          "role": "ロール",
+          "status": "ステータス",
+          "created": "作成日",
+          "actions": "アクション"
+        },
+        "status": {
+          "active": "アクティブ",
+          "banned": "BAN済み"
+        },
+        "pagination": {
+          "previous": "前へ",
+          "next": "次へ"
+        },
+        "editUser": {
+          "title": "ユーザーを編集",
+          "description": "ユーザープロファイルに変更を加えます。"
+        },
+        "fields": {
+          "name": "名前",
+          "email": "メール",
+          "role": "ロール",
+          "selectRole": "ロールを選択",
+          "banned": "BAN済み"
+        },
+        "roles": {
+          "user": "ユーザー",
+          "admin": "管理者"
+        },
+        "actions": {
+          "saveChanges": "変更を保存"
+        }
+      },
+      "alerts": {
+        "title": "ダッシュボードアラート",
+        "confirmDelete": "よろしいですか？",
+        "empty": "まだアラートが生成されていません。",
+        "hasAction": "アクションあり：{actionText}",
+        "created": "作成日：{date}",
+        "status": {
+          "active": "アクティブ",
+          "inactive": "非アクティブ"
+        },
+        "toasts": {
+          "createSuccess": "アラートを正常に作成しました",
+          "createFailed": "アラートの作成に失敗しました",
+          "statusUpdated": "アラートステータスを更新しました",
+          "statusFailed": "ステータスの更新に失敗しました",
+          "deleteSuccess": "アラートを削除しました",
+          "deleteFailed": "アラートの削除に失敗しました"
+        },
+        "actions": {
+          "cancel": "キャンセル",
+          "createAlert": "アラートを作成",
+          "saveAlert": "アラートを保存"
+        },
+        "newAlert": {
+          "title": "新規アラート"
+        },
+        "fields": {
+          "title": "タイトル",
+          "titlePlaceholder": "アラートタイトル...",
+          "messageBody": "メッセージ本文",
+          "bodyPlaceholder": "アラートの詳細...",
+          "variant": "バリアント",
+          "actionText": "アクションテキスト（オプション）",
+          "actionTextPlaceholder": "例：詳細を読む"
+        },
+        "variants": {
+          "blue": "青（情報）",
+          "yellow": "黄（警告）",
+          "red": "赤（重大）"
+        }
+      },
+      "incidents": {
+        "title": "インシデント告知",
+        "confirmDelete": "よろしいですか？",
+        "empty": "まだインシデントが報告されていません。",
+        "started": "開始：{date}",
+        "severityBadge": "{severity} 重大度",
+        "toasts": {
+          "createSuccess": "インシデントを作成しました",
+          "createFailed": "インシデントの作成に失敗しました",
+          "updateSuccess": "インシデントを更新しました",
+          "updateFailed": "インシデントの更新に失敗しました",
+          "deleteSuccess": "インシデントを削除しました",
+          "deleteFailed": "インシデントの削除に失敗しました"
+        },
+        "actions": {
+          "cancel": "キャンセル",
+          "postIncident": "インシデントを投稿",
+          "createAnnouncement": "告知を作成"
+        },
+        "newIncident": {
+          "title": "新規インシデント"
+        },
+        "fields": {
+          "title": "タイトル",
+          "titlePlaceholder": "例：APIが予想より時間がかかっています",
+          "description": "説明",
+          "descriptionPlaceholder": "何が起きていますか？",
+          "status": "ステータス",
+          "severity": "重大度"
+        },
+        "badges": {
+          "active": "進行中",
+          "resolved": "解決済み"
+        },
+        "statuses": {
+          "investigating": "調査中",
+          "identified": "特定済み",
+          "monitoring": "監視中",
+          "resolved": "解決済み",
+          "markResolved": "解決済みとしてマーク"
+        },
+        "severity": {
+          "minor": "軽微",
+          "major": "主要",
+          "critical": "重大"
+        }
+      },
+      "analytics": {
+        "title": "分析",
+        "subtitle": "セルフホスト型の洞察とパフォーマンス指標。",
+        "selectRange": "範囲を選択",
+        "ranges": {
+          "24h": "過去24時間",
+          "7d": "過去7日間",
+          "30d": "過去30日間"
+        },
+        "cards": {
+          "totalVisitors": {
+            "title": "総訪問者数",
+            "description": "ユニークデバイス"
+          },
+          "pageViews": {
+            "title": "ページビュー",
+            "description": "総ページ読み込み数"
+          },
+          "bounceRate": {
+            "title": "直帰率",
+            "description": "単一ページセッション"
+          },
+          "avgLcp": {
+            "title": "平均LCP",
+            "description": "Largest Contentful Paint"
+          }
+        },
+        "overview": {
+          "title": "概要"
+        },
+        "devices": {
+          "title": "デバイス",
+          "description": "タイプ別",
+          "visitors": "訪問者",
+          "labels": {
+            "mobile": "モバイル",
+            "tablet": "タブレット",
+            "desktop": "デスクトップ"
+          }
+        },
+        "topPages": {
+          "title": "人気ページ",
+          "description": "最も訪問されたパス。"
+        },
+        "topReferrers": {
+          "title": "上位リファラー",
+          "description": "主なトラフィックソース。"
+        },
+        "pageSpeed": {
+          "title": "Page Speed Insights",
+          "description": "ページごとのパフォーマンス指標（平均値）。",
+          "legend": {
+            "lcp": "LCP (ms)",
+            "fid": "FID (ms)",
+            "cls": "CLS (x1000)"
+          }
+        },
+        "noData": "データがありません",
+        "noWebVitals": "まだWeb Vitalsデータが収集されていません。"
+      }
+    }
+  },
+  "Auth": {
+    "welcome_back": "おかえりなさい",
+    "create_account": "アカウントを作成",
+    "enter_details": "詳細を入力してください。",
+    "login_failed": "ログインに失敗しました",
+    "signup_failed": "登録に失敗しました",
+    "signing_in": "ログイン中...",
+    "creating_account": "アカウントを作成中...",
+    "sign_in": "ログイン",
+    "sign_up": "登録",
+    "name": "名前",
+    "email_address": "メールアドレス",
+    "password": "パスワード",
+    "no_account": "アカウントをお持ちでないですか？",
+    "back_to_login": "ログインに戻る",
+    "sign_up_link": "登録"
+  },
+  "Dashboard": {
+    "usage": "使用量",
+    "alerts": "アラート",
+    "domains": "ドメイン"
+  },
+  "DashboardMeta": {
+    "titleTemplate": "{team} | チーム {page}",
+    "teamsTitleTemplate": "Netgoat | チーム {page}",
+    "descriptionTemplate": "NetGoatでチーム {team} の {page} を管理します。",
+    "pages": {
+      "overview": "概要",
+      "integrations": "統合",
+      "settings": "設定",
+      "activity": "アクティビティ",
+      "domains": "ドメイン",
+      "dns": "DNS",
+      "waf": "WAF",
+      "new": "新規"
+    }
+  }
+}

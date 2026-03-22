@@ -99,7 +99,7 @@ export default function BelowScreenFooter() {
             <p>
               <a
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
-                href="https://docs.netgoat.xyz"
+                href="/docs"
               >
                 Docs
               </a>
@@ -135,7 +135,7 @@ export default function BelowScreenFooter() {
                 href="/contributing"
               >
                 Contributing
-              </a>{" "}
+              </a>
               <span className="inline text-blue-500">
                 — We're Searching!
               </span>
@@ -143,9 +143,9 @@ export default function BelowScreenFooter() {
             <p>
               <a
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
-                href="/newsroom"
+                href="/blogs"
               >
-                Newsroom
+                Blogs
               </a>
             </p>
           </div>

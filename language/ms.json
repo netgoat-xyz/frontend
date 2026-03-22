@@ -2,12 +2,13 @@
   "HomePage": {
     "calm": "Tenang",
     "networking": "Rangkaian",
-    "sub_header": "Rangkaian menjadi mudah.",
-    "detailed": "Penyelesaian rangkaian yang selamat, berskala dan mudah digunakan.",
+    "sub_header": "Rangkaian yang dipermudahkan.",
+    "detailed": "Penyelesaian rangkaian yang selamat, boleh skala, dan mudah digunakan.",
     "pricing_button": "Harga",
-    "get_started_button": "Mula",
+    "get_started_button": "Mulakan",
     "home": "Laman Utama",
     "blogs": "Blog",
+    "status": "Status",
     "docs": "Dokumen",
     "source_code": "Kod Sumber",
     "discord": "Discord",
@@ -17,21 +18,21 @@
     "features": {
       "speed": {
         "title": "Sangat Pantas",
-        "description": "Dioptimumkan untuk sambungan latensi rendah di seluruh dunia."
+        "description": "Dioptimumkan khusus untuk sambungan kependaman rendah di seluruh dunia."
       },
       "security": {
         "title": "Zero Trust",
-        "description": "Dasar tolak dengan kawalan akses terperinci."
+        "description": "Dasar penafian lalai dengan kawalan akses terperinci."
       },
       "scalability": {
-        "title": "Skala Tanpa Henti",
-        "description": "Berkembang dari satu hingga satu juta nod tanpa halangan."
+        "title": "Skala Tak Terhad",
+        "description": "Berkembang dari satu ke satu juta nod tanpa geseran."
       }
     },
     "bento": {
       "network": {
         "title": "Rangkaian Edge Global",
-        "desc": "Ditempatkan di 35+ lokasi di seluruh dunia untuk latensi minimum."
+        "desc": " dikerahkan di lebih 35 lokasi di seluruh dunia untuk kependaman minimum."
       },
       "analytics": {
         "title": "Analitik Masa Nyata",
@@ -39,62 +40,164 @@
       },
       "security": {
         "title": "Perlindungan DDoS",
-        "desc": "Mitigasi Lapisan 3/4 & 7 termasuk."
+        "desc": "Mitigasi Lapisan 3/4 & 7 disertakan."
       },
       "api": {
-        "title": "Reka Bentuk API First",
-        "desc": "Automatikkan semuanya dengan API yang kukuh."
+        "title": "Reka Bentuk API-First",
+        "desc": "Automatikan semuanya dengan API kami yang kukuh."
       },
       "community": {
-        "title": "Didorong Komuniti",
+        "title": "Dikuasakan Komuniti",
         "desc": "Komponen sumber terbuka dan komuniti aktif."
       }
     },
     "testimonials": {
-      "title": "Dipercayai oleh pembangun seluruh dunia"
+      "title": "Dipercayai oleh pembangun di seluruh dunia"
     },
     "how_it_works": {
-      "title": "Bagaimana Ia Berfungsi",
+      "title": "Cara ia berfungsi",
       "step1": {
-        "title": "Sambungkan",
-        "desc": "Pasang agen ringan kami pada sebarang peranti."
+        "title": "Sambung",
+        "desc": "Pasang ejen ringan kami pada sebarang peranti."
       },
       "step2": {
-        "title": "Konfigurasikan",
-        "desc": "Tentukan logik dan polisi keselamatan anda."
+        "title": "Konfigurasi",
+        "desc": "Tentukan logik dan dasar keselamatan anda."
       },
       "step3": {
         "title": "Kawal",
-        "desc": "Pantau trafik dan urus akses secara masa nyata."
+        "desc": "Pantau trafik dan urus akses dalam masa nyata."
       }
     },
     "stats": {
-      "commits": "Jumlah Komit",
+      "commits": "Jumlah Commit",
       "stars": "Bintang di GitHub",
       "contributors": "Penyumbang"
     },
     "cta": {
-      "title": "Bersedia untuk mengamankan rangkaian anda?",
-      "button": "Mula percuma"
+      "title": "Sedia untuk mengamankan rangkaian anda?",
+      "button": "Mulakan percuma"
     },
     "footer": {
-      "rights": "© 2026 NetGoat Inc. Semua hak terpelihara."
+      "rights": "© 2026 Yayasan NetGoat OSS. Hak cipta terpelihara."
     },
     "blog": {
       "title": "Blog",
-      "description": "Berita terkini, kemas kini dan kupasan kejuruteraan mendalam daripada pasukan NetGoat.",
+      "description": "Berita terkini, kemas kini dan analisis teknikal dari pasukan NetGoat.",
       "subtitle": "Kejuruteraan & Kemas Kini",
       "labels": {
-        "featured": "Ditampilkan"
+        "featured": "Unggulan"
       },
       "actions": {
         "readArticle": "Baca artikel",
-        "readMore": "Baca lagi"
+        "readMore": "Baca selanjutnya"
       },
       "empty": {
-        "title": "Belum ada pos",
-        "description": "Kembali semula tidak lama lagi untuk kemas kini."
+        "title": "Tiada siaran lagi",
+        "description": "Semak semula tidak lama lagi untuk kemas kini."
       }
+    },
+    "statusPage": {
+      "title": "Status Sistem",
+      "description": "Kesihatan masa nyata infrastruktur dan perkhidmatan NetGoat.",
+      "statuses": {
+        "operational": "Beroperasi",
+        "degraded": "Prestasi Merosot",
+        "outage": "Gangguan",
+        "maintenance": "Dalam Penyelenggaraan"
+      },
+      "labels": {
+        "lastChecked": "Terakhir diperiksa",
+        "services": "Perkhidmatan",
+        "infrastructure": "Infrastruktur",
+        "recentIncidents": "Kejadian Terkini",
+        "uptime": "Masa Aktif",
+        "servicesHealthy": "Perkhidmatan Sihat",
+        "avgResponse": "Respons Purata"
+      },
+      "incidents": {
+        "active": "Aktif",
+        "resolved": "Diselesaikan",
+        "started": "Dimulakan",
+        "resolvedAt": "Diselesaikan",
+        "none": "Tiada kejadian dilaporkan. Kami beroperasi dengan lancar."
+      },
+      "incidentStatus": {
+        "investigating": "Sedang Menyiasat",
+        "identified": "Diidentifikasi",
+        "monitoring": "Memantau",
+        "resolved": "Diselesaikan"
+      },
+      "incidentSeverity": {
+        "critical": "Kritikal",
+        "major": "Utama",
+        "minor": "Minor",
+        "low": "Rendah"
+      },
+      "services": {
+        "webApplication": {
+          "name": "Aplikasi Web",
+          "description": "Papan pemuka frontend dan laman pemasaran"
+        },
+        "api": {
+          "name": "API",
+          "description": "API REST luaran dan komunikasi ejen"
+        },
+        "documentation": {
+          "name": "Dokumentasi",
+          "description": "Dokumentasi pembangun dan panduan"
+        },
+        "edgeNetwork": {
+          "name": "Rangkaian Edge",
+          "description": "Proksi songsang global dan nod WAF"
+        },
+        "authentication": {
+          "name": "Pengesahan",
+          "description": "Pengesahan pengguna dan pengurusan sesi"
+        }
+      },
+      "components": {
+        "api": {
+          "title": "API",
+          "description": "API teras yang menjalankan semua perkhidmatan NetGoat."
+        },
+        "dashboard": {
+          "title": "Papan Pemuka",
+          "description": "Papan pemuka frontend dan laman pemasaran."
+        },
+        "agent": {
+          "title": "Ejen",
+          "description": "Klien ringan yang berjalan pada peranti anda."
+        },
+        "network": {
+          "title": "Rangkaian Edge",
+          "description": "Infrastruktur rangkaian teragih yang menyambung semua nod."
+        },
+        "authentication": {
+          "title": "Perkhidmatan Pengesahan",
+          "description": "Mengendalikan pengesahan pengguna dan kawalan akses."
+        }
+      }
+    }
+  },
+  "ErrorPages": {
+    "serverError": {
+      "title": "Kerosakan Sistem",
+      "description": "Houston, kami ada masalah.",
+      "action": "Cuba semula?",
+      "imageAlt": "Animasi ralat pelayan"
+    },
+    "notFound": {
+      "title": "Sektor Tidak Dijumpai",
+      "description": "Ini bukan droid yang anda cari.",
+      "action": "Kembali ke Bilik Kawalan",
+      "imageAlt": "Animasi tidak dijumpai"
+    },
+    "forbidden": {
+      "title": "Akses Ditolak",
+      "description": "Anda tidak mempunyai kebenaran untuk mengakses sektor ini.",
+      "action": "Patah Balik",
+      "imageAlt": "Animasi akses dilarang"
     }
   },
   "ChangelogDetail": {
@@ -103,828 +206,808 @@
     "githubRelease": "Keluaran GitHub",
     "emptyReleaseNotes": "Tiada nota keluaran disediakan untuk keluaran ini."
   },
-  "ErrorPages": {
-    "serverError": {
-      "title": "Kerosakan sistem",
-      "description": "Houston, kita ada masalah.",
-      "action": "Cuba lagi?",
-      "imageAlt": "Animasi ralat pelayan"
-    },
-    "notFound": {
-      "title": "Sektor tidak ditemui",
-      "description": "Ini bukan droid yang anda cari.",
-      "action": "Kembali ke bilik kawalan",
-      "imageAlt": "Animasi halaman tidak ditemui"
-    },
-    "forbidden": {
-      "title": "Akses ditolak",
-      "description": "Anda tidak mempunyai kebenaran untuk mengakses sektor ini.",
-      "action": "Berpatah balik",
-      "imageAlt": "Animasi akses dilarang"
-    }
-  },
   "DashboardPages": {
     "activity": {
-      "title": "Activity"
+      "title": "Aktiviti"
     },
     "homeToolbar": {
-      "searchPlaceholder": "Search domains...",
-      "filterLabel": "Filter domains",
-      "toggleLayout": "Toggle domain layout",
+      "searchPlaceholder": "Cari domain...",
+      "filterLabel": "Tapis domain",
+      "toggleLayout": "Togol susun atur domain",
       "filters": {
-        "all": "All domains",
-        "verified": "Verified only",
-        "needsVerification": "Needs verification"
+        "all": "Semua domain",
+        "verified": "Sahih sahaja",
+        "needsVerification": "Perlu pengesahan"
       },
       "actions": {
-        "addNew": "Add New...",
-        "addSection": "Add New",
+        "addNew": "Tambah Baharu...",
+        "addSection": "Tambah Baharu",
         "domain": "Domain",
-        "group": "Group"
+        "group": "Kumpulan"
       }
     },
     "homeDomains": {
-      "noMatchingTitle": "No matching domains",
-      "noMatchingDescription": "Adjust search or filter settings to find the domain you are looking for.",
-      "emptyTitle": "No domains yet",
-      "emptyDescription": "Add your first domain to start protecting your applications with NetGoat",
+      "noMatchingTitle": "Tiada domain yang sepadan",
+      "noMatchingDescription": "Laraskan tetapan carian atau penapis untuk mencari domain yang anda cari.",
+      "emptyTitle": "Tiada domain lagi",
+      "emptyDescription": "Tambah domain pertama anda untuk mula melindungi aplikasi anda dengan NetGoat",
       "time": {
-        "today": "Today",
-        "daysAgo": "{count}d ago",
-        "monthsAgo": "{count}mo ago"
+        "today": "Hari ini",
+        "daysAgo": "{count} hari lalu",
+        "monthsAgo": "{count} bulan lalu"
       },
       "actions": {
-        "createDomain": "Create Domain",
-        "viewAll": "View All {count} Domains"
+        "createDomain": "Cipta Domain",
+        "viewAll": "Lihat Semua {count} Domain"
       },
       "card": {
         "status": {
-          "valid": "Valid",
-          "inactive": "Inactive",
-          "invalidConfiguration": "Invalid Configuration"
+          "valid": "Sahih",
+          "inactive": "Tidak Aktif",
+          "invalidConfiguration": "Konfigurasi Tidak Sahih"
         },
         "group": {
-          "production": "Production",
-          "preview": "Preview"
+          "production": "Pengeluaran",
+          "preview": "Pratonton"
         },
         "labels": {
-          "group": "Group",
-          "updated": "Updated"
+          "group": "Kumpulan",
+          "updated": "Dikemas kini"
         },
         "verification": {
-          "title": "Domain needs verification",
-          "addTxt": "Add this TXT record to"
+          "title": "Domain perlu pengesahan",
+          "addTxt": "Tambah rekod TXT ini ke"
         },
         "messages": {
-          "verifiedSuccess": "✓ Domain verified successfully!",
-          "verifyFailed": "Verification failed. Please check your DNS records.",
-          "verifyRequestFailed": "Failed to verify domain"
+          "verifiedSuccess": "✓ Domain berjaya disahkan!",
+          "verifyFailed": "Pengesahan gagal. Sila periksa rekod DNS anda.",
+          "verifyRequestFailed": "Gagal mengesahkan domain"
         },
         "actions": {
-          "copyToken": "Copy token",
-          "checking": "Checking...",
-          "verify": "Verify",
+          "copyToken": "Salin token",
+          "checking": "Memeriksa...",
+          "verify": "Sahkan",
           "edit": "Edit"
         }
       }
     },
     "integrations": {
-      "title": "Integrations",
-      "description": "Extend your workflow with over 100+ tools for monitoring, databases, and more.",
-      "searchPlaceholder": "Search integrations...",
-      "empty": "No integrations found.",
+      "title": "Integrasi",
+      "description": "Kembangkan aliran kerja anda dengan lebih 100+ alat untuk pemantauan, pangkalan data, dan banyak lagi.",
+      "searchPlaceholder": "Cari integrasi...",
+      "empty": "Tiada integrasi dijumpai.",
       "categories": {
-        "all": "All",
-        "cloud": "Cloud",
-        "networking": "Networking",
-        "monitoring": "Monitoring",
-        "security": "Security"
+        "all": "Semua",
+        "cloud": "Awan",
+        "networking": "Rangkaian",
+        "monitoring": "Pemantauan",
+        "security": "Keselamatan"
       }
     },
     "settings": {
-      "title": "Settings",
-      "description": "Manage workspace, security, billing, and integrations.",
-      "searchIntegrationsPlaceholder": "Search integrations...",
+      "title": "Tetapan",
+      "description": "Urus ruang kerja, keselamatan, bil dan integrasi.",
+      "searchIntegrationsPlaceholder": "Cari integrasi...",
       "sections": {
-        "general": "General",
-        "billing": "Billing",
-        "invoices": "Invoices",
-        "members": "Members",
-        "accessGroups": "Access Groups",
+        "general": "Umum",
+        "billing": "Bil",
+        "invoices": "Invois",
+        "members": "Ahli",
+        "accessGroups": "Kumpulan Akses",
         "webhooks": "Webhooks",
-        "securityPrivacy": "Security & Privacy",
-        "appsIntegrations": "Apps & Integrations"
+        "securityPrivacy": "Keselamatan & Privasi",
+        "appsIntegrations": "Aplikasi & Integrasi"
       },
       "general": {
-        "teamNameTitle": "Team Name",
-        "teamNameDescription": "This is your team's visible name within Netgoat. For example, the name of your company or department.",
-        "teamNameHint": "Please use 32 characters at maximum."
+        "teamNameTitle": "Nama Pasukan",
+        "teamNameDescription": "Ini adalah nama pasukan yang kelihatan dalam Netgoat. Contohnya, nama syarikat atau jabatan anda.",
+        "teamNameHint": "Sila gunakan maksimum 32 aksara."
       },
       "actions": {
-        "save": "Save"
+        "save": "Simpan"
       }
     },
     "domain": {
       "notFound": {
-        "title": "Domain not found",
-        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+        "title": "Domain tidak dijumpai",
+        "description": "Tiada domain \"{domainName}\" dijumpai untuk pasukan \"{teamName}\"."
       }
     },
     "subdomains": {
       "notFound": {
-        "title": "Domain not found",
-        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+        "title": "Domain tidak dijumpai",
+        "description": "Tiada domain \"{domainName}\" dijumpai untuk pasukan \"{teamName}\"."
       },
-      "title": "Subdomains ({count})",
-      "target": "Target",
-      "requests": "{count} reqs",
-      "empty": "No subdomains configured yet.",
+      "title": "Subdomain ({count})",
+      "target": "Sasaran",
+      "requests": "{count} permintaan",
+      "empty": "Tiada subdomain dikonfigurasi lagi.",
       "actions": {
-        "add": "Add Subdomain"
+        "add": "Tambah Subdomain"
       },
       "status": {
-        "active": "Active",
-        "inactive": "Inactive"
+        "active": "Aktif",
+        "inactive": "Tidak Aktif"
       }
     },
     "reverseProxy": {
       "notFound": {
-        "title": "Domain not found",
-        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+        "title": "Domain tidak dijumpai",
+        "description": "Tiada domain \"{domainName}\" dijumpai untuk pasukan \"{teamName}\"."
       },
-      "title": "Reverse Proxies (Upstreams)",
-      "fallbackTarget": "Fallback Root Target URL",
-      "empty": "No reverse proxy rules configured. Traffic routes to the default target.",
+      "title": "Proksi Songsang (Upstreams)",
+      "fallbackTarget": "URL Sasaran Punca Fallback",
+      "empty": "Tiada peraturan proksi songsang dikonfigurasi. Trafik dihala ke sasaran lalai.",
       "fields": {
-        "ruleName": "Rule Name",
-        "routePath": "Route Path",
-        "targetUrl": "Target URL"
+        "ruleName": "Nama Peraturan",
+        "routePath": "Laluan Laluan",
+        "targetUrl": "URL Sasaran"
       },
       "placeholders": {
-        "ruleName": "e.g. API Target",
-        "routePath": "e.g. /api/*",
-        "targetUrl": "e.g. https://api.mybackend.com"
+        "ruleName": "cth. Sasaran API",
+        "routePath": "cth. /api/*",
+        "targetUrl": "cth. https://api.backend-saya.com"
       },
       "actions": {
-        "addUpstream": "Add Upstream Target",
-        "cancel": "Cancel",
-        "saveRule": "Save Rule"
+        "addUpstream": "Tambah Sasaran Upstream",
+        "cancel": "Batal",
+        "saveRule": "Simpan Peraturan"
       },
       "status": {
-        "active": "Active",
-        "disabled": "Disabled"
+        "active": "Aktif",
+        "disabled": "Dilumpuhkan"
       },
       "errors": {
-        "nameAndTargetRequired": "Name and Target URL are required",
-        "addFailed": "Failed to add reverse proxy",
-        "removeFailed": "Failed to remove"
+        "nameAndTargetRequired": "Nama dan URL Sasaran diperlukan",
+        "addFailed": "Gagal menambah proksi songsang",
+        "removeFailed": "Gagal membuang"
       },
       "toasts": {
-        "added": "Reverse Proxy added",
-        "removed": "Removed"
+        "added": "Proksi Songsang ditambah",
+        "removed": "Dibuang"
       }
     },
     "teamMembers": {
-      "title": "Team Members",
-      "description": "Manage your team members and their privileges.",
-      "searchPlaceholder": "Search by name or email...",
-      "totalMembers": "{count} Total Members",
+      "title": "Ahli Pasukan",
+      "description": "Urus ahli pasukan anda dan keistimewaan mereka.",
+      "searchPlaceholder": "Cari mengikut nama atau emel...",
+      "totalMembers": "{count} Jumlah Ahli",
       "roles": {
-        "owner": "Owner",
-        "member": "Member",
-        "billing": "Billing"
+        "owner": "Pemilik",
+        "member": "Ahli",
+        "billing": "Bil"
       },
       "actions": {
-        "inviteMember": "Invite Member",
-        "copy": "Copy"
+        "inviteMember": "Jemput Ahli",
+        "copy": "Salin"
       },
       "inviteLink": {
-        "title": "Invite link",
-        "description": "Share this link to invite people to your team.",
-        "caption": "Anyone with the link can request access."
+        "title": "Pautan jemputan",
+        "description": "Kongsi pautan ini untuk menjemput orang ke pasukan anda.",
+        "caption": "Sesiapa dengan pautan boleh meminta akses."
       },
       "table": {
-        "user": "User",
-        "role": "Role",
+        "user": "Pengguna",
+        "role": "Peranan",
         "status": "Status",
-        "actions": "Actions"
+        "actions": "Tindakan"
       },
       "status": {
-        "pending": "Pending",
-        "active": "Active"
+        "pending": "Tertunda",
+        "active": "Aktif"
       }
     },
     "newDomain": {
-      "projectFallback": "Project",
-      "backTo": "Back to {name}",
-      "title": "Add Domain to {teamName}",
+      "projectFallback": "Projek",
+      "backTo": "Kembali ke {name}",
+      "title": "Tambah Domain ke {teamName}",
       "steps": {
         "domain": "Domain",
-        "verify": "Verify"
+        "verify": "Sahkan"
       },
       "input": {
-        "title": "What's your domain?",
-        "description": "Enter the exact domain you want to protect with NetGoat. You can add subdomains later.",
-        "placeholder": "e.g. yourwebsite.com"
+        "title": "Apakah domain anda?",
+        "description": "Masukkan domain tepat yang anda mahu lindungi dengan NetGoat. Anda boleh menambah subdomain kemudian.",
+        "placeholder": "cth. lamanwebanda.com"
       },
       "verify": {
-        "title": "Verify Ownership",
-        "description": "Add the following TXT record to your DNS provider to prove you own this domain.",
-        "verifiedTitle": "Domain Verified",
-        "verifiedDescription": "Your domain has been successfully added to NetGoat.",
-        "ready": "Domain is fully validated and ready for routing.",
-        "propagationHint": "DNS changes may take a few minutes to propagate. You can click Verify now, or bypass for immediate use.",
+        "title": "Sahkan Pemilikan",
+        "description": "Tambah rekod TXT berikut ke pembekal DNS anda untuk membuktikan anda memiliki domain ini.",
+        "verifiedTitle": "Domain Disahkan",
+        "verifiedDescription": "Domain anda telah berjaya ditambah ke NetGoat.",
+        "ready": "Domain disahkan sepenuhnya dan sedia untuk penghalaan.",
+        "propagationHint": "Perubahan DNS mungkin mengambil beberapa minit untuk merebak. Anda boleh klik Sahkan sekarang, atau langkau untuk penggunaan serta-merta.",
         "fields": {
-          "type": "Type",
-          "name": "Name",
-          "value": "Value"
+          "type": "Jenis",
+          "name": "Nama",
+          "value": "Nilai"
         }
       },
       "actions": {
-        "continue": "Continue",
-        "back": "Back",
-        "verify": "Verify",
-        "verifying": "Verifying...",
-        "preparing": "Preparing verification...",
-        "bypass": "Bypass",
-        "bypassTitle": "Bypass verification for testing"
+        "continue": "Teruskan",
+        "back": "Kembali",
+        "verify": "Sahkan",
+        "verifying": "Mengesahkan...",
+        "preparing": "Menyediakan pengesahan...",
+        "bypass": "Langkau",
+        "bypassTitle": "Langkau pengesahan untuk ujian"
       },
       "errors": {
-        "enterDomain": "Please enter a domain name",
-        "invalidDomain": "Please enter a valid domain name (e.g. example.com)",
-        "tokenFailed": "Failed to generate verification token",
-        "verifyFailed": "Verification failed. Please check your DNS settings and try again.",
-        "propagation": "Verification failed. DNS records might take time to propagate.",
-        "createFailed": "Failed to create domain",
-        "generic": "Something went wrong"
+        "enterDomain": "Sila masukkan nama domain",
+        "invalidDomain": "Sila masukkan nama domain yang sah (cth. example.com)",
+        "tokenFailed": "Gagal menjana token pengesahan",
+        "verifyFailed": "Pengesahan gagal. Sila periksa tetapan DNS anda dan cuba lagi.",
+        "propagation": "Pengesahan gagal. Rekod DNS mungkin mengambil masa untuk merebak.",
+        "createFailed": "Gagal mencipta domain",
+        "generic": "Sesuatu telah salah"
       },
       "toasts": {
-        "verified": "Domain verified successfully!",
-        "added": "Domain added",
-        "bypassAdded": "Domain verified and added!",
-        "copied": "Copied to clipboard"
+        "verified": "Domain berjaya disahkan!",
+        "added": "Domain ditambah",
+        "bypassAdded": "Domain disahkan dan ditambah!",
+        "copied": "Disalin ke papan keratan"
       }
     },
     "teamDns": {
-      "title": "DNS Records",
-      "subtitle": "Manage DNS records for your domains",
-      "emptyDomainsTitle": "No domains yet",
-      "emptyRecordsTitle": "No DNS records",
-      "emptyDomains": "Add a domain first to manage DNS records",
-      "emptyRecords": "Add your first DNS record to get started",
-      "emptyFilter": "No {type} records found",
+      "title": "Rekod DNS",
+      "subtitle": "Urus rekod DNS untuk domain anda",
+      "emptyDomainsTitle": "Tiada domain lagi",
+      "emptyRecordsTitle": "Tiada rekod DNS",
+      "emptyDomains": "Tambah domain terlebih dahulu untuk mengurus rekod DNS",
+      "emptyRecords": "Tambah rekod DNS pertama anda untuk bermula",
+      "emptyFilter": "Tiada rekod {type} dijumpai",
       "zonePlaceholder": "example.com. 3600 IN A 192.0.2.1\nwww 3600 IN CNAME example.com.\nmail 3600 IN MX 10 mail.example.com.",
       "fields": {
-        "type": "Type",
-        "name": "Name",
-        "namePlaceholder": "@ or subdomain",
-        "rootHint": "@ = root domain",
-        "value": "Value",
-        "ttl": "TTL (seconds)",
-        "ttlHint": "Default: 3600 (1 hour)",
-        "priority": "Priority",
-        "proxied": "Proxied (requests go through NetGoat)"
+        "type": "Jenis",
+        "name": "Nama",
+        "namePlaceholder": "@ atau subdomain",
+        "rootHint": "@ = domain punca",
+        "value": "Nilai",
+        "ttl": "TTL (saat)",
+        "ttlHint": "Lalai: 3600 (1 jam)",
+        "priority": "Keutamaan",
+        "proxied": "Proxied (permintaan melalui NetGoat)"
       },
       "filters": {
         "domain": "Domain",
-        "selectDomain": "Select domain",
-        "recordType": "Record Type Filter",
+        "selectDomain": "Pilih domain",
+        "recordType": "Penapis Jenis Rekod",
         "typeOptions": {
-          "all": "All Types",
-          "A": "A Records",
-          "AAAA": "AAAA Records",
-          "CNAME": "CNAME Records",
-          "MX": "MX Records",
-          "TXT": "TXT Records",
-          "NS": "NS Records",
-          "SRV": "SRV Records",
-          "CAA": "CAA Records"
+          "all": "Semua Jenis",
+          "A": "Rekod A",
+          "AAAA": "Rekod AAAA",
+          "CNAME": "Rekod CNAME",
+          "MX": "Rekod MX",
+          "TXT": "Rekod TXT",
+          "NS": "Rekod NS",
+          "SRV": "Rekod SRV",
+          "CAA": "Rekod CAA"
         }
       },
       "recordTypeOptions": {
         "A": "A (IPv4)",
         "AAAA": "AAAA (IPv6)",
         "CNAME": "CNAME (Alias)",
-        "MX": "MX (Mail)",
-        "TXT": "TXT (Text)",
-        "NS": "NS (Name Server)",
-        "SRV": "SRV (Service)",
-        "CAA": "CAA (Certificate)"
+        "MX": "MX (Emel)",
+        "TXT": "TXT (Teks)",
+        "NS": "NS (Pelayan Nama)",
+        "SRV": "SRV (Perkhidmatan)",
+        "CAA": "CAA (Sijil)"
       },
       "typeInfo": {
         "a": {
           "placeholder": "192.0.2.1",
-          "description": "IPv4 address"
+          "description": "Alamat IPv4"
         },
         "aaaa": {
           "placeholder": "2001:0db8::1",
-          "description": "IPv6 address"
+          "description": "Alamat IPv6"
         },
         "cname": {
           "placeholder": "example.com",
-          "description": "Canonical name (alias)"
+          "description": "Nama kanonik (alias)"
         },
         "mx": {
           "placeholder": "mail.example.com",
-          "description": "Mail server (requires priority)"
+          "description": "Pelayan mel (memerlukan keutamaan)"
         },
         "txt": {
           "placeholder": "v=spf1 include:_spf.example.com ~all",
-          "description": "Text record"
+          "description": "Rekod teks"
         },
         "ns": {
           "placeholder": "ns1.example.com",
-          "description": "Name server"
+          "description": "Pelayan nama"
         },
         "srv": {
           "placeholder": "10 5 5060 sip.example.com",
-          "description": "Service record"
+          "description": "Rekod perkhidmatan"
         },
         "caa": {
           "placeholder": "0 issue \"letsencrypt.org\"",
-          "description": "Certificate authority"
+          "description": "Pihak berkuasa sijil"
         }
       },
       "status": {
         "proxied": "Proxied",
-        "propagated": "propagated",
-        "failed": "failed",
-        "pending": "pending"
+        "propagated": "merebak",
+        "failed": "gagal",
+        "pending": "tertunda"
       },
       "records": {
-        "groupTitle": "{type} Records ({count})",
+        "groupTitle": "Rekod {type} ({count})",
         "ttl": "TTL",
-        "priority": "Priority"
+        "priority": "Keutamaan"
       },
       "actions": {
-        "importZone": "Import Zone File",
-        "importRecords": "Import Records",
-        "addRecord": "Add Record",
-        "addDnsRecord": "Add DNS Record",
-        "checkPropagation": "Check propagation",
-        "createDnsRecord": "Create DNS Record",
-        "updateDnsRecord": "Update DNS Record"
+        "importZone": "Import Fail Zon",
+        "importRecords": "Import Rekod",
+        "addRecord": "Tambah Rekod",
+        "addDnsRecord": "Tambah Rekod DNS",
+        "checkPropagation": "Periksa penyebaran",
+        "createDnsRecord": "Cipta Rekod DNS",
+        "updateDnsRecord": "Kemas Kini Rekod DNS"
       },
       "dialogs": {
         "import": {
-          "title": "Import DNS Zone File",
-          "description": "Paste your zone file content to bulk import DNS records"
+          "title": "Import Fail Zon DNS",
+          "description": "Tampal kandungan fail zon anda untuk mengimport rekod DNS secara pukal"
         },
         "add": {
-          "title": "Add DNS Record",
-          "description": "Create a new DNS record for {domain}"
+          "title": "Tambah Rekod DNS",
+          "description": "Cipta rekod DNS baharu untuk {domain}"
         },
         "edit": {
-          "title": "Edit DNS Record",
-          "description": "Update the DNS record for {domain}"
+          "title": "Edit Rekod DNS",
+          "description": "Kemas kini rekod DNS untuk {domain}"
         }
       },
       "errors": {
-        "selectDomain": "Please select a domain",
-        "nameValueRequired": "Name and value are required",
-        "zoneRequired": "Domain and zone file content are required",
-        "noValidRecords": "No valid DNS records found in zone file"
+        "selectDomain": "Sila pilih domain",
+        "nameValueRequired": "Nama dan nilai diperlukan",
+        "zoneRequired": "Domain dan kandungan fail zon diperlukan",
+        "noValidRecords": "Tiada rekod DNS yang sah dijumpai dalam fail zon"
       },
       "confirm": {
-        "deleteRecord": "Delete this DNS record?"
+        "deleteRecord": "Padam rekod DNS ini?"
       },
       "toasts": {
-        "created": "DNS record created",
-        "updated": "DNS record updated",
-        "deleted": "DNS record deleted",
-        "propagated": "DNS record has propagated",
-        "stillPropagating": "DNS record is still propagating...",
-        "imported": "Imported {success} DNS records, {failed} failed"
+        "created": "Rekod DNS dicipta",
+        "updated": "Rekod DNS dikemas kini",
+        "deleted": "Rekod DNS dipadam",
+        "propagated": "Rekod DNS telah merebak",
+        "stillPropagating": "Rekod DNS masih merebak...",
+        "imported": "Diimport {success} rekod DNS, {failed} gagal"
       }
     },
     "teamWaf": {
-      "title": "WAF Rules",
-      "loading": "Loading WAF configuration...",
-      "subtitle": "Configure Web Application Firewall rules to protect your domains",
-      "emptyDomainsTitle": "No domains yet",
-      "emptyDomains": "Add a domain first to configure WAF rules",
+      "title": "Peraturan WAF",
+      "loading": "Memuatkan konfigurasi WAF...",
+      "subtitle": "Konfigurasi peraturan Firewall Aplikasi Web untuk melindungi domain anda",
+      "emptyDomainsTitle": "Tiada domain lagi",
+      "emptyDomains": "Tambah domain terlebih dahulu untuk mengkonfigurasi peraturan WAF",
       "fields": {
-        "ruleName": "Rule Name",
-        "action": "Action",
-        "expression": "Expression",
-        "priority": "Priority (0-100)",
-        "target": "Target",
-        "description": "Description (Optional)",
-        "selectDomain": "Select Domain:",
-        "selectDomainPlaceholder": "Select a domain"
+        "ruleName": "Nama Peraturan",
+        "action": "Tindakan",
+        "expression": "Ungkapan",
+        "priority": "Keutamaan (0-100)",
+        "target": "Sasaran",
+        "description": "Penerangan (Pilihan)",
+        "selectDomain": "Pilih Domain:",
+        "selectDomainPlaceholder": "Pilih domain"
       },
       "placeholders": {
         "ruleName": "block-sql-injection",
         "expression": "contains(request.path, 'SELECT')",
-        "description": "Brief description of what this rule does"
+        "description": "Penerangan ringkas tentang apa yang dilakukan peraturan ini"
       },
       "hints": {
-        "expressionFunctions": "Use functions like contains(), matches(), startsWith(), endsWith()",
-        "priority": "Higher = evaluated first"
+        "expressionFunctions": "Gunakan fungsi seperti contains(), matches(), startsWith(), endsWith()",
+        "priority": "Lebih tinggi = dinilai dahulu"
       },
       "actionOptions": {
-        "block": "Block (deny request)",
-        "allow": "Allow (permit request)",
-        "log": "Log (allow but record)"
+        "block": "Sekat (tolak permintaan)",
+        "allow": "Benarkan (benarkan permintaan)",
+        "log": "Log (benarkan tetapi rekod)"
       },
       "targetOptions": {
-        "domain": "Domain-level"
+        "domain": "Tahap Domain"
       },
       "dialogs": {
         "add": {
-          "title": "Add WAF Rule",
-          "description": "Create a custom WAF rule to protect against threats"
+          "title": "Tambah Peraturan WAF",
+          "description": "Cipta peraturan WAF tersuai untuk melindungi daripada ancaman"
         }
       },
       "actions": {
-        "addRule": "Add WAF Rule",
-        "createRule": "Create WAF Rule",
-        "addFirstRule": "Add First Rule",
-        "addSubdomainRule": "Add Subdomain Rule"
+        "addRule": "Tambah Peraturan WAF",
+        "createRule": "Cipta Peraturan WAF",
+        "addFirstRule": "Tambah Peraturan Pertama",
+        "addSubdomainRule": "Tambah Peraturan Subdomain"
       },
       "tabs": {
-        "domainRules": "Domain Rules ({count})"
+        "domainRules": "Peraturan Domain ({count})"
       },
       "cards": {
         "domainRules": {
-          "title": "Domain-Level WAF Rules",
-          "description": "These rules apply to {domain} and all its subdomains"
+          "title": "Peraturan WAF Tahap Domain",
+          "description": "Peraturan ini terpakai untuk {domain} dan semua subdomainnya"
         },
         "subdomainRules": {
-          "title": "WAF Rules for {domain}",
-          "description": "Subdomain-specific rules in addition to domain-level rules"
+          "title": "Peraturan WAF untuk {domain}",
+          "description": "Peraturan khusus subdomain selain peraturan tahap domain"
         }
       },
       "labels": {
-        "priority": "Priority"
+        "priority": "Keutamaan"
       },
       "empty": {
-        "domainRules": "No WAF rules configured for this domain",
-        "subdomainRules": "No subdomain-specific WAF rules"
+        "domainRules": "Tiada peraturan WAF dikonfigurasi untuk domain ini",
+        "subdomainRules": "Tiada peraturan WAF khusus subdomain"
       },
       "expression": {
-        "title": "WAF Expression Language",
-        "availableProperties": "Available Properties:",
-        "functionsTitle": "Functions:",
+        "title": "Bahasa Ungkapan WAF",
+        "availableProperties": "Sifat Tersedia:",
+        "functionsTitle": "Fungsi:",
         "properties": {
-          "path": "request.path - URL path (e.g., /api/users)",
-          "method": "request.method - HTTP method (GET, POST, etc.)",
-          "ip": "request.ip - Client IP address",
-          "country": "request.country - Country code",
-          "userAgent": "request.user_agent - User-Agent header",
-          "rate": "request.rate - Requests per second"
+          "path": "request.path - Laluan URL (cth. /api/users)",
+          "method": "request.method - Kaedah HTTP (GET, POST, dll.)",
+          "ip": "request.ip - Alamat IP klien",
+          "country": "request.country - Kod negara",
+          "userAgent": "request.user_agent - Pengepala User-Agent",
+          "rate": "request.rate - Permintaan sesaat"
         }
       },
       "examples": {
-        "title": "Quick Examples",
+        "title": "Contoh Pantas",
         "sqlInjection": {
-          "name": "SQL Injection Protection"
+          "name": "Perlindungan Injeksi SQL"
         },
         "xss": {
-          "name": "XSS Protection"
+          "name": "Perlindungan XSS"
         },
         "rateLimit": {
-          "name": "Rate Limiting"
+          "name": "Had Kadar"
         },
         "geoBlock": {
-          "name": "Geographic Block"
+          "name": "Sekatan Geografi"
         },
         "botDetection": {
-          "name": "Bot Detection"
+          "name": "Pengesanan Bot"
         }
       },
       "subdomain": {
-        "rulesStillApply": "Domain-level rules still apply"
+        "rulesStillApply": "Peraturan tahap domain masih terpakai"
       },
       "errors": {
-        "selectDomain": "Please select a domain",
-        "nameExpressionRequired": "Name and expression are required"
+        "selectDomain": "Sila pilih domain",
+        "nameExpressionRequired": "Nama dan ungkapan diperlukan"
       },
       "confirm": {
-        "deleteRule": "Delete WAF rule \"{ruleName}\"?"
+        "deleteRule": "Padam peraturan WAF \"{ruleName}\"?"
       },
       "toasts": {
-        "addedToSubdomain": "WAF rule added to {subdomain}",
-        "addedToDomain": "WAF rule added to domain",
-        "deleted": "WAF rule deleted"
+        "addedToSubdomain": "Peraturan WAF ditambah ke {subdomain}",
+        "addedToDomain": "Peraturan WAF ditambah ke domain",
+        "deleted": "Peraturan WAF dipadam"
       }
     },
     "admin": {
       "dashboard": {
-        "title": "Admin Dashboard",
-        "subtitle": "Overview of your system's performance and activity.",
+        "title": "Papan Pemuka Admin",
+        "subtitle": "Gambaran keseluruhan prestasi dan aktiviti sistem anda.",
         "toasts": {
-          "fetchFailed": "Failed to fetch admin data"
+          "fetchFailed": "Gagal mengambil data admin"
         },
         "actions": {
-          "refreshing": "Refreshing...",
-          "refreshData": "Refresh Data"
+          "refreshing": "Menyegarkan...",
+          "refreshData": "Segarkan Data"
         },
         "cards": {
           "totalUsers": {
-            "title": "Total Users",
-            "description": "Registered accounts"
+            "title": "Jumlah Pengguna",
+            "description": "Akaun berdaftar"
           },
           "activeSessions": {
-            "title": "Active Sessions",
-            "description": "Currently online users"
+            "title": "Sesi Aktif",
+            "description": "Pengguna dalam talian sekarang"
           },
           "systemLoad": {
-            "title": "System Load",
-            "description": "Average CPU usage"
+            "title": "Beban Sistem",
+            "description": "Purata penggunaan CPU"
           },
           "securityEvents": {
-            "title": "Security Events",
-            "description": "Events requiring attention"
+            "title": "Kejadian Keselamatan",
+            "description": "Kejadian yang memerlukan perhatian"
           }
         },
         "activityMap": {
-          "title": "System Activity Map",
-          "description": "Visual metrics over time.",
-          "pending": "Chart integration pending"
+          "title": "Peta Aktiviti Sistem",
+          "description": "Metrik visual dari semasa ke semasa.",
+          "pending": "Integrasi carta tertunda"
         },
         "quickActions": {
-          "title": "Quick Actions",
-          "description": "Manage common administrative tasks.",
-          "manageUsers": "Manage Users",
-          "securityLogs": "Security Logs",
-          "systemSettings": "System Settings"
+          "title": "Tindakan Pantas",
+          "description": "Urus tugas pentadbiran biasa.",
+          "manageUsers": "Urus Pengguna",
+          "securityLogs": "Log Keselamatan",
+          "systemSettings": "Tetapan Sistem"
         }
       },
       "logs": {
-        "title": "Logs",
-        "subtitle": "View and manage your server logs in real-time.",
-        "liveServerLogs": "Live Server Logs",
-        "description": "Realtime logs captured from the server instance.",
-        "empty": "No logs captured yet...",
+        "title": "Log",
+        "subtitle": "Lihat dan urus log pelayan anda dalam masa nyata.",
+        "liveServerLogs": "Log Pelayan Langsung",
+        "description": "Log masa nyata yang ditangkap dari instans pelayan.",
+        "empty": "Tiada log ditangkap lagi...",
         "badges": {
-          "live": "Live",
-          "paused": "Paused"
+          "live": "Langsung",
+          "paused": "Dijeda"
         },
         "actions": {
-          "toggleRequestFilter": "Toggle Request Filter",
-          "requests": "Requests"
+          "toggleRequestFilter": "Togol Penapis Permintaan",
+          "requests": "Permintaan"
         }
       },
       "system": {
-        "title": "System Information",
-        "subtitle": "Server specifications and status.",
-        "confirmRestart": "Are you sure you want to trigger a system restart?",
+        "title": "Maklumat Sistem",
+        "subtitle": "Spesifikasi dan status pelayan.",
+        "confirmRestart": "Adakah anda pasti mahu mencetuskan semula sistem?",
         "toasts": {
-          "fetchFailed": "Failed to fetch system specs",
-          "restartSent": "Restart signal sent",
-          "restartFailed": "Failed to restart system"
+          "fetchFailed": "Gagal mengambil spesifikasi sistem",
+          "restartSent": "Isyarat semula dihantar",
+          "restartFailed": "Gagal memulakan semula sistem"
         },
         "actions": {
-          "restartSystem": "Restart System"
+          "restartSystem": "Mula Semula Sistem"
         },
         "hardware": {
-          "title": "Hardware Details",
-          "description": "Current hardware allocation and usage metrics.",
+          "title": "Butiran Perkakasan",
+          "description": "Peruntukan perkakasan semasa dan metrik penggunaan.",
           "fields": {
             "os": "OS",
-            "cpuModel": "CPU Model",
-            "cpuCores": "CPU Cores",
-            "memoryTotal": "Memory (Total)",
-            "memoryFree": "Memory (Free)",
-            "uptime": "Uptime"
+            "cpuModel": "Model CPU",
+            "cpuCores": "Teras CPU",
+            "memoryTotal": "Memori (Jumlah)",
+            "memoryFree": "Memori (Percuma)",
+            "uptime": "Masa Aktif"
           }
         }
       },
       "users": {
-        "title": "User Management",
-        "subtitle": "Manage your users, roles, and access.",
-        "searchPlaceholder": "Search users...",
-        "yes": "Yes",
-        "no": "No",
+        "title": "Pengurusan Pengguna",
+        "subtitle": "Urus pengguna, peranan dan akses anda.",
+        "searchPlaceholder": "Cari pengguna...",
+        "yes": "Ya",
+        "no": "Tidak",
         "toasts": {
-          "fetchFailed": "Failed to fetch users",
-          "updateSuccess": "User updated successfully",
-          "updateFailed": "Failed to update user"
+          "fetchFailed": "Gagal mengambil pengguna",
+          "updateSuccess": "Pengguna berjaya dikemas kini",
+          "updateFailed": "Gagal mengemas kini pengguna"
         },
         "directory": {
-          "title": "Directory",
-          "description": "Search explicitly or browse dynamically."
+          "title": "Direktori",
+          "description": "Cari secara eksplisit atau layari secara dinamik."
         },
         "table": {
-          "user": "User",
-          "role": "Role",
+          "user": "Pengguna",
+          "role": "Peranan",
           "status": "Status",
-          "created": "Created",
-          "actions": "Actions"
+          "created": "Dicipta",
+          "actions": "Tindakan"
         },
         "status": {
-          "active": "Active",
-          "banned": "Banned"
+          "active": "Aktif",
+          "banned": "Diharamkan"
         },
         "pagination": {
-          "previous": "Previous",
-          "next": "Next"
+          "previous": "Sebelumnya",
+          "next": "Seterusnya"
         },
         "editUser": {
-          "title": "Edit User",
-          "description": "Make changes to the user profile."
+          "title": "Edit Pengguna",
+          "description": "Buat perubahan pada profil pengguna."
         },
         "fields": {
-          "name": "Name",
-          "email": "Email",
-          "role": "Role",
-          "selectRole": "Select role",
-          "banned": "Banned"
+          "name": "Nama",
+          "email": "Emel",
+          "role": "Peranan",
+          "selectRole": "Pilih peranan",
+          "banned": "Diharamkan"
         },
         "roles": {
-          "user": "User",
+          "user": "Pengguna",
           "admin": "Admin"
         },
         "actions": {
-          "saveChanges": "Save Changes"
+          "saveChanges": "Simpan Perubahan"
         }
       },
       "alerts": {
-        "title": "Dashboard Alerts",
-        "confirmDelete": "Are you sure?",
-        "empty": "No alerts generated yet.",
-        "hasAction": "Has Action: {actionText}",
-        "created": "Created: {date}",
+        "title": "Alert Papan Pemuka",
+        "confirmDelete": "Adakah anda pasti?",
+        "empty": "Tiada alert dijana lagi.",
+        "hasAction": "Mempunyai Tindakan: {actionText}",
+        "created": "Dicipta: {date}",
         "status": {
-          "active": "Active",
-          "inactive": "Inactive"
+          "active": "Aktif",
+          "inactive": "Tidak Aktif"
         },
         "toasts": {
-          "createSuccess": "Alert created successfully",
-          "createFailed": "Failed to create alert",
-          "statusUpdated": "Alert status updated",
-          "statusFailed": "Failed to update status",
-          "deleteSuccess": "Alert deleted",
-          "deleteFailed": "Failed to delete alert"
+          "createSuccess": "Alert berjaya dicipta",
+          "createFailed": "Gagal mencipta alert",
+          "statusUpdated": "Status alert dikemas kini",
+          "statusFailed": "Gagal mengemas kini status",
+          "deleteSuccess": "Alert dipadam",
+          "deleteFailed": "Gagal memadam alert"
         },
         "actions": {
-          "cancel": "Cancel",
-          "createAlert": "Create Alert",
-          "saveAlert": "Save Alert"
+          "cancel": "Batal",
+          "createAlert": "Cipta Alert",
+          "saveAlert": "Simpan Alert"
         },
         "newAlert": {
-          "title": "New Alert"
+          "title": "Alert Baharu"
         },
         "fields": {
-          "title": "Title",
-          "titlePlaceholder": "Alert title...",
-          "messageBody": "Message Body",
-          "bodyPlaceholder": "Details of the alert...",
-          "variant": "Variant",
-          "actionText": "Action Text (optional)",
-          "actionTextPlaceholder": "E.g., Read More"
+          "title": "Tajuk",
+          "titlePlaceholder": "Tajuk alert...",
+          "messageBody": "Isi Mesej",
+          "bodyPlaceholder": "Butiran alert...",
+          "variant": "Varian",
+          "actionText": "Teks Tindakan (pilihan)",
+          "actionTextPlaceholder": "Cth. Baca Lanjut"
         },
         "variants": {
-          "blue": "Blue (Info)",
-          "yellow": "Yellow (Warning)",
-          "red": "Red (Critical)"
+          "blue": "Biru (Info)",
+          "yellow": "Kuning (Amaran)",
+          "red": "Merah (Kritikal)"
         }
       },
       "incidents": {
-        "title": "Incident Announcements",
-        "confirmDelete": "Are you sure?",
-        "empty": "No incidents reported yet.",
-        "started": "Started: {date}",
-        "severityBadge": "{severity} Severity",
+        "title": "Pengumuman Kejadian",
+        "confirmDelete": "Adakah anda pasti?",
+        "empty": "Tiada kejadian dilaporkan lagi.",
+        "started": "Dimulakan: {date}",
+        "severityBadge": "Keterukan {severity}",
         "toasts": {
-          "createSuccess": "Incident created",
-          "createFailed": "Failed to create incident",
-          "updateSuccess": "Incident updated",
-          "updateFailed": "Failed to update incident",
-          "deleteSuccess": "Incident deleted",
-          "deleteFailed": "Failed to delete incident"
+          "createSuccess": "Kejadian dicipta",
+          "createFailed": "Gagal mencipta kejadian",
+          "updateSuccess": "Kejadian dikemas kini",
+          "updateFailed": "Gagal mengemas kini kejadian",
+          "deleteSuccess": "Kejadian dipadam",
+          "deleteFailed": "Gagal memadam kejadian"
         },
         "actions": {
-          "cancel": "Cancel",
-          "postIncident": "Post Incident",
-          "createAnnouncement": "Create Announcement"
+          "cancel": "Batal",
+          "postIncident": "Siarkan Kejadian",
+          "createAnnouncement": "Cipta Pengumuman"
         },
         "newIncident": {
-          "title": "New Incident"
+          "title": "Kejadian Baharu"
         },
         "fields": {
-          "title": "Title",
-          "titlePlaceholder": "E.g. API taking longer than expected",
-          "description": "Description",
-          "descriptionPlaceholder": "What is going on?",
+          "title": "Tajuk",
+          "titlePlaceholder": "Cth. API mengambil masa lebih lama dari jangkaan",
+          "description": "Penerangan",
+          "descriptionPlaceholder": "Apa yang sedang berlaku?",
           "status": "Status",
-          "severity": "Severity"
+          "severity": "Keterukan"
         },
         "badges": {
-          "active": "Active",
-          "resolved": "Resolved"
+          "active": "Aktif",
+          "resolved": "Diselesaikan"
         },
         "statuses": {
-          "investigating": "Investigating",
-          "identified": "Identified",
-          "monitoring": "Monitoring",
-          "resolved": "Resolved",
-          "markResolved": "Mark Resolved"
+          "investigating": "Menyiasat",
+          "identified": "Diidentifikasi",
+          "monitoring": "Memantau",
+          "resolved": "Diselesaikan",
+          "markResolved": "Tanda Selesai"
         },
         "severity": {
           "minor": "Minor",
-          "major": "Major",
-          "critical": "Critical"
+          "major": "Utama",
+          "critical": "Kritikal"
         }
       },
       "analytics": {
-        "title": "Analytics",
-        "subtitle": "Self-hosted insights and performance metrics.",
-        "selectRange": "Select Range",
+        "title": "Analitik",
+        "subtitle": "Wawasan sendiri dan metrik prestasi.",
+        "selectRange": "Pilih Julat",
         "ranges": {
-          "24h": "Last 24 Hours",
-          "7d": "Last 7 Days",
-          "30d": "Last 30 Days"
+          "24h": "24 Jam Terakhir",
+          "7d": "7 Hari Terakhir",
+          "30d": "30 Hari Terakhir"
         },
         "cards": {
           "totalVisitors": {
-            "title": "Total Visitors",
-            "description": "Unique devices"
+            "title": "Jumlah Pelawat",
+            "description": "Peranti unik"
           },
           "pageViews": {
-            "title": "Page Views",
-            "description": "Total page loads"
+            "title": "Paparan Halaman",
+            "description": "Jumlah muatan halaman"
           },
           "bounceRate": {
-            "title": "Bounce Rate",
-            "description": "Single page sessions"
+            "title": "Kadar Lantunan",
+            "description": "Sesi satu halaman"
           },
           "avgLcp": {
-            "title": "Avg LCP",
+            "title": "LCP Purata",
             "description": "Largest Contentful Paint"
           }
         },
         "overview": {
-          "title": "Overview"
+          "title": "Gambaran Keseluruhan"
         },
         "devices": {
-          "title": "Devices",
-          "description": "By type",
-          "visitors": "Visitors",
+          "title": "Peranti",
+          "description": "Mengikut jenis",
+          "visitors": "Pelawat",
           "labels": {
-            "mobile": "Mobile",
+            "mobile": "Mudah alih",
             "tablet": "Tablet",
             "desktop": "Desktop"
           }
         },
         "topPages": {
-          "title": "Top Pages",
-          "description": "Most visited paths."
+          "title": "Halaman Teratas",
+          "description": "Laluan yang paling banyak dilawati."
         },
         "topReferrers": {
-          "title": "Top Referrers",
-          "description": "Main sources of traffic."
+          "title": "Perujuk Teratas",
+          "description": "Sumber trafik utama."
         },
         "pageSpeed": {
           "title": "Page Speed Insights",
-          "description": "Performance metrics per page (Average values).",
+          "description": "Metrik prestasi setiap halaman (nilai purata).",
           "legend": {
             "lcp": "LCP (ms)",
             "fid": "FID (ms)",
             "cls": "CLS (x1000)"
           }
         },
-        "noData": "No data available",
-        "noWebVitals": "No web vitals data collected yet."
+        "noData": "Tiada data tersedia",
+        "noWebVitals": "Tiada data Web Vitals dikumpulkan lagi."
       }
     }
   },
   "Auth": {
-    "welcome_back": "Selamat kembali",
-    "create_account": "Buat Akaun",
-    "enter_details": "Sila masukkan maklumat anda.",
-    "login_failed": "Gagal log masuk",
-    "signup_failed": "Gagal mendaftar",
-    "signing_in": "Log masuk...",
-    "creating_account": "Membuat akaun...",
+    "welcome_back": "Selamat Kembali",
+    "create_account": "Cipta Akaun",
+    "enter_details": "Sila masukkan butiran anda.",
+    "login_failed": "Log masuk gagal",
+    "signup_failed": "Pendaftaran gagal",
+    "signing_in": "Sedang log masuk...",
+    "creating_account": "Mencipta akaun...",
     "sign_in": "Log Masuk",
     "sign_up": "Daftar",
     "name": "Nama",
     "email_address": "Alamat Emel",
     "password": "Kata Laluan",
-    "no_account": "Belum ada akaun?",
+    "no_account": "Tiada akaun?",
     "back_to_login": "Kembali ke Log Masuk",
     "sign_up_link": "Daftar"
   },
   "Dashboard": {
     "usage": "Penggunaan",
-    "alerts": "Amaran",
+    "alerts": "Alert",
     "domains": "Domain"
   },
   "DashboardMeta": {
-    "titleTemplate": "{team} | Team {page}",
-    "teamsTitleTemplate": "Netgoat | Teams {page}",
-    "descriptionTemplate": "Manage {page} for the {team} team on NetGoat.",
+    "titleTemplate": "{team} | Pasukan {page}",
+    "teamsTitleTemplate": "Netgoat | Pasukan {page}",
+    "descriptionTemplate": "Urus {page} untuk pasukan {team} di NetGoat.",
     "pages": {
-      "overview": "Overview",
-      "integrations": "Integrations",
-      "settings": "Settings",
-      "activity": "Activity",
-      "domains": "Domains",
+      "overview": "Gambaran Keseluruhan",
+      "integrations": "Integrasi",
+      "settings": "Tetapan",
+      "activity": "Aktiviti",
+      "domains": "Domain",
       "dns": "DNS",
       "waf": "WAF",
-      "new": "New"
+      "new": "Baharu"
     }
   }
 }

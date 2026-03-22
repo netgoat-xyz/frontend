@@ -1,0 +1,1013 @@
+{
+  "HomePage": {
+    "calm": "Kalmado",
+    "networking": "Networking",
+    "sub_header": "Networking na simple.",
+    "detailed": "Isang ligtas, scalable, at madaling gamiting solusyon sa networking.",
+    "pricing_button": "Presyo",
+    "get_started_button": "Magsimula",
+    "home": "Home",
+    "blogs": "Blog",
+    "status": "Status",
+    "docs": "Dokumentasyon",
+    "source_code": "Source Code",
+    "discord": "Discord",
+    "public_beta": "✨ Public Beta - Malapit na...",
+    "netgoat": "NetGoat",
+    "login": "Mag-login",
+    "features": {
+      "speed": {
+        "title": "Sobrang Bilis",
+        "description": "Na-optimize para sa mababang latency na koneksyon sa buong mundo."
+      },
+      "security": {
+        "title": "Zero Trust",
+        "description": "Default deny policies na may granular na access controls."
+      },
+      "scalability": {
+        "title": "Infinite Scale",
+        "description": "Lumaki mula sa isa hanggang isang milyong nodes nang walang friction."
+      }
+    },
+    "bento": {
+      "network": {
+        "title": "Global Edge Network",
+        "desc": " na-deploy sa 35+ na lokasyon sa buong mundo para sa minimum na latency."
+      },
+      "analytics": {
+        "title": "Real-time Analytics",
+        "desc": "Suriin ang traffic flow kaagad."
+      },
+      "security": {
+        "title": "DDoS Protection",
+        "desc": "Layer 3/4 & 7 mitigation kasama."
+      },
+      "api": {
+        "title": "API First Design",
+        "desc": "I-automate ang lahat gamit ang aming robust na API."
+      },
+      "community": {
+        "title": "Community Driven",
+        "desc": "Open source components at aktibong komunidad."
+      }
+    },
+    "testimonials": {
+      "title": "Pinagkakatiwalaan ng mga developer sa buong mundo"
+    },
+    "how_it_works": {
+      "title": "Paano ito gumagana",
+      "step1": {
+        "title": "Kumonekta",
+        "desc": "I-install ang aming lightweight agent sa anumang device."
+      },
+      "step2": {
+        "title": "I-configure",
+        "desc": "Tukuyin ang iyong logic at security policies."
+      },
+      "step3": {
+        "title": "Kontrolin",
+        "desc": "Subaybayan ang traffic at pamahalaan ang access sa real-time."
+      }
+    },
+    "stats": {
+      "commits": "Kabuuang Commits",
+      "stars": "Stars sa GitHub",
+      "contributors": "Mga Contributor"
+    },
+    "cta": {
+      "title": "Handa nang i-secure ang iyong network?",
+      "button": "Magsimula nang libre"
+    },
+    "footer": {
+      "rights": "© 2026 Ang NetGoat OSS Foundation. Lahat ng karapatan ay nakalaan."
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Pinakabagong balita, updates, at engineering deep dives mula sa NetGoat team.",
+      "subtitle": "Engineering at Updates",
+      "labels": {
+        "featured": "Featured"
+      },
+      "actions": {
+        "readArticle": "Basahin ang artikulo",
+        "readMore": "Magbasa pa"
+      },
+      "empty": {
+        "title": "Wala pang mga post",
+        "description": "Bumalik sa lalong madaling panahon para sa mga update."
+      }
+    },
+    "statusPage": {
+      "title": "System Status",
+      "description": "Real-time na kalusugan ng NetGoat infrastructure at mga serbisyo.",
+      "statuses": {
+        "operational": "Operational",
+        "degraded": "Degraded Performance",
+        "outage": "Outage",
+        "maintenance": "Sa Maintenance"
+      },
+      "labels": {
+        "lastChecked": "Huling na-check",
+        "services": "Mga Serbisyo",
+        "infrastructure": "Infrastruktura",
+        "recentIncidents": "Mga Kamakailang Insidente",
+        "uptime": "Uptime",
+        "servicesHealthy": "Malulusog na Serbisyo",
+        "avgResponse": "Avg Response"
+      },
+      "incidents": {
+        "active": "Aktibo",
+        "resolved": "Naresolba",
+        "started": "Nagsimula",
+        "resolvedAt": "Naresolba",
+        "none": "Walang naiulat na insidente. Maayos kaming nag-o-operate."
+      },
+      "incidentStatus": {
+        "investigating": "Iniimbestigahan",
+        "identified": "Na-identify",
+        "monitoring": "Minomonitor",
+        "resolved": "Naresolba"
+      },
+      "incidentSeverity": {
+        "critical": "Kritikal",
+        "major": "Malala",
+        "minor": "Minor",
+        "low": "Mababa"
+      },
+      "services": {
+        "webApplication": {
+          "name": "Web Application",
+          "description": "Frontend dashboard at marketing site"
+        },
+        "api": {
+          "name": "API",
+          "description": "External REST API at agent communication"
+        },
+        "documentation": {
+          "name": "Dokumentasyon",
+          "description": "Developer documentation at mga gabay"
+        },
+        "edgeNetwork": {
+          "name": "Edge Network",
+          "description": "Global reverse proxy at WAF nodes"
+        },
+        "authentication": {
+          "name": "Authentication",
+          "description": "User authentication at session management"
+        }
+      },
+      "components": {
+        "api": {
+          "title": "API",
+          "description": "Ang core API na nagpapatakbo sa lahat ng NetGoat services."
+        },
+        "dashboard": {
+          "title": "Dashboard",
+          "description": "Frontend dashboard at marketing site."
+        },
+        "agent": {
+          "title": "Agent",
+          "description": "Ang lightweight client na tumatakbo sa iyong mga device."
+        },
+        "network": {
+          "title": "Edge Network",
+          "description": "Ang distributed network infrastructure na kumokonekta sa lahat ng nodes."
+        },
+        "authentication": {
+          "title": "Authentication Service",
+          "description": "Nagha-handle ng user authentication at access control."
+        }
+      }
+    }
+  },
+  "ErrorPages": {
+    "serverError": {
+      "title": "System Malfunction",
+      "description": "Houston, may problema kami.",
+      "action": "Subukan ulit?",
+      "imageAlt": "Server error animation"
+    },
+    "notFound": {
+      "title": "Sector Not Found",
+      "description": "Hindi ito ang mga droid na hinahanap mo.",
+      "action": "Bumalik sa Control Room",
+      "imageAlt": "Not found animation"
+    },
+    "forbidden": {
+      "title": "Access Denied",
+      "description": "Wala kang pahintulot na i-access ang sektor na ito.",
+      "action": "Bumalik",
+      "imageAlt": "Forbidden access animation"
+    }
+  },
+  "ChangelogDetail": {
+    "back": "Bumalik sa Changelog",
+    "preRelease": "Pre-release",
+    "githubRelease": "GitHub Release",
+    "emptyReleaseNotes": "Walang release notes na ibinigay para sa release na ito."
+  },
+  "DashboardPages": {
+    "activity": {
+      "title": "Aktibidad"
+    },
+    "homeToolbar": {
+      "searchPlaceholder": "Maghanap ng mga domain...",
+      "filterLabel": "I-filter ang mga domain",
+      "toggleLayout": "I-toggle ang domain layout",
+      "filters": {
+        "all": "Lahat ng domain",
+        "verified": "Verified lamang",
+        "needsVerification": "Nangangailangan ng verification"
+      },
+      "actions": {
+        "addNew": "Magdagdag ng Bago...",
+        "addSection": "Magdagdag ng Bago",
+        "domain": "Domain",
+        "group": "Grupo"
+      }
+    },
+    "homeDomains": {
+      "noMatchingTitle": "Walang tumutugmang domain",
+      "noMatchingDescription": "Ayusin ang search o filter settings para mahanap ang hinahanap mong domain.",
+      "emptyTitle": "Wala pang mga domain",
+      "emptyDescription": "Magdagdag ng iyong unang domain para simulang protektahan ang iyong mga application gamit ang NetGoat",
+      "time": {
+        "today": "Ngayon",
+        "daysAgo": "{count} araw ang nakalipas",
+        "monthsAgo": "{count} buwan ang nakalipas"
+      },
+      "actions": {
+        "createDomain": "Gumawa ng Domain",
+        "viewAll": "Tingnan ang Lahat ng {count} Domain"
+      },
+      "card": {
+        "status": {
+          "valid": "Valid",
+          "inactive": "Hindi Aktibo",
+          "invalidConfiguration": "Invalid Configuration"
+        },
+        "group": {
+          "production": "Production",
+          "preview": "Preview"
+        },
+        "labels": {
+          "group": "Grupo",
+          "updated": "Na-update"
+        },
+        "verification": {
+          "title": "Kailangan ng verification ang domain",
+          "addTxt": "Idagdag ang TXT record na ito sa"
+        },
+        "messages": {
+          "verifiedSuccess": "✓ Matagumpay na na-verify ang domain!",
+          "verifyFailed": "Nabigo ang verification. Paki-check ang iyong DNS records.",
+          "verifyRequestFailed": "Nabigong i-verify ang domain"
+        },
+        "actions": {
+          "copyToken": "Kopyahin ang token",
+          "checking": "Nagche-check...",
+          "verify": "I-verify",
+          "edit": "I-edit"
+        }
+      }
+    },
+    "integrations": {
+      "title": "Integrations",
+      "description": "Palawakin ang iyong workflow gamit ang mahigit 100+ na mga tool para sa monitoring, databases, at marami pa.",
+      "searchPlaceholder": "Maghanap ng mga integration...",
+      "empty": "Walang nakitang mga integration.",
+      "categories": {
+        "all": "Lahat",
+        "cloud": "Cloud",
+        "networking": "Networking",
+        "monitoring": "Monitoring",
+        "security": "Seguridad"
+      }
+    },
+    "settings": {
+      "title": "Mga Setting",
+      "description": "Pamahalaan ang workspace, seguridad, billing, at mga integration.",
+      "searchIntegrationsPlaceholder": "Maghanap ng mga integration...",
+      "sections": {
+        "general": "Pangkalahatan",
+        "billing": "Billing",
+        "invoices": "Mga Invoice",
+        "members": "Mga Miyembro",
+        "accessGroups": "Access Groups",
+        "webhooks": "Webhooks",
+        "securityPrivacy": "Seguridad at Privacy",
+        "appsIntegrations": "Apps at Integrations"
+      },
+      "general": {
+        "teamNameTitle": "Pangalan ng Team",
+        "teamNameDescription": "Ito ang nakikitang pangalan ng iyong team sa loob ng Netgoat. Halimbawa, ang pangalan ng iyong kumpanya o departamento.",
+        "teamNameHint": "Mangyaring gumamit ng maximum na 32 characters."
+      },
+      "actions": {
+        "save": "I-save"
+      }
+    },
+    "domain": {
+      "notFound": {
+        "title": "Hindi nahanap ang domain",
+        "description": "Walang nakitang \"{domainName}\" na domain para sa \"{teamName}\" na team."
+      }
+    },
+    "subdomains": {
+      "notFound": {
+        "title": "Hindi nahanap ang domain",
+        "description": "Walang nakitang \"{domainName}\" na domain para sa \"{teamName}\" na team."
+      },
+      "title": "Subdomains ({count})",
+      "target": "Target",
+      "requests": "{count} reqs",
+      "empty": "Wala pang nakakonfigurang mga subdomain.",
+      "actions": {
+        "add": "Magdagdag ng Subdomain"
+      },
+      "status": {
+        "active": "Aktibo",
+        "inactive": "Hindi Aktibo"
+      }
+    },
+    "reverseProxy": {
+      "notFound": {
+        "title": "Hindi nahanap ang domain",
+        "description": "Walang nakitang \"{domainName}\" na domain para sa \"{teamName}\" na team."
+      },
+      "title": "Reverse Proxies (Upstreams)",
+      "fallbackTarget": "Fallback Root Target URL",
+      "empty": "Walang nakakonfigurang reverse proxy rules. Ang traffic ay niru-route sa default target.",
+      "fields": {
+        "ruleName": "Pangalan ng Rule",
+        "routePath": "Route Path",
+        "targetUrl": "Target URL"
+      },
+      "placeholders": {
+        "ruleName": "hal. API Target",
+        "routePath": "hal. /api/*",
+        "targetUrl": "hal. https://api.mybackend.com"
+      },
+      "actions": {
+        "addUpstream": "Magdagdag ng Upstream Target",
+        "cancel": "Kanselahin",
+        "saveRule": "I-save ang Rule"
+      },
+      "status": {
+        "active": "Aktibo",
+        "disabled": "Hindi Pinagana"
+      },
+      "errors": {
+        "nameAndTargetRequired": "Kailangan ang Pangalan at Target URL",
+        "addFailed": "Nabigong magdagdag ng reverse proxy",
+        "removeFailed": "Nabigong alisin"
+      },
+      "toasts": {
+        "added": "Naidagdag ang Reverse Proxy",
+        "removed": "Naalis"
+      }
+    },
+    "teamMembers": {
+      "title": "Mga Miyembro ng Team",
+      "description": "Pamahalaan ang iyong mga team member at kanilang mga pribilehiyo.",
+      "searchPlaceholder": "Maghanap ayon sa pangalan o email...",
+      "totalMembers": "{count} Kabuuang Miyembro",
+      "roles": {
+        "owner": "May-ari",
+        "member": "Miyembro",
+        "billing": "Billing"
+      },
+      "actions": {
+        "inviteMember": "Mag-imbita ng Miyembro",
+        "copy": "Kopyahin"
+      },
+      "inviteLink": {
+        "title": "Invite link",
+        "description": "I-share ang link na ito para makapag-imbita ng mga tao sa iyong team.",
+        "caption": "Sinumang may link ay maaaring humiling ng access."
+      },
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "status": "Status",
+        "actions": "Mga Aksyon"
+      },
+      "status": {
+        "pending": "Nakabinbin",
+        "active": "Aktibo"
+      }
+    },
+    "newDomain": {
+      "projectFallback": "Proyekto",
+      "backTo": "Bumalik sa {name}",
+      "title": "Magdagdag ng Domain sa {teamName}",
+      "steps": {
+        "domain": "Domain",
+        "verify": "I-verify"
+      },
+      "input": {
+        "title": "Ano ang iyong domain?",
+        "description": "Ilagay ang eksaktong domain na gusto mong i-secure gamit ang NetGoat. Maaari kang magdagdag ng mga subdomain sa ibang pagkakataon.",
+        "placeholder": "hal. iyongwebsite.com"
+      },
+      "verify": {
+        "title": "I-verify ang Pagmamay-ari",
+        "description": "Idagdag ang sumusunod na TXT record sa iyong DNS provider para patunayan na ikaw ang may-ari ng domain na ito.",
+        "verifiedTitle": "Na-verify ang Domain",
+        "verifiedDescription": "Matagumpay na naidagdag ang iyong domain sa NetGoat.",
+        "ready": "Ang domain ay ganap na na-validate at handa na para sa routing.",
+        "propagationHint": "Ang mga pagbabago sa DNS ay maaaring tumagal ng ilang minuto bago mag-propagate. Maaari mong i-click ang Verify ngayon, o i-bypass para sa agarang paggamit.",
+        "fields": {
+          "type": "Type",
+          "name": "Pangalan",
+          "value": "Value"
+        }
+      },
+      "actions": {
+        "continue": "Magpatuloy",
+        "back": "Bumalik",
+        "verify": "I-verify",
+        "verifying": "Nagve-verify...",
+        "preparing": "Naghahanda ng verification...",
+        "bypass": "I-bypass",
+        "bypassTitle": "I-bypass ang verification para sa pagsubok"
+      },
+      "errors": {
+        "enterDomain": "Mangyaring ilagay ang pangalan ng domain",
+        "invalidDomain": "Mangyaring ilagay ang valid na pangalan ng domain (hal. example.com)",
+        "tokenFailed": "Nabigong mag-generate ng verification token",
+        "verifyFailed": "Nabigo ang verification. Paki-check ang iyong DNS settings at subukan ulit.",
+        "propagation": "Nabigo ang verification. Ang mga DNS records ay maaaring kailangan ng oras para mag-propagate.",
+        "createFailed": "Nabigong gumawa ng domain",
+        "generic": "May nangyaring mali"
+      },
+      "toasts": {
+        "verified": "Matagumpay na na-verify ang domain!",
+        "added": "Naidagdag ang domain",
+        "bypassAdded": "Na-verify at naidagdag ang domain!",
+        "copied": "Nakopya sa clipboard"
+      }
+    },
+    "teamDns": {
+      "title": "DNS Records",
+      "subtitle": "Pamahalaan ang DNS records para sa iyong mga domain",
+      "emptyDomainsTitle": "Wala pang mga domain",
+      "emptyRecordsTitle": "Walang DNS records",
+      "emptyDomains": "Magdagdag muna ng domain para pamahalaan ang DNS records",
+      "emptyRecords": "Magdagdag ng iyong unang DNS record para magsimula",
+      "emptyFilter": "Walang nakitang {type} records",
+      "zonePlaceholder": "example.com. 3600 IN A 192.0.2.1\nwww 3600 IN CNAME example.com.\nmail 3600 IN MX 10 mail.example.com.",
+      "fields": {
+        "type": "Type",
+        "name": "Pangalan",
+        "namePlaceholder": "@ o subdomain",
+        "rootHint": "@ = root domain",
+        "value": "Value",
+        "ttl": "TTL (segundo)",
+        "ttlHint": "Default: 3600 (1 oras)",
+        "priority": "Priority",
+        "proxied": "Proxied (ang mga request ay dadaan sa NetGoat)"
+      },
+      "filters": {
+        "domain": "Domain",
+        "selectDomain": "Pumili ng domain",
+        "recordType": "Record Type Filter",
+        "typeOptions": {
+          "all": "Lahat ng Types",
+          "A": "A Records",
+          "AAAA": "AAAA Records",
+          "CNAME": "CNAME Records",
+          "MX": "MX Records",
+          "TXT": "TXT Records",
+          "NS": "NS Records",
+          "SRV": "SRV Records",
+          "CAA": "CAA Records"
+        }
+      },
+      "recordTypeOptions": {
+        "A": "A (IPv4)",
+        "AAAA": "AAAA (IPv6)",
+        "CNAME": "CNAME (Alias)",
+        "MX": "MX (Mail)",
+        "TXT": "TXT (Text)",
+        "NS": "NS (Name Server)",
+        "SRV": "SRV (Service)",
+        "CAA": "CAA (Certificate)"
+      },
+      "typeInfo": {
+        "a": {
+          "placeholder": "192.0.2.1",
+          "description": "IPv4 address"
+        },
+        "aaaa": {
+          "placeholder": "2001:0db8::1",
+          "description": "IPv6 address"
+        },
+        "cname": {
+          "placeholder": "example.com",
+          "description": "Canonical name (alias)"
+        },
+        "mx": {
+          "placeholder": "mail.example.com",
+          "description": "Mail server (kailangan ng priority)"
+        },
+        "txt": {
+          "placeholder": "v=spf1 include:_spf.example.com ~all",
+          "description": "Text record"
+        },
+        "ns": {
+          "placeholder": "ns1.example.com",
+          "description": "Name server"
+        },
+        "srv": {
+          "placeholder": "10 5 5060 sip.example.com",
+          "description": "Service record"
+        },
+        "caa": {
+          "placeholder": "0 issue \"letsencrypt.org\"",
+          "description": "Certificate authority"
+        }
+      },
+      "status": {
+        "proxied": "Proxied",
+        "propagated": "na-propagate",
+        "failed": "nabigo",
+        "pending": "nakabinbin"
+      },
+      "records": {
+        "groupTitle": "{type} Records ({count})",
+        "ttl": "TTL",
+        "priority": "Priority"
+      },
+      "actions": {
+        "importZone": "I-import ang Zone File",
+        "importRecords": "I-import ang Records",
+        "addRecord": "Magdagdag ng Record",
+        "addDnsRecord": "Magdagdag ng DNS Record",
+        "checkPropagation": "I-check ang propagation",
+        "createDnsRecord": "Gumawa ng DNS Record",
+        "updateDnsRecord": "I-update ang DNS Record"
+      },
+      "dialogs": {
+        "import": {
+          "title": "I-import ang DNS Zone File",
+          "description": "I-paste ang iyong zone file content para i-bulk import ang mga DNS records"
+        },
+        "add": {
+          "title": "Magdagdag ng DNS Record",
+          "description": "Gumawa ng bagong DNS record para sa {domain}"
+        },
+        "edit": {
+          "title": "I-edit ang DNS Record",
+          "description": "I-update ang DNS record para sa {domain}"
+        }
+      },
+      "errors": {
+        "selectDomain": "Mangyaring pumili ng domain",
+        "nameValueRequired": "Kailangan ang Pangalan at Value",
+        "zoneRequired": "Kailangan ang Domain at zone file content",
+        "noValidRecords": "Walang valid na DNS records na nakita sa zone file"
+      },
+      "confirm": {
+        "deleteRecord": "Burahin ang DNS record na ito?"
+      },
+      "toasts": {
+        "created": "Nagawa ang DNS record",
+        "updated": "Na-update ang DNS record",
+        "deleted": "Nabura ang DNS record",
+        "propagated": "Na-propagate ang DNS record",
+        "stillPropagating": "Nagppropagate pa ang DNS record...",
+        "imported": "Na-import {success} DNS records, {failed} nabigo"
+      }
+    },
+    "teamWaf": {
+      "title": "WAF Rules",
+      "loading": "Naglo-load ng WAF configuration...",
+      "subtitle": "I-configure ang Web Application Firewall rules para protektahan ang iyong mga domain",
+      "emptyDomainsTitle": "Wala pang mga domain",
+      "emptyDomains": "Magdagdag muna ng domain para i-configure ang WAF rules",
+      "fields": {
+        "ruleName": "Pangalan ng Rule",
+        "action": "Aksyon",
+        "expression": "Expression",
+        "priority": "Priority (0-100)",
+        "target": "Target",
+        "description": "Description (Opsyonal)",
+        "selectDomain": "Pumili ng Domain:",
+        "selectDomainPlaceholder": "Pumili ng domain"
+      },
+      "placeholders": {
+        "ruleName": "block-sql-injection",
+        "expression": "contains(request.path, 'SELECT')",
+        "description": "Maikling paglalarawan kung ano ang ginagawa ng rule na ito"
+      },
+      "hints": {
+        "expressionFunctions": "Gumamit ng mga function tulad ng contains(), matches(), startsWith(), endsWith()",
+        "priority": "Mas mataas = unang ine-evaluate"
+      },
+      "actionOptions": {
+        "block": "Block (tanggihan ang request)",
+        "allow": "Allow (payagan ang request)",
+        "log": "Log (payagan pero irekord)"
+      },
+      "targetOptions": {
+        "domain": "Domain-level"
+      },
+      "dialogs": {
+        "add": {
+          "title": "Magdagdag ng WAF Rule",
+          "description": "Gumawa ng custom WAF rule para protektahan laban sa mga banta"
+        }
+      },
+      "actions": {
+        "addRule": "Magdagdag ng WAF Rule",
+        "createRule": "Gumawa ng WAF Rule",
+        "addFirstRule": "Magdagdag ng Unang Rule",
+        "addSubdomainRule": "Magdagdag ng Subdomain Rule"
+      },
+      "tabs": {
+        "domainRules": "Domain Rules ({count})"
+      },
+      "cards": {
+        "domainRules": {
+          "title": "Domain-Level WAF Rules",
+          "description": "Ang mga rules na ito ay nalalapat sa {domain} at lahat ng kanyang mga subdomain"
+        },
+        "subdomainRules": {
+          "title": "WAF Rules para sa {domain}",
+          "description": "Subdomain-specific rules bilang karagdagan sa domain-level rules"
+        }
+      },
+      "labels": {
+        "priority": "Priority"
+      },
+      "empty": {
+        "domainRules": "Walang nakakonfigurang WAF rules para sa domain na ito",
+        "subdomainRules": "Walang subdomain-specific na WAF rules"
+      },
+      "expression": {
+        "title": "WAF Expression Language",
+        "availableProperties": "Available Properties:",
+        "functionsTitle": "Functions:",
+        "properties": {
+          "path": "request.path - URL path (hal. /api/users)",
+          "method": "request.method - HTTP method (GET, POST, etc.)",
+          "ip": "request.ip - Client IP address",
+          "country": "request.country - Country code",
+          "userAgent": "request.user_agent - User-Agent header",
+          "rate": "request.rate - Requests per second"
+        }
+      },
+      "examples": {
+        "title": "Quick Examples",
+        "sqlInjection": {
+          "name": "SQL Injection Protection"
+        },
+        "xss": {
+          "name": "XSS Protection"
+        },
+        "rateLimit": {
+          "name": "Rate Limiting"
+        },
+        "geoBlock": {
+          "name": "Geographic Block"
+        },
+        "botDetection": {
+          "name": "Bot Detection"
+        }
+      },
+      "subdomain": {
+        "rulesStillApply": "Ang mga domain-level rules ay nalalapat pa rin"
+      },
+      "errors": {
+        "selectDomain": "Mangyaring pumili ng domain",
+        "nameExpressionRequired": "Kailangan ang Pangalan at Expression"
+      },
+      "confirm": {
+        "deleteRule": "Burahin ang WAF rule na \"{ruleName}\"?"
+      },
+      "toasts": {
+        "addedToSubdomain": "Naidagdag ang WAF rule sa {subdomain}",
+        "addedToDomain": "Naidagdag ang WAF rule sa domain",
+        "deleted": "Nabura ang WAF rule"
+      }
+    },
+    "admin": {
+      "dashboard": {
+        "title": "Admin Dashboard",
+        "subtitle": "Overview ng performance at aktibidad ng iyong system.",
+        "toasts": {
+          "fetchFailed": "Nabigong kunin ang admin data"
+        },
+        "actions": {
+          "refreshing": "Nagre-refresh...",
+          "refreshData": "I-refresh ang Data"
+        },
+        "cards": {
+          "totalUsers": {
+            "title": "Kabuuang Users",
+            "description": "Nakarehistro na mga account"
+          },
+          "activeSessions": {
+            "title": "Aktibong Sessions",
+            "description": "Kasalukuyang online na mga user"
+          },
+          "systemLoad": {
+            "title": "System Load",
+            "description": "Average CPU usage"
+          },
+          "securityEvents": {
+            "title": "Security Events",
+            "description": "Mga event na nangangailangan ng atensyon"
+          }
+        },
+        "activityMap": {
+          "title": "System Activity Map",
+          "description": "Visual metrics sa paglipas ng panahon.",
+          "pending": "Chart integration pending"
+        },
+        "quickActions": {
+          "title": "Quick Actions",
+          "description": "Pamahalaan ang mga karaniwang administrative task.",
+          "manageUsers": "Pamahalaan ang Users",
+          "securityLogs": "Security Logs",
+          "systemSettings": "System Settings"
+        }
+      },
+      "logs": {
+        "title": "Logs",
+        "subtitle": "Tingnan at pamahalaan ang iyong mga server log sa real-time.",
+        "liveServerLogs": "Live Server Logs",
+        "description": "Real-time logs na nakuha mula sa server instance.",
+        "empty": "Wala pang nakuha na mga log...",
+        "badges": {
+          "live": "Live",
+          "paused": "Paused"
+        },
+        "actions": {
+          "toggleRequestFilter": "I-toggle ang Request Filter",
+          "requests": "Requests"
+        }
+      },
+      "system": {
+        "title": "System Information",
+        "subtitle": "Mga specification at status ng server.",
+        "confirmRestart": "Sigurado ka bang gusto mong i-trigger ang system restart?",
+        "toasts": {
+          "fetchFailed": "Nabigong kunin ang system specs",
+          "restartSent": "Naipadala ang restart signal",
+          "restartFailed": "Nabigong i-restart ang system"
+        },
+        "actions": {
+          "restartSystem": "I-restart ang System"
+        },
+        "hardware": {
+          "title": "Hardware Details",
+          "description": "Kasalukuyang hardware allocation at usage metrics.",
+          "fields": {
+            "os": "OS",
+            "cpuModel": "CPU Model",
+            "cpuCores": "CPU Cores",
+            "memoryTotal": "Memory (Total)",
+            "memoryFree": "Memory (Free)",
+            "uptime": "Uptime"
+          }
+        }
+      },
+      "users": {
+        "title": "User Management",
+        "subtitle": "Pamahalaan ang iyong mga user, roles, at access.",
+        "searchPlaceholder": "Maghanap ng mga user...",
+        "yes": "Oo",
+        "no": "Hindi",
+        "toasts": {
+          "fetchFailed": "Nabigong kunin ang mga user",
+          "updateSuccess": "Matagumpay na na-update ang user",
+          "updateFailed": "Nabigong i-update ang user"
+        },
+        "directory": {
+          "title": "Directory",
+          "description": "Maghanap nang eksplisito o mag-browse nang dynamic."
+        },
+        "table": {
+          "user": "User",
+          "role": "Role",
+          "status": "Status",
+          "created": "Created",
+          "actions": "Mga Aksyon"
+        },
+        "status": {
+          "active": "Aktibo",
+          "banned": "Banned"
+        },
+        "pagination": {
+          "previous": "Nakaraan",
+          "next": "Susunod"
+        },
+        "editUser": {
+          "title": "I-edit ang User",
+          "description": "Gumawa ng mga pagbabago sa user profile."
+        },
+        "fields": {
+          "name": "Pangalan",
+          "email": "Email",
+          "role": "Role",
+          "selectRole": "Pumili ng role",
+          "banned": "Banned"
+        },
+        "roles": {
+          "user": "User",
+          "admin": "Admin"
+        },
+        "actions": {
+          "saveChanges": "I-save ang mga Pagbabago"
+        }
+      },
+      "alerts": {
+        "title": "Dashboard Alerts",
+        "confirmDelete": "Sigurado ka?",
+        "empty": "Wala pang nalikhang mga alert.",
+        "hasAction": "May Aksyon: {actionText}",
+        "created": "Nilikha: {date}",
+        "status": {
+          "active": "Aktibo",
+          "inactive": "Hindi Aktibo"
+        },
+        "toasts": {
+          "createSuccess": "Matagumpay na nalikha ang alert",
+          "createFailed": "Nabigong likhain ang alert",
+          "statusUpdated": "Na-update ang alert status",
+          "statusFailed": "Nabigong i-update ang status",
+          "deleteSuccess": "Nabura ang alert",
+          "deleteFailed": "Nabigong burahin ang alert"
+        },
+        "actions": {
+          "cancel": "Kanselahin",
+          "createAlert": "Gumawa ng Alert",
+          "saveAlert": "I-save ang Alert"
+        },
+        "newAlert": {
+          "title": "Bagong Alert"
+        },
+        "fields": {
+          "title": "Pamagat",
+          "titlePlaceholder": "Pamagat ng alert...",
+          "messageBody": "Message Body",
+          "bodyPlaceholder": "Mga detalye ng alert...",
+          "variant": "Variant",
+          "actionText": "Action Text (opsyonal)",
+          "actionTextPlaceholder": "Hal. Magbasa Pa"
+        },
+        "variants": {
+          "blue": "Asul (Info)",
+          "yellow": "Dilaw (Babala)",
+          "red": "Pula (Kritikal)"
+        }
+      },
+      "incidents": {
+        "title": "Incident Announcements",
+        "confirmDelete": "Sigurado ka?",
+        "empty": "Wala pang naiulat na mga insidente.",
+        "started": "Nagsimula: {date}",
+        "severityBadge": "{severity} Severity",
+        "toasts": {
+          "createSuccess": "Nalikha ang insidente",
+          "createFailed": "Nabigong likhain ang insidente",
+          "updateSuccess": "Na-update ang insidente",
+          "updateFailed": "Nabigong i-update ang insidente",
+          "deleteSuccess": "Nabura ang insidente",
+          "deleteFailed": "Nabigong burahin ang insidente"
+        },
+        "actions": {
+          "cancel": "Kanselahin",
+          "postIncident": "I-post ang Insidente",
+          "createAnnouncement": "Gumawa ng Announcement"
+        },
+        "newIncident": {
+          "title": "Bagong Insidente"
+        },
+        "fields": {
+          "title": "Pamagat",
+          "titlePlaceholder": "Hal. API ay tumatagal nang mas matagal kaysa sa inaasahan",
+          "description": "Description",
+          "descriptionPlaceholder": "Ano ang nangyayari?",
+          "status": "Status",
+          "severity": "Severity"
+        },
+        "badges": {
+          "active": "Aktibo",
+          "resolved": "Naresolba"
+        },
+        "statuses": {
+          "investigating": "Iniimbestigahan",
+          "identified": "Na-identify",
+          "monitoring": "Minomonitor",
+          "resolved": "Naresolba",
+          "markResolved": "Markahan bilang Naresolba"
+        },
+        "severity": {
+          "minor": "Minor",
+          "major": "Malala",
+          "critical": "Kritikal"
+        }
+      },
+      "analytics": {
+        "title": "Analytics",
+        "subtitle": "Self-hosted insights at performance metrics.",
+        "selectRange": "Pumili ng Range",
+        "ranges": {
+          "24h": "Huling 24 Oras",
+          "7d": "Huling 7 Araw",
+          "30d": "Huling 30 Araw"
+        },
+        "cards": {
+          "totalVisitors": {
+            "title": "Kabuuang Visitors",
+            "description": "Mga natatanging device"
+          },
+          "pageViews": {
+            "title": "Page Views",
+            "description": "Kabuuang page loads"
+          },
+          "bounceRate": {
+            "title": "Bounce Rate",
+            "description": "Mga single page session"
+          },
+          "avgLcp": {
+            "title": "Avg LCP",
+            "description": "Largest Contentful Paint"
+          }
+        },
+        "overview": {
+          "title": "Overview"
+        },
+        "devices": {
+          "title": "Mga Device",
+          "description": "Ayon sa type",
+          "visitors": "Visitors",
+          "labels": {
+            "mobile": "Mobile",
+            "tablet": "Tablet",
+            "desktop": "Desktop"
+          }
+        },
+        "topPages": {
+          "title": "Top Pages",
+          "description": "Mga pinaka-bisitang paths."
+        },
+        "topReferrers": {
+          "title": "Top Referrers",
+          "description": "Pangunahing mga pinagmulan ng traffic."
+        },
+        "pageSpeed": {
+          "title": "Page Speed Insights",
+          "description": "Performance metrics bawat page (Average values).",
+          "legend": {
+            "lcp": "LCP (ms)",
+            "fid": "FID (ms)",
+            "cls": "CLS (x1000)"
+          }
+        },
+        "noData": "Walang available na data",
+        "noWebVitals": "Wala pang nakolektang web vitals data."
+      }
+    }
+  },
+  "Auth": {
+    "welcome_back": "Maligayang Pagbabalik",
+    "create_account": "Gumawa ng Account",
+    "enter_details": "Mangyaring ilagay ang iyong mga detalye.",
+    "login_failed": "Nabigo ang login",
+    "signup_failed": "Nabigo ang signup",
+    "signing_in": "Nagla-login...",
+    "creating_account": "Gumagawa ng account...",
+    "sign_in": "Mag-sign In",
+    "sign_up": "Mag-sign Up",
+    "name": "Pangalan",
+    "email_address": "Email Address",
+    "password": "Password",
+    "no_account": "Walang account?",
+    "back_to_login": "Bumalik sa Login",
+    "sign_up_link": "Mag-sign up"
+  },
+  "Dashboard": {
+    "usage": "Paggamit",
+    "alerts": "Alerts",
+    "domains": "Mga Domain"
+  },
+  "DashboardMeta": {
+    "titleTemplate": "{team} | Team {page}",
+    "teamsTitleTemplate": "Netgoat | Teams {page}",
+    "descriptionTemplate": "Pamahalaan ang {page} para sa {team} team sa NetGoat.",
+    "pages": {
+      "overview": "Overview",
+      "integrations": "Integrations",
+      "settings": "Settings",
+      "activity": "Aktibidad",
+      "domains": "Mga Domain",
+      "dns": "DNS",
+      "waf": "WAF",
+      "new": "Bago"
+    }
+  }
+}

@@ -57,7 +57,7 @@ export async function getPublicStatus(): Promise<SystemStatus> {
   // Check services in parallel
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const apiUrl = process.env.EXTERNAL_API_URL || "http://localhost:3001";
-  const docsUrl = "https://docs.netgoat.xyz";
+  const docsUrl = "/docs";
 
   const [appCheck, apiCheck, docsCheck] = await Promise.all([
     checkEndpoint(appUrl),

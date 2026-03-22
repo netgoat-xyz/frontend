@@ -16,6 +16,7 @@ import GlobalBanner from "@/components/elements/GlobalBanner";
 import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
 import ExperimentsInjector from "@/components/elements/ExperimentsInjector";
 import SelfHostedAnalytics from "@/components/analytics/SelfHostedAnalytics";
+import KeyboardEasterEgg from "@/components/elements/KeyboardEasterEgg";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -83,6 +84,7 @@ export default async function RootLayout({
             settings={settings}
             doNotShowBanner={["/blog", "/auth", "/", "/status"]}
           />
+          <KeyboardEasterEgg />
           <main className="min-h-svh w-full">{children}</main>
         </NextIntlClientProvider>
         <SpeedInsights />

@@ -9,6 +9,7 @@ import { Dropdown, DropdownItem } from "@/components/elements/Dropdown";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 
 export default function Header() {
   const router = useRouter();
@@ -173,16 +174,10 @@ export default function Header() {
                 {t("login")}
               </button>
               
-              <div className="relative hidden md:flex items-center group" style={{ filter: "url(#gooey-filter)" }}>
+              <div className="relative hidden md:flex items-center" style={{ filter: "url(#gooey-filter)" }}>
                 <button
                   onClick={() => router.push("/auth")}
-                  className="absolute right-0 px-3 py-2 rounded-full bg-white text-black font-medium text-xs transition-all duration-300 -translate-x-8 group-hover:-translate-x-16 opacity-0 group-hover:opacity-100 h-8 flex items-center"
-                >
-                  →
-                </button>
-                <button
-                  onClick={() => router.push("/auth")}
-                  className="relative px-6 py-2 rounded-full bg-white text-black font-medium text-xs transition-all duration-300 z-10 h-8 flex items-center"
+                  className="relative px-6 py-2 rounded-full hover:cursor-pointer hover:bg-neutral-400 bg-white text-black font-medium text-xs transition-all duration-300 z-10 h-8 flex items-center"
                 >
                   {t("login")}
                 </button>

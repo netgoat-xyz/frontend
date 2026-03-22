@@ -1,60 +1,61 @@
 {
   "HomePage": {
-    "calm": "Calma",
+    "calm": "Tranquilo",
     "networking": "Redes",
     "sub_header": "Redes simplificadas.",
-    "detailed": "Una solución de red segura, escalable y fácil de usar.",
+    "detailed": "Una solución de redes segura, escalable y fácil de usar.",
     "pricing_button": "Precios",
     "get_started_button": "Empezar",
     "home": "Inicio",
-    "blogs": "Blogs",
-    "docs": "Documentación",
+    "blogs": "Blog",
+    "status": "Estado",
+    "docs": "Documentos",
     "source_code": "Código Fuente",
     "discord": "Discord",
     "public_beta": "✨ Beta Pública - Próximamente...",
     "netgoat": "NetGoat",
-    "login": "Iniciar Sesión",
+    "login": "Iniciar sesión",
     "features": {
       "speed": {
-        "title": "Rápido como un rayo",
-        "description": "Optimizado para conexiones de baja latencia en todo el mundo."
+        "title": "Ultra Rápido",
+        "description": "Optimizado específicamente para conexiones de baja latencia globalmente."
       },
       "security": {
         "title": "Confianza Cero",
-        "description": "Políticas por defecto de denegación con controles granulares."
+        "description": "Políticas de denegación predeterminadas con controles de acceso granulares."
       },
       "scalability": {
-        "title": "Escalabilidad Infinita",
+        "title": "Escala Infinita",
         "description": "Crece de uno a un millón de nodos sin fricción."
       }
     },
     "bento": {
       "network": {
         "title": "Red Edge Global",
-        "desc": "Desplegado en más de 35 ubicaciones en todo el mundo para mínima latencia."
+        "desc": " desplegada en más de 35 ubicaciones en todo el mundo para latencia mínima."
       },
       "analytics": {
-        "title": "Analítica en Tiempo Real",
+        "title": "Análisis en Tiempo Real",
         "desc": "Inspecciona el flujo de tráfico al instante."
       },
       "security": {
         "title": "Protección DDoS",
-        "desc": "Mitigación de capa 3/4 y 7 incluida."
+        "desc": "Mitigación de Capa 3/4 y 7 incluida."
       },
       "api": {
-        "title": "Diseño API First",
+        "title": "Diseño API-First",
         "desc": "Automatiza todo con nuestra API robusta."
       },
       "community": {
         "title": "Impulsado por la Comunidad",
-        "desc": "Componentes open-source y comunidad activa."
+        "desc": "Componentes de código abierto y comunidad activa."
       }
     },
     "testimonials": {
-      "title": "Confiado por desarrolladores de todo el mundo"
+      "title": "Confiado por desarrolladores en todo el mundo"
     },
     "how_it_works": {
-      "title": "Cómo Funciona",
+      "title": "Cómo funciona",
       "step1": {
         "title": "Conectar",
         "desc": "Instala nuestro agente ligero en cualquier dispositivo."
@@ -69,842 +70,924 @@
       }
     },
     "stats": {
-      "commits": "Total de Commits",
+      "commits": "Commits Totales",
       "stars": "Estrellas en GitHub",
-      "contributors": "Colaboradores"
+      "contributors": "Contribuyentes"
     },
     "cta": {
       "title": "¿Listo para asegurar tu red?",
-      "button": "Comenzar gratis"
+      "button": "Empezar gratis"
     },
     "footer": {
-      "rights": "© 2026 NetGoat Inc. Todos los derechos reservados."
+      "rights": "© 2026 La Fundación NetGoat OSS. Todos los derechos reservados."
     },
     "blog": {
       "title": "Blog",
-      "description": "Ultimas noticias, actualizaciones y analisis tecnicos en profundidad del equipo de NetGoat.",
-      "subtitle": "Ingenieria y actualizaciones",
+      "description": "Últimas noticias, actualizaciones y análisis técnicos del equipo de NetGoat.",
+      "subtitle": "Ingeniería y Actualizaciones",
       "labels": {
         "featured": "Destacado"
       },
       "actions": {
-        "readArticle": "Leer articulo",
-        "readMore": "Leer mas"
+        "readArticle": "Leer artículo",
+        "readMore": "Leer más"
       },
       "empty": {
-        "title": "Aun no hay publicaciones",
+        "title": "Aún no hay publicaciones",
         "description": "Vuelve pronto para ver actualizaciones."
       }
+    },
+    "statusPage": {
+      "title": "Estado del Sistema",
+      "description": "Salud en tiempo real de la infraestructura y servicios de NetGoat.",
+      "statuses": {
+        "operational": "Operativo",
+        "degraded": "Rendimiento Degradado",
+        "outage": "Interrupción",
+        "maintenance": "En Mantenimiento"
+      },
+      "labels": {
+        "lastChecked": "Última verificación",
+        "services": "Servicios",
+        "infrastructure": "Infraestructura",
+        "recentIncidents": "Incidentes Recientes",
+        "uptime": "Tiempo de Actividad",
+        "servicesHealthy": "Servicios Saludables",
+        "avgResponse": "Respuesta Promedio"
+      },
+      "incidents": {
+        "active": "Activo",
+        "resolved": "Resuelto",
+        "started": "Iniciado",
+        "resolvedAt": "Resuelto",
+        "none": "No se han reportado incidentes. Estamos operando sin problemas."
+      },
+      "incidentStatus": {
+        "investigating": "Investigando",
+        "identified": "Identificado",
+        "monitoring": "Monitoreando",
+        "resolved": "Resuelto"
+      },
+      "incidentSeverity": {
+        "critical": "Crítico",
+        "major": "Mayor",
+        "minor": "Menor",
+        "low": "Bajo"
+      },
+      "services": {
+        "webApplication": {
+          "name": "Aplicación Web",
+          "description": "Dashboard frontend y sitio de marketing"
+        },
+        "api": {
+          "name": "API",
+          "description": "API REST externa y comunicación con agentes"
+        },
+        "documentation": {
+          "name": "Documentación",
+          "description": "Documentación para desarrolladores y guías"
+        },
+        "edgeNetwork": {
+          "name": "Red Edge",
+          "description": "Proxy inverso global y nodos WAF"
+        },
+        "authentication": {
+          "name": "Autenticación",
+          "description": "Autenticación de usuarios y gestión de sesiones"
+        }
+      },
+      "components": {
+        "api": {
+          "title": "API",
+          "description": "La API central que impulsa todos los servicios de NetGoat."
+        },
+        "dashboard": {
+          "title": "Dashboard",
+          "description": "Dashboard frontend y sitio de marketing."
+        },
+        "agent": {
+          "title": "Agente",
+          "description": "El cliente ligero que se ejecuta en tus dispositivos."
+        },
+        "network": {
+          "title": "Red Edge",
+          "description": "La infraestructura de red distribuida que conecta todos los nodos."
+        },
+        "authentication": {
+          "title": "Servicio de Autenticación",
+          "description": "Maneja la autenticación de usuarios y control de acceso."
+        }
+      }
     }
-  },
-  "ChangelogDetail": {
-    "back": "Volver al registro de cambios",
-    "preRelease": "Version preliminar",
-    "githubRelease": "Lanzamiento en GitHub",
-    "emptyReleaseNotes": "No se proporcionaron notas de lanzamiento para esta version."
   },
   "ErrorPages": {
     "serverError": {
-      "title": "Fallo del sistema",
+      "title": "Error del Sistema",
       "description": "Houston, tenemos un problema.",
-      "action": "Reintentar?",
-      "imageAlt": "Animacion de error del servidor"
+      "action": "¿Reintentar?",
+      "imageAlt": "Animación de error del servidor"
     },
     "notFound": {
-      "title": "Sector no encontrado",
-      "description": "Estos no son los droides que estas buscando.",
-      "action": "Volver a la sala de control",
-      "imageAlt": "Animacion de pagina no encontrada"
+      "title": "Sector No Encontrado",
+      "description": "Estos no son los droides que estás buscando.",
+      "action": "Volver a la Sala de Control",
+      "imageAlt": "Animación de no encontrado"
     },
     "forbidden": {
-      "title": "Acceso denegado",
+      "title": "Acceso Denegado",
       "description": "No tienes permiso para acceder a este sector.",
-      "action": "Dar media vuelta",
-      "imageAlt": "Animacion de acceso prohibido"
+      "action": "Dar la Vuelta",
+      "imageAlt": "Animación de acceso denegado"
     }
+  },
+  "ChangelogDetail": {
+    "back": "Volver al Changelog",
+    "preRelease": "Pre-lanzamiento",
+    "githubRelease": "Release de GitHub",
+    "emptyReleaseNotes": "No se proporcionaron notas de release para esta versión."
   },
   "DashboardPages": {
     "activity": {
-      "title": "Activity"
+      "title": "Actividad"
     },
     "homeToolbar": {
-      "searchPlaceholder": "Search domains...",
-      "filterLabel": "Filter domains",
-      "toggleLayout": "Toggle domain layout",
+      "searchPlaceholder": "Buscar dominios...",
+      "filterLabel": "Filtrar dominios",
+      "toggleLayout": "Alternar diseño de dominios",
       "filters": {
-        "all": "All domains",
-        "verified": "Verified only",
-        "needsVerification": "Needs verification"
+        "all": "Todos los dominios",
+        "verified": "Solo verificados",
+        "needsVerification": "Necesita verificación"
       },
       "actions": {
-        "addNew": "Add New...",
-        "addSection": "Add New",
-        "domain": "Domain",
-        "group": "Group"
+        "addNew": "Agregar Nuevo...",
+        "addSection": "Agregar Nuevo",
+        "domain": "Dominio",
+        "group": "Grupo"
       }
     },
     "homeDomains": {
-      "noMatchingTitle": "No matching domains",
-      "noMatchingDescription": "Adjust search or filter settings to find the domain you are looking for.",
-      "emptyTitle": "No domains yet",
-      "emptyDescription": "Add your first domain to start protecting your applications with NetGoat",
+      "noMatchingTitle": "No hay dominios coincidentes",
+      "noMatchingDescription": "Ajusta la búsqueda o los filtros para encontrar el dominio que buscas.",
+      "emptyTitle": "Aún no hay dominios",
+      "emptyDescription": "Agrega tu primer dominio para empezar a proteger tus aplicaciones con NetGoat",
       "time": {
-        "today": "Today",
-        "daysAgo": "{count}d ago",
-        "monthsAgo": "{count}mo ago"
+        "today": "Hoy",
+        "daysAgo": "hace {count} días",
+        "monthsAgo": "hace {count} meses"
       },
       "actions": {
-        "createDomain": "Create Domain",
-        "viewAll": "View All {count} Domains"
+        "createDomain": "Crear Dominio",
+        "viewAll": "Ver Todos los {count} Dominios"
       },
       "card": {
         "status": {
-          "valid": "Valid",
-          "inactive": "Inactive",
-          "invalidConfiguration": "Invalid Configuration"
+          "valid": "Válido",
+          "inactive": "Inactivo",
+          "invalidConfiguration": "Configuración Inválida"
         },
         "group": {
-          "production": "Production",
-          "preview": "Preview"
+          "production": "Producción",
+          "preview": "Vista Previa"
         },
         "labels": {
-          "group": "Group",
-          "updated": "Updated"
+          "group": "Grupo",
+          "updated": "Actualizado"
         },
         "verification": {
-          "title": "Domain needs verification",
-          "addTxt": "Add this TXT record to"
+          "title": "El dominio necesita verificación",
+          "addTxt": "Agrega este registro TXT a"
         },
         "messages": {
-          "verifiedSuccess": "✓ Domain verified successfully!",
-          "verifyFailed": "Verification failed. Please check your DNS records.",
-          "verifyRequestFailed": "Failed to verify domain"
+          "verifiedSuccess": "✓ ¡Dominio verificado exitosamente!",
+          "verifyFailed": "La verificación falló. Por favor verifica tus registros DNS.",
+          "verifyRequestFailed": "Error al verificar el dominio"
         },
         "actions": {
-          "copyToken": "Copy token",
-          "checking": "Checking...",
-          "verify": "Verify",
-          "edit": "Edit"
+          "copyToken": "Copiar token",
+          "checking": "Verificando...",
+          "verify": "Verificar",
+          "edit": "Editar"
         }
       }
     },
     "integrations": {
-      "title": "Integrations",
-      "description": "Extend your workflow with over 100+ tools for monitoring, databases, and more.",
-      "searchPlaceholder": "Search integrations...",
-      "empty": "No integrations found.",
+      "title": "Integraciones",
+      "description": "Extiende tu flujo de trabajo con más de 100 herramientas para monitoreo, bases de datos y más.",
+      "searchPlaceholder": "Buscar integraciones...",
+      "empty": "No se encontraron integraciones.",
       "categories": {
-        "all": "All",
-        "cloud": "Cloud",
-        "networking": "Networking",
-        "monitoring": "Monitoring",
-        "security": "Security"
+        "all": "Todas",
+        "cloud": "Nube",
+        "networking": "Redes",
+        "monitoring": "Monitoreo",
+        "security": "Seguridad"
       }
     },
     "settings": {
-      "title": "Settings",
-      "description": "Manage workspace, security, billing, and integrations.",
-      "searchIntegrationsPlaceholder": "Search integrations...",
+      "title": "Configuración",
+      "description": "Gestiona espacio de trabajo, seguridad, facturación e integraciones.",
+      "searchIntegrationsPlaceholder": "Buscar integraciones...",
       "sections": {
         "general": "General",
-        "billing": "Billing",
-        "invoices": "Invoices",
-        "members": "Members",
-        "accessGroups": "Access Groups",
+        "billing": "Facturación",
+        "invoices": "Facturas",
+        "members": "Miembros",
+        "accessGroups": "Grupos de Acceso",
         "webhooks": "Webhooks",
-        "securityPrivacy": "Security & Privacy",
-        "appsIntegrations": "Apps & Integrations"
+        "securityPrivacy": "Seguridad y Privacidad",
+        "appsIntegrations": "Apps e Integraciones"
       },
       "general": {
-        "teamNameTitle": "Team Name",
-        "teamNameDescription": "This is your team's visible name within Netgoat. For example, the name of your company or department.",
-        "teamNameHint": "Please use 32 characters at maximum."
+        "teamNameTitle": "Nombre del Equipo",
+        "teamNameDescription": "Este es el nombre visible de tu equipo dentro de Netgoat. Por ejemplo, el nombre de tu empresa o departamento.",
+        "teamNameHint": "Por favor usa máximo 32 caracteres."
       },
       "actions": {
-        "save": "Save"
+        "save": "Guardar"
       }
     },
     "domain": {
       "notFound": {
-        "title": "Domain not found",
-        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+        "title": "Dominio no encontrado",
+        "description": "No se encontró el dominio \"{domainName}\" para el equipo \"{teamName}\"."
       }
     },
     "subdomains": {
       "notFound": {
-        "title": "Domain not found",
-        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+        "title": "Dominio no encontrado",
+        "description": "No se encontró el dominio \"{domainName}\" para el equipo \"{teamName}\"."
       },
-      "title": "Subdomains ({count})",
-      "target": "Target",
-      "requests": "{count} reqs",
-      "empty": "No subdomains configured yet.",
+      "title": "Subdominios ({count})",
+      "target": "Destino",
+      "requests": "{count} peticiones",
+      "empty": "Aún no hay subdominios configurados.",
       "actions": {
-        "add": "Add Subdomain"
+        "add": "Agregar Subdominio"
       },
       "status": {
-        "active": "Active",
-        "inactive": "Inactive"
+        "active": "Activo",
+        "inactive": "Inactivo"
       }
     },
     "reverseProxy": {
       "notFound": {
-        "title": "Domain not found",
-        "description": "No domain \"{domainName}\" found for team \"{teamName}\"."
+        "title": "Dominio no encontrado",
+        "description": "No se encontró el dominio \"{domainName}\" para el equipo \"{teamName}\"."
       },
-      "title": "Reverse Proxies (Upstreams)",
-      "fallbackTarget": "Fallback Root Target URL",
-      "empty": "No reverse proxy rules configured. Traffic routes to the default target.",
+      "title": "Proxies Inversos (Upstreams)",
+      "fallbackTarget": "URL de Destino Raíz de Respaldo",
+      "empty": "No hay reglas de proxy inverso configuradas. El tráfico se dirige al destino predeterminado.",
       "fields": {
-        "ruleName": "Rule Name",
-        "routePath": "Route Path",
-        "targetUrl": "Target URL"
+        "ruleName": "Nombre de Regla",
+        "routePath": "Ruta",
+        "targetUrl": "URL de Destino"
       },
       "placeholders": {
-        "ruleName": "e.g. API Target",
-        "routePath": "e.g. /api/*",
-        "targetUrl": "e.g. https://api.mybackend.com"
+        "ruleName": "ej. Destino API",
+        "routePath": "ej. /api/*",
+        "targetUrl": "ej. https://api.mibackend.com"
       },
       "actions": {
-        "addUpstream": "Add Upstream Target",
-        "cancel": "Cancel",
-        "saveRule": "Save Rule"
+        "addUpstream": "Agregar Destino Upstream",
+        "cancel": "Cancelar",
+        "saveRule": "Guardar Regla"
       },
       "status": {
-        "active": "Active",
-        "disabled": "Disabled"
+        "active": "Activo",
+        "disabled": "Deshabilitado"
       },
       "errors": {
-        "nameAndTargetRequired": "Name and Target URL are required",
-        "addFailed": "Failed to add reverse proxy",
-        "removeFailed": "Failed to remove"
+        "nameAndTargetRequired": "Se requieren Nombre y URL de Destino",
+        "addFailed": "Error al agregar proxy inverso",
+        "removeFailed": "Error al eliminar"
       },
       "toasts": {
-        "added": "Reverse Proxy added",
-        "removed": "Removed"
+        "added": "Proxy Inverso agregado",
+        "removed": "Eliminado"
       }
     },
     "teamMembers": {
-      "title": "Team Members",
-      "description": "Manage your team members and their privileges.",
-      "searchPlaceholder": "Search by name or email...",
-      "totalMembers": "{count} Total Members",
+      "title": "Miembros del Equipo",
+      "description": "Gestiona los miembros de tu equipo y sus privilegios.",
+      "searchPlaceholder": "Buscar por nombre o email...",
+      "totalMembers": "{count} Miembros Totales",
       "roles": {
-        "owner": "Owner",
-        "member": "Member",
-        "billing": "Billing"
+        "owner": "Propietario",
+        "member": "Miembro",
+        "billing": "Facturación"
       },
       "actions": {
-        "inviteMember": "Invite Member",
-        "copy": "Copy"
+        "inviteMember": "Invitar Miembro",
+        "copy": "Copiar"
       },
       "inviteLink": {
-        "title": "Invite link",
-        "description": "Share this link to invite people to your team.",
-        "caption": "Anyone with the link can request access."
+        "title": "Enlace de invitación",
+        "description": "Comparte este enlace para invitar personas a tu equipo.",
+        "caption": "Cualquiera con el enlace puede solicitar acceso."
       },
       "table": {
-        "user": "User",
-        "role": "Role",
-        "status": "Status",
-        "actions": "Actions"
+        "user": "Usuario",
+        "role": "Rol",
+        "status": "Estado",
+        "actions": "Acciones"
       },
       "status": {
-        "pending": "Pending",
-        "active": "Active"
+        "pending": "Pendiente",
+        "active": "Activo"
       }
     },
     "newDomain": {
-      "projectFallback": "Project",
-      "backTo": "Back to {name}",
-      "title": "Add Domain to {teamName}",
+      "projectFallback": "Proyecto",
+      "backTo": "Volver a {name}",
+      "title": "Agregar Dominio a {teamName}",
       "steps": {
-        "domain": "Domain",
-        "verify": "Verify"
+        "domain": "Dominio",
+        "verify": "Verificar"
       },
       "input": {
-        "title": "What's your domain?",
-        "description": "Enter the exact domain you want to protect with NetGoat. You can add subdomains later.",
-        "placeholder": "e.g. yourwebsite.com"
+        "title": "¿Cuál es tu dominio?",
+        "description": "Ingresa el dominio exacto que quieres proteger con NetGoat. Puedes agregar subdominios después.",
+        "placeholder": "ej. tudominio.com"
       },
       "verify": {
-        "title": "Verify Ownership",
-        "description": "Add the following TXT record to your DNS provider to prove you own this domain.",
-        "verifiedTitle": "Domain Verified",
-        "verifiedDescription": "Your domain has been successfully added to NetGoat.",
-        "ready": "Domain is fully validated and ready for routing.",
-        "propagationHint": "DNS changes may take a few minutes to propagate. You can click Verify now, or bypass for immediate use.",
+        "title": "Verificar Propiedad",
+        "description": "Agrega el siguiente registro TXT a tu proveedor DNS para demostrar que eres dueño de este dominio.",
+        "verifiedTitle": "Dominio Verificado",
+        "verifiedDescription": "Tu dominio ha sido agregado exitosamente a NetGoat.",
+        "ready": "El dominio está completamente validado y listo para enrutamiento.",
+        "propagationHint": "Los cambios DNS pueden tardar unos minutos en propagarse. Puedes hacer clic en Verificar ahora, o omitir para uso inmediato.",
         "fields": {
-          "type": "Type",
-          "name": "Name",
-          "value": "Value"
+          "type": "Tipo",
+          "name": "Nombre",
+          "value": "Valor"
         }
       },
       "actions": {
-        "continue": "Continue",
-        "back": "Back",
-        "verify": "Verify",
-        "verifying": "Verifying...",
-        "preparing": "Preparing verification...",
-        "bypass": "Bypass",
-        "bypassTitle": "Bypass verification for testing"
+        "continue": "Continuar",
+        "back": "Atrás",
+        "verify": "Verificar",
+        "verifying": "Verificando...",
+        "preparing": "Preparando verificación...",
+        "bypass": "Omitir",
+        "bypassTitle": "Omitir verificación para pruebas"
       },
       "errors": {
-        "enterDomain": "Please enter a domain name",
-        "invalidDomain": "Please enter a valid domain name (e.g. example.com)",
-        "tokenFailed": "Failed to generate verification token",
-        "verifyFailed": "Verification failed. Please check your DNS settings and try again.",
-        "propagation": "Verification failed. DNS records might take time to propagate.",
-        "createFailed": "Failed to create domain",
-        "generic": "Something went wrong"
+        "enterDomain": "Por favor ingresa un nombre de dominio",
+        "invalidDomain": "Por favor ingresa un nombre de dominio válido (ej. example.com)",
+        "tokenFailed": "Error al generar token de verificación",
+        "verifyFailed": "La verificación falló. Por favor verifica tu configuración DNS e intenta de nuevo.",
+        "propagation": "La verificación falló. Los registros DNS pueden tardar en propagarse.",
+        "createFailed": "Error al crear el dominio",
+        "generic": "Algo salió mal"
       },
       "toasts": {
-        "verified": "Domain verified successfully!",
-        "added": "Domain added",
-        "bypassAdded": "Domain verified and added!",
-        "copied": "Copied to clipboard"
+        "verified": "¡Dominio verificado exitosamente!",
+        "added": "Dominio agregado",
+        "bypassAdded": "¡Dominio verificado y agregado!",
+        "copied": "Copiado al portapapeles"
       }
     },
     "teamDns": {
-      "title": "DNS Records",
-      "subtitle": "Manage DNS records for your domains",
-      "emptyDomainsTitle": "No domains yet",
-      "emptyRecordsTitle": "No DNS records",
-      "emptyDomains": "Add a domain first to manage DNS records",
-      "emptyRecords": "Add your first DNS record to get started",
-      "emptyFilter": "No {type} records found",
+      "title": "Registros DNS",
+      "subtitle": "Gestiona registros DNS para tus dominios",
+      "emptyDomainsTitle": "Aún no hay dominios",
+      "emptyRecordsTitle": "No hay registros DNS",
+      "emptyDomains": "Agrega un dominio primero para gestionar registros DNS",
+      "emptyRecords": "Agrega tu primer registro DNS para comenzar",
+      "emptyFilter": "No se encontraron registros {type}",
       "zonePlaceholder": "example.com. 3600 IN A 192.0.2.1\nwww 3600 IN CNAME example.com.\nmail 3600 IN MX 10 mail.example.com.",
       "fields": {
-        "type": "Type",
-        "name": "Name",
-        "namePlaceholder": "@ or subdomain",
-        "rootHint": "@ = root domain",
-        "value": "Value",
-        "ttl": "TTL (seconds)",
-        "ttlHint": "Default: 3600 (1 hour)",
-        "priority": "Priority",
-        "proxied": "Proxied (requests go through NetGoat)"
+        "type": "Tipo",
+        "name": "Nombre",
+        "namePlaceholder": "@ o subdominio",
+        "rootHint": "@ = dominio raíz",
+        "value": "Valor",
+        "ttl": "TTL (segundos)",
+        "ttlHint": "Predeterminado: 3600 (1 hora)",
+        "priority": "Prioridad",
+        "proxied": "Proxied (las peticiones pasan por NetGoat)"
       },
       "filters": {
-        "domain": "Domain",
-        "selectDomain": "Select domain",
-        "recordType": "Record Type Filter",
+        "domain": "Dominio",
+        "selectDomain": "Seleccionar dominio",
+        "recordType": "Filtro de Tipo de Registro",
         "typeOptions": {
-          "all": "All Types",
-          "A": "A Records",
-          "AAAA": "AAAA Records",
-          "CNAME": "CNAME Records",
-          "MX": "MX Records",
-          "TXT": "TXT Records",
-          "NS": "NS Records",
-          "SRV": "SRV Records",
-          "CAA": "CAA Records"
+          "all": "Todos los Tipos",
+          "A": "Registros A",
+          "AAAA": "Registros AAAA",
+          "CNAME": "Registros CNAME",
+          "MX": "Registros MX",
+          "TXT": "Registros TXT",
+          "NS": "Registros NS",
+          "SRV": "Registros SRV",
+          "CAA": "Registros CAA"
         }
       },
       "recordTypeOptions": {
         "A": "A (IPv4)",
         "AAAA": "AAAA (IPv6)",
         "CNAME": "CNAME (Alias)",
-        "MX": "MX (Mail)",
-        "TXT": "TXT (Text)",
-        "NS": "NS (Name Server)",
-        "SRV": "SRV (Service)",
-        "CAA": "CAA (Certificate)"
+        "MX": "MX (Correo)",
+        "TXT": "TXT (Texto)",
+        "NS": "NS (Servidor de Nombres)",
+        "SRV": "SRV (Servicio)",
+        "CAA": "CAA (Certificado)"
       },
       "typeInfo": {
         "a": {
           "placeholder": "192.0.2.1",
-          "description": "IPv4 address"
+          "description": "Dirección IPv4"
         },
         "aaaa": {
           "placeholder": "2001:0db8::1",
-          "description": "IPv6 address"
+          "description": "Dirección IPv6"
         },
         "cname": {
           "placeholder": "example.com",
-          "description": "Canonical name (alias)"
+          "description": "Nombre canónico (alias)"
         },
         "mx": {
           "placeholder": "mail.example.com",
-          "description": "Mail server (requires priority)"
+          "description": "Servidor de correo (requiere prioridad)"
         },
         "txt": {
           "placeholder": "v=spf1 include:_spf.example.com ~all",
-          "description": "Text record"
+          "description": "Registro de texto"
         },
         "ns": {
           "placeholder": "ns1.example.com",
-          "description": "Name server"
+          "description": "Servidor de nombres"
         },
         "srv": {
           "placeholder": "10 5 5060 sip.example.com",
-          "description": "Service record"
+          "description": "Registro de servicio"
         },
         "caa": {
           "placeholder": "0 issue \"letsencrypt.org\"",
-          "description": "Certificate authority"
+          "description": "Autoridad de certificación"
         }
       },
       "status": {
         "proxied": "Proxied",
-        "propagated": "propagated",
-        "failed": "failed",
-        "pending": "pending"
+        "propagated": "propagado",
+        "failed": "fallido",
+        "pending": "pendiente"
       },
       "records": {
-        "groupTitle": "{type} Records ({count})",
+        "groupTitle": "Registros {type} ({count})",
         "ttl": "TTL",
-        "priority": "Priority"
+        "priority": "Prioridad"
       },
       "actions": {
-        "importZone": "Import Zone File",
-        "importRecords": "Import Records",
-        "addRecord": "Add Record",
-        "addDnsRecord": "Add DNS Record",
-        "checkPropagation": "Check propagation",
-        "createDnsRecord": "Create DNS Record",
-        "updateDnsRecord": "Update DNS Record"
+        "importZone": "Importar Archivo de Zona",
+        "importRecords": "Importar Registros",
+        "addRecord": "Agregar Registro",
+        "addDnsRecord": "Agregar Registro DNS",
+        "checkPropagation": "Verificar propagación",
+        "createDnsRecord": "Crear Registro DNS",
+        "updateDnsRecord": "Actualizar Registro DNS"
       },
       "dialogs": {
         "import": {
-          "title": "Import DNS Zone File",
-          "description": "Paste your zone file content to bulk import DNS records"
+          "title": "Importar Archivo de Zona DNS",
+          "description": "Pega el contenido de tu archivo de zona para importar registros DNS en masa"
         },
         "add": {
-          "title": "Add DNS Record",
-          "description": "Create a new DNS record for {domain}"
+          "title": "Agregar Registro DNS",
+          "description": "Crear un nuevo registro DNS para {domain}"
         },
         "edit": {
-          "title": "Edit DNS Record",
-          "description": "Update the DNS record for {domain}"
+          "title": "Editar Registro DNS",
+          "description": "Actualizar el registro DNS para {domain}"
         }
       },
       "errors": {
-        "selectDomain": "Please select a domain",
-        "nameValueRequired": "Name and value are required",
-        "zoneRequired": "Domain and zone file content are required",
-        "noValidRecords": "No valid DNS records found in zone file"
+        "selectDomain": "Por favor selecciona un dominio",
+        "nameValueRequired": "Se requieren Nombre y Valor",
+        "zoneRequired": "Se requieren Dominio y contenido del archivo de zona",
+        "noValidRecords": "No se encontraron registros DNS válidos en el archivo de zona"
       },
       "confirm": {
-        "deleteRecord": "Delete this DNS record?"
+        "deleteRecord": "¿Eliminar este registro DNS?"
       },
       "toasts": {
-        "created": "DNS record created",
-        "updated": "DNS record updated",
-        "deleted": "DNS record deleted",
-        "propagated": "DNS record has propagated",
-        "stillPropagating": "DNS record is still propagating...",
-        "imported": "Imported {success} DNS records, {failed} failed"
+        "created": "Registro DNS creado",
+        "updated": "Registro DNS actualizado",
+        "deleted": "Registro DNS eliminado",
+        "propagated": "El registro DNS se ha propagado",
+        "stillPropagating": "El registro DNS aún se está propagando...",
+        "imported": "Importados {success} registros DNS, {failed} fallidos"
       }
     },
     "teamWaf": {
-      "title": "WAF Rules",
-      "loading": "Loading WAF configuration...",
-      "subtitle": "Configure Web Application Firewall rules to protect your domains",
-      "emptyDomainsTitle": "No domains yet",
-      "emptyDomains": "Add a domain first to configure WAF rules",
+      "title": "Reglas WAF",
+      "loading": "Cargando configuración WAF...",
+      "subtitle": "Configura reglas de Firewall de Aplicaciones Web para proteger tus dominios",
+      "emptyDomainsTitle": "Aún no hay dominios",
+      "emptyDomains": "Agrega un dominio primero para configurar reglas WAF",
       "fields": {
-        "ruleName": "Rule Name",
-        "action": "Action",
-        "expression": "Expression",
-        "priority": "Priority (0-100)",
-        "target": "Target",
-        "description": "Description (Optional)",
-        "selectDomain": "Select Domain:",
-        "selectDomainPlaceholder": "Select a domain"
+        "ruleName": "Nombre de Regla",
+        "action": "Acción",
+        "expression": "Expresión",
+        "priority": "Prioridad (0-100)",
+        "target": "Destino",
+        "description": "Descripción (Opcional)",
+        "selectDomain": "Seleccionar Dominio:",
+        "selectDomainPlaceholder": "Seleccionar un dominio"
       },
       "placeholders": {
         "ruleName": "block-sql-injection",
         "expression": "contains(request.path, 'SELECT')",
-        "description": "Brief description of what this rule does"
+        "description": "Breve descripción de lo que hace esta regla"
       },
       "hints": {
-        "expressionFunctions": "Use functions like contains(), matches(), startsWith(), endsWith()",
-        "priority": "Higher = evaluated first"
+        "expressionFunctions": "Usa funciones como contains(), matches(), startsWith(), endsWith()",
+        "priority": "Mayor = evaluado primero"
       },
       "actionOptions": {
-        "block": "Block (deny request)",
-        "allow": "Allow (permit request)",
-        "log": "Log (allow but record)"
+        "block": "Bloquear (denegar petición)",
+        "allow": "Permitir (permitir petición)",
+        "log": "Registrar (permitir pero registrar)"
       },
       "targetOptions": {
-        "domain": "Domain-level"
+        "domain": "Nivel de Dominio"
       },
       "dialogs": {
         "add": {
-          "title": "Add WAF Rule",
-          "description": "Create a custom WAF rule to protect against threats"
+          "title": "Agregar Regla WAF",
+          "description": "Crear una regla WAF personalizada para proteger contra amenazas"
         }
       },
       "actions": {
-        "addRule": "Add WAF Rule",
-        "createRule": "Create WAF Rule",
-        "addFirstRule": "Add First Rule",
-        "addSubdomainRule": "Add Subdomain Rule"
+        "addRule": "Agregar Regla WAF",
+        "createRule": "Crear Regla WAF",
+        "addFirstRule": "Agregar Primera Regla",
+        "addSubdomainRule": "Agregar Regla de Subdominio"
       },
       "tabs": {
-        "domainRules": "Domain Rules ({count})"
+        "domainRules": "Reglas de Dominio ({count})"
       },
       "cards": {
         "domainRules": {
-          "title": "Domain-Level WAF Rules",
-          "description": "These rules apply to {domain} and all its subdomains"
+          "title": "Reglas WAF de Nivel de Dominio",
+          "description": "Estas reglas aplican a {domain} y todos sus subdominios"
         },
         "subdomainRules": {
-          "title": "WAF Rules for {domain}",
-          "description": "Subdomain-specific rules in addition to domain-level rules"
+          "title": "Reglas WAF para {domain}",
+          "description": "Reglas específicas de subdominio además de las reglas de nivel de dominio"
         }
       },
       "labels": {
-        "priority": "Priority"
+        "priority": "Prioridad"
       },
       "empty": {
-        "domainRules": "No WAF rules configured for this domain",
-        "subdomainRules": "No subdomain-specific WAF rules"
+        "domainRules": "No hay reglas WAF configuradas para este dominio",
+        "subdomainRules": "No hay reglas WAF específicas de subdominio"
       },
       "expression": {
-        "title": "WAF Expression Language",
-        "availableProperties": "Available Properties:",
-        "functionsTitle": "Functions:",
+        "title": "Lenguaje de Expresiones WAF",
+        "availableProperties": "Propiedades Disponibles:",
+        "functionsTitle": "Funciones:",
         "properties": {
-          "path": "request.path - URL path (e.g., /api/users)",
-          "method": "request.method - HTTP method (GET, POST, etc.)",
-          "ip": "request.ip - Client IP address",
-          "country": "request.country - Country code",
-          "userAgent": "request.user_agent - User-Agent header",
-          "rate": "request.rate - Requests per second"
+          "path": "request.path - Ruta URL (ej. /api/users)",
+          "method": "request.method - Método HTTP (GET, POST, etc.)",
+          "ip": "request.ip - Dirección IP del cliente",
+          "country": "request.country - Código de país",
+          "userAgent": "request.user_agent - Header User-Agent",
+          "rate": "request.rate - Peticiones por segundo"
         }
       },
       "examples": {
-        "title": "Quick Examples",
+        "title": "Ejemplos Rápidos",
         "sqlInjection": {
-          "name": "SQL Injection Protection"
+          "name": "Protección contra Inyección SQL"
         },
         "xss": {
-          "name": "XSS Protection"
+          "name": "Protección XSS"
         },
         "rateLimit": {
-          "name": "Rate Limiting"
+          "name": "Limitación de Tasa"
         },
         "geoBlock": {
-          "name": "Geographic Block"
+          "name": "Bloqueo Geográfico"
         },
         "botDetection": {
-          "name": "Bot Detection"
+          "name": "Detección de Bots"
         }
       },
       "subdomain": {
-        "rulesStillApply": "Domain-level rules still apply"
+        "rulesStillApply": "Las reglas de nivel de dominio siguen aplicando"
       },
       "errors": {
-        "selectDomain": "Please select a domain",
-        "nameExpressionRequired": "Name and expression are required"
+        "selectDomain": "Por favor selecciona un dominio",
+        "nameExpressionRequired": "Se requieren Nombre y Expresión"
       },
       "confirm": {
-        "deleteRule": "Delete WAF rule \"{ruleName}\"?"
+        "deleteRule": "¿Eliminar regla WAF \"{ruleName}\"?"
       },
       "toasts": {
-        "addedToSubdomain": "WAF rule added to {subdomain}",
-        "addedToDomain": "WAF rule added to domain",
-        "deleted": "WAF rule deleted"
+        "addedToSubdomain": "Regla WAF agregada a {subdomain}",
+        "addedToDomain": "Regla WAF agregada al dominio",
+        "deleted": "Regla WAF eliminada"
       }
     },
     "admin": {
       "dashboard": {
-        "title": "Admin Dashboard",
-        "subtitle": "Overview of your system's performance and activity.",
+        "title": "Dashboard de Admin",
+        "subtitle": "Resumen del rendimiento y actividad de tu sistema.",
         "toasts": {
-          "fetchFailed": "Failed to fetch admin data"
+          "fetchFailed": "Error al obtener datos de administrador"
         },
         "actions": {
-          "refreshing": "Refreshing...",
-          "refreshData": "Refresh Data"
+          "refreshing": "Actualizando...",
+          "refreshData": "Actualizar Datos"
         },
         "cards": {
           "totalUsers": {
-            "title": "Total Users",
-            "description": "Registered accounts"
+            "title": "Usuarios Totales",
+            "description": "Cuentas registradas"
           },
           "activeSessions": {
-            "title": "Active Sessions",
-            "description": "Currently online users"
+            "title": "Sesiones Activas",
+            "description": "Usuarios actualmente en línea"
           },
           "systemLoad": {
-            "title": "System Load",
-            "description": "Average CPU usage"
+            "title": "Carga del Sistema",
+            "description": "Uso promedio de CPU"
           },
           "securityEvents": {
-            "title": "Security Events",
-            "description": "Events requiring attention"
+            "title": "Eventos de Seguridad",
+            "description": "Eventos que requieren atención"
           }
         },
         "activityMap": {
-          "title": "System Activity Map",
-          "description": "Visual metrics over time.",
-          "pending": "Chart integration pending"
+          "title": "Mapa de Actividad del Sistema",
+          "description": "Métricas visuales a lo largo del tiempo.",
+          "pending": "Integración de gráficos pendiente"
         },
         "quickActions": {
-          "title": "Quick Actions",
-          "description": "Manage common administrative tasks.",
-          "manageUsers": "Manage Users",
-          "securityLogs": "Security Logs",
-          "systemSettings": "System Settings"
+          "title": "Acciones Rápidas",
+          "description": "Gestiona tareas administrativas comunes.",
+          "manageUsers": "Gestionar Usuarios",
+          "securityLogs": "Logs de Seguridad",
+          "systemSettings": "Configuración del Sistema"
         }
       },
       "logs": {
         "title": "Logs",
-        "subtitle": "View and manage your server logs in real-time.",
-        "liveServerLogs": "Live Server Logs",
-        "description": "Realtime logs captured from the server instance.",
-        "empty": "No logs captured yet...",
+        "subtitle": "Ver y gestionar los logs de tu servidor en tiempo real.",
+        "liveServerLogs": "Logs del Servidor en Vivo",
+        "description": "Logs en tiempo real capturados de la instancia del servidor.",
+        "empty": "Aún no se han capturado logs...",
         "badges": {
-          "live": "Live",
-          "paused": "Paused"
+          "live": "En Vivo",
+          "paused": "Pausado"
         },
         "actions": {
-          "toggleRequestFilter": "Toggle Request Filter",
-          "requests": "Requests"
+          "toggleRequestFilter": "Alternar Filtro de Peticiones",
+          "requests": "Peticiones"
         }
       },
       "system": {
-        "title": "System Information",
-        "subtitle": "Server specifications and status.",
-        "confirmRestart": "Are you sure you want to trigger a system restart?",
+        "title": "Información del Sistema",
+        "subtitle": "Especificaciones y estado del servidor.",
+        "confirmRestart": "¿Estás seguro de que quieres activar un reinicio del sistema?",
         "toasts": {
-          "fetchFailed": "Failed to fetch system specs",
-          "restartSent": "Restart signal sent",
-          "restartFailed": "Failed to restart system"
+          "fetchFailed": "Error al obtener especificaciones del sistema",
+          "restartSent": "Señal de reinicio enviada",
+          "restartFailed": "Error al reiniciar el sistema"
         },
         "actions": {
-          "restartSystem": "Restart System"
+          "restartSystem": "Reiniciar Sistema"
         },
         "hardware": {
-          "title": "Hardware Details",
-          "description": "Current hardware allocation and usage metrics.",
+          "title": "Detalles de Hardware",
+          "description": "Asignación de hardware actual y métricas de uso.",
           "fields": {
-            "os": "OS",
-            "cpuModel": "CPU Model",
-            "cpuCores": "CPU Cores",
-            "memoryTotal": "Memory (Total)",
-            "memoryFree": "Memory (Free)",
-            "uptime": "Uptime"
+            "os": "SO",
+            "cpuModel": "Modelo de CPU",
+            "cpuCores": "Núcleos de CPU",
+            "memoryTotal": "Memoria (Total)",
+            "memoryFree": "Memoria (Libre)",
+            "uptime": "Tiempo de Actividad"
           }
         }
       },
       "users": {
-        "title": "User Management",
-        "subtitle": "Manage your users, roles, and access.",
-        "searchPlaceholder": "Search users...",
-        "yes": "Yes",
+        "title": "Gestión de Usuarios",
+        "subtitle": "Gestiona tus usuarios, roles y accesos.",
+        "searchPlaceholder": "Buscar usuarios...",
+        "yes": "Sí",
         "no": "No",
         "toasts": {
-          "fetchFailed": "Failed to fetch users",
-          "updateSuccess": "User updated successfully",
-          "updateFailed": "Failed to update user"
+          "fetchFailed": "Error al obtener usuarios",
+          "updateSuccess": "Usuario actualizado exitosamente",
+          "updateFailed": "Error al actualizar usuario"
         },
         "directory": {
-          "title": "Directory",
-          "description": "Search explicitly or browse dynamically."
+          "title": "Directorio",
+          "description": "Busca explícitamente o navega dinámicamente."
         },
         "table": {
-          "user": "User",
-          "role": "Role",
-          "status": "Status",
-          "created": "Created",
-          "actions": "Actions"
+          "user": "Usuario",
+          "role": "Rol",
+          "status": "Estado",
+          "created": "Creado",
+          "actions": "Acciones"
         },
         "status": {
-          "active": "Active",
-          "banned": "Banned"
+          "active": "Activo",
+          "banned": "Baneado"
         },
         "pagination": {
-          "previous": "Previous",
-          "next": "Next"
+          "previous": "Anterior",
+          "next": "Siguiente"
         },
         "editUser": {
-          "title": "Edit User",
-          "description": "Make changes to the user profile."
+          "title": "Editar Usuario",
+          "description": "Realiza cambios en el perfil del usuario."
         },
         "fields": {
-          "name": "Name",
+          "name": "Nombre",
           "email": "Email",
-          "role": "Role",
-          "selectRole": "Select role",
-          "banned": "Banned"
+          "role": "Rol",
+          "selectRole": "Seleccionar rol",
+          "banned": "Baneado"
         },
         "roles": {
-          "user": "User",
+          "user": "Usuario",
           "admin": "Admin"
         },
         "actions": {
-          "saveChanges": "Save Changes"
+          "saveChanges": "Guardar Cambios"
         }
       },
       "alerts": {
-        "title": "Dashboard Alerts",
-        "confirmDelete": "Are you sure?",
-        "empty": "No alerts generated yet.",
-        "hasAction": "Has Action: {actionText}",
-        "created": "Created: {date}",
+        "title": "Alertas del Dashboard",
+        "confirmDelete": "¿Estás seguro?",
+        "empty": "Aún no se han generado alertas.",
+        "hasAction": "Tiene Acción: {actionText}",
+        "created": "Creado: {date}",
         "status": {
-          "active": "Active",
-          "inactive": "Inactive"
+          "active": "Activa",
+          "inactive": "Inactiva"
         },
         "toasts": {
-          "createSuccess": "Alert created successfully",
-          "createFailed": "Failed to create alert",
-          "statusUpdated": "Alert status updated",
-          "statusFailed": "Failed to update status",
-          "deleteSuccess": "Alert deleted",
-          "deleteFailed": "Failed to delete alert"
+          "createSuccess": "Alerta creada exitosamente",
+          "createFailed": "Error al crear alerta",
+          "statusUpdated": "Estado de alerta actualizado",
+          "statusFailed": "Error al actualizar estado",
+          "deleteSuccess": "Alerta eliminada",
+          "deleteFailed": "Error al eliminar alerta"
         },
         "actions": {
-          "cancel": "Cancel",
-          "createAlert": "Create Alert",
-          "saveAlert": "Save Alert"
+          "cancel": "Cancelar",
+          "createAlert": "Crear Alerta",
+          "saveAlert": "Guardar Alerta"
         },
         "newAlert": {
-          "title": "New Alert"
+          "title": "Nueva Alerta"
         },
         "fields": {
-          "title": "Title",
-          "titlePlaceholder": "Alert title...",
-          "messageBody": "Message Body",
-          "bodyPlaceholder": "Details of the alert...",
-          "variant": "Variant",
-          "actionText": "Action Text (optional)",
-          "actionTextPlaceholder": "E.g., Read More"
+          "title": "Título",
+          "titlePlaceholder": "Título de alerta...",
+          "messageBody": "Cuerpo del Mensaje",
+          "bodyPlaceholder": "Detalles de la alerta...",
+          "variant": "Variante",
+          "actionText": "Texto de Acción (opcional)",
+          "actionTextPlaceholder": "Ej. Leer Más"
         },
         "variants": {
-          "blue": "Blue (Info)",
-          "yellow": "Yellow (Warning)",
-          "red": "Red (Critical)"
+          "blue": "Azul (Info)",
+          "yellow": "Amarillo (Advertencia)",
+          "red": "Rojo (Crítico)"
         }
       },
       "incidents": {
-        "title": "Incident Announcements",
-        "confirmDelete": "Are you sure?",
-        "empty": "No incidents reported yet.",
-        "started": "Started: {date}",
-        "severityBadge": "{severity} Severity",
+        "title": "Anuncios de Incidentes",
+        "confirmDelete": "¿Estás seguro?",
+        "empty": "Aún no se han reportado incidentes.",
+        "started": "Iniciado: {date}",
+        "severityBadge": "Severidad {severity}",
         "toasts": {
-          "createSuccess": "Incident created",
-          "createFailed": "Failed to create incident",
-          "updateSuccess": "Incident updated",
-          "updateFailed": "Failed to update incident",
-          "deleteSuccess": "Incident deleted",
-          "deleteFailed": "Failed to delete incident"
+          "createSuccess": "Incidente creado",
+          "createFailed": "Error al crear incidente",
+          "updateSuccess": "Incidente actualizado",
+          "updateFailed": "Error al actualizar incidente",
+          "deleteSuccess": "Incidente eliminado",
+          "deleteFailed": "Error al eliminar incidente"
         },
         "actions": {
-          "cancel": "Cancel",
-          "postIncident": "Post Incident",
-          "createAnnouncement": "Create Announcement"
+          "cancel": "Cancelar",
+          "postIncident": "Publicar Incidente",
+          "createAnnouncement": "Crear Anuncio"
         },
         "newIncident": {
-          "title": "New Incident"
+          "title": "Nuevo Incidente"
         },
         "fields": {
-          "title": "Title",
-          "titlePlaceholder": "E.g. API taking longer than expected",
-          "description": "Description",
-          "descriptionPlaceholder": "What is going on?",
-          "status": "Status",
-          "severity": "Severity"
+          "title": "Título",
+          "titlePlaceholder": "Ej. API tardando más de lo esperado",
+          "description": "Descripción",
+          "descriptionPlaceholder": "¿Qué está pasando?",
+          "status": "Estado",
+          "severity": "Severidad"
         },
         "badges": {
-          "active": "Active",
-          "resolved": "Resolved"
+          "active": "Activo",
+          "resolved": "Resuelto"
         },
         "statuses": {
-          "investigating": "Investigating",
-          "identified": "Identified",
-          "monitoring": "Monitoring",
-          "resolved": "Resolved",
-          "markResolved": "Mark Resolved"
+          "investigating": "Investigando",
+          "identified": "Identificado",
+          "monitoring": "Monitoreando",
+          "resolved": "Resuelto",
+          "markResolved": "Marcar como Resuelto"
         },
         "severity": {
-          "minor": "Minor",
-          "major": "Major",
-          "critical": "Critical"
+          "minor": "Menor",
+          "major": "Mayor",
+          "critical": "Crítico"
         }
       },
       "analytics": {
-        "title": "Analytics",
-        "subtitle": "Self-hosted insights and performance metrics.",
-        "selectRange": "Select Range",
+        "title": "Analíticas",
+        "subtitle": "Insights autohospedados y métricas de rendimiento.",
+        "selectRange": "Seleccionar Rango",
         "ranges": {
-          "24h": "Last 24 Hours",
-          "7d": "Last 7 Days",
-          "30d": "Last 30 Days"
+          "24h": "Últimas 24 Horas",
+          "7d": "Últimos 7 Días",
+          "30d": "Últimos 30 Días"
         },
         "cards": {
           "totalVisitors": {
-            "title": "Total Visitors",
-            "description": "Unique devices"
+            "title": "Visitantes Totales",
+            "description": "Dispositivos únicos"
           },
           "pageViews": {
-            "title": "Page Views",
-            "description": "Total page loads"
+            "title": "Vistas de Página",
+            "description": "Cargas totales de página"
           },
           "bounceRate": {
-            "title": "Bounce Rate",
-            "description": "Single page sessions"
+            "title": "Tasa de Rebote",
+            "description": "Sesiones de una sola página"
           },
           "avgLcp": {
-            "title": "Avg LCP",
+            "title": "LCP Promedio",
             "description": "Largest Contentful Paint"
           }
         },
         "overview": {
-          "title": "Overview"
+          "title": "Resumen"
         },
         "devices": {
-          "title": "Devices",
-          "description": "By type",
-          "visitors": "Visitors",
+          "title": "Dispositivos",
+          "description": "Por tipo",
+          "visitors": "Visitantes",
           "labels": {
-            "mobile": "Mobile",
+            "mobile": "Móvil",
             "tablet": "Tablet",
-            "desktop": "Desktop"
+            "desktop": "Escritorio"
           }
         },
         "topPages": {
-          "title": "Top Pages",
-          "description": "Most visited paths."
+          "title": "Páginas Principales",
+          "description": "Rutas más visitadas."
         },
         "topReferrers": {
-          "title": "Top Referrers",
-          "description": "Main sources of traffic."
+          "title": "Principales Referentes",
+          "description": "Fuentes principales de tráfico."
         },
         "pageSpeed": {
           "title": "Page Speed Insights",
-          "description": "Performance metrics per page (Average values).",
+          "description": "Métricas de rendimiento por página (valores promedio).",
           "legend": {
             "lcp": "LCP (ms)",
             "fid": "FID (ms)",
             "cls": "CLS (x1000)"
           }
         },
-        "noData": "No data available",
-        "noWebVitals": "No web vitals data collected yet."
+        "noData": "No hay datos disponibles",
+        "noWebVitals": "Aún no se han recopilado datos de Web Vitals."
       }
     }
   },
   "Auth": {
-    "welcome_back": "Bienvenido de nuevo",
+    "welcome_back": "Bienvenido de Nuevo",
     "create_account": "Crear Cuenta",
-    "enter_details": "Por favor ingrese sus datos.",
-    "login_failed": "Error al iniciar sesión",
-    "signup_failed": "Error al registrarse",
+    "enter_details": "Por favor ingresa tus datos.",
+    "login_failed": "Inicio de sesión fallido",
+    "signup_failed": "Registro fallido",
     "signing_in": "Iniciando sesión...",
     "creating_account": "Creando cuenta...",
     "sign_in": "Iniciar Sesión",
     "sign_up": "Registrarse",
     "name": "Nombre",
-    "email_address": "Correo Electrónico",
+    "email_address": "Dirección de Email",
     "password": "Contraseña",
-    "no_account": "¿No tienes cuenta?",
-    "back_to_login": "Volver a Iniciar Sesión",
+    "no_account": "¿No tienes una cuenta?",
+    "back_to_login": "Volver al Inicio de Sesión",
     "sign_up_link": "Registrarse"
   },
   "Dashboard": {
@@ -913,18 +996,18 @@
     "domains": "Dominios"
   },
   "DashboardMeta": {
-    "titleTemplate": "{team} | Team {page}",
-    "teamsTitleTemplate": "Netgoat | Teams {page}",
-    "descriptionTemplate": "Manage {page} for the {team} team on NetGoat.",
+    "titleTemplate": "{team} | Equipo {page}",
+    "teamsTitleTemplate": "Netgoat | Equipos {page}",
+    "descriptionTemplate": "Gestionar {page} para el equipo {team} en NetGoat.",
     "pages": {
-      "overview": "Overview",
-      "integrations": "Integrations",
-      "settings": "Settings",
-      "activity": "Activity",
-      "domains": "Domains",
+      "overview": "Resumen",
+      "integrations": "Integraciones",
+      "settings": "Configuración",
+      "activity": "Actividad",
+      "domains": "Dominios",
       "dns": "DNS",
       "waf": "WAF",
-      "new": "New"
+      "new": "Nuevo"
     }
   }
 }

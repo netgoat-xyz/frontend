@@ -62,9 +62,11 @@ export default async function ShaderShowcase() {
           <Brands />
           <HowItWorks />
           <CallToAction />
-          <Footer />
         </div>
       </LaunchWrapper>
+
+      {/* Keep footer visible even before launch date */}
+      <Footer />
     </ShaderBackground>
   );
 }

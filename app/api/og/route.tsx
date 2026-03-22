@@ -3,6 +3,17 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
+function truncateWithEllipsis(text: string, maxLength: number): string {
+  const normalized = text.trim();
+
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  const truncated = normalized.slice(0, maxLength).trimEnd().replace(/,+$/g, '');
+  return `${truncated}...`;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -10,6 +21,7 @@ export async function GET(request: NextRequest) {
     // Get parameters
     const title = searchParams.get('title') || 'NetGoat Security';
     const description = searchParams.get('description') || 'Next-Generation Web Application Firewall';
+    const displayDescription = truncateWithEllipsis(description, 90);
     
     return new ImageResponse(
       (
@@ -99,7 +111,7 @@ export async function GET(request: NextRequest) {
                 lineHeight: '1.4',
               }}
             >
-              {description}
+              {displayDescription}
             </p>
           </div>
           
@@ -120,7 +132,7 @@ export async function GET(request: NextRequest) {
                 letterSpacing: '0.1em',
               }}
             >
-              go.netgoat.app
+              netgoat.xyz
             </div>
           </div>
         </div>
