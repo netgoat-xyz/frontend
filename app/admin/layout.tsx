@@ -25,7 +25,7 @@ export default async function AdminLayout({
     <div suppressHydrationWarning className="min-h-svh w-full flex flex-col bg-neutral-50 dark:bg-neutral-950 text-foreground">
       <NavigationTop />
 
-      <main className="flex-1 w-full flex flex-col items-center">
+      <main className="min-h-svh w-full flex flex-col items-center">
         <div className="container mx-auto px-4 py-8 md:px-8 max-w-7xl flex-1 mt-6 mb-12">
           {children}
         </div>

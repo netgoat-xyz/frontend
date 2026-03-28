@@ -7,7 +7,9 @@ export default defineConfig({
     "es",
     "id",
     "ms",
-    "zh"
+    "zh",
+    "tl",
+    "jp"
   ],
   extract: {
     input: "app/**/*.{js,jsx,ts,tsx}",

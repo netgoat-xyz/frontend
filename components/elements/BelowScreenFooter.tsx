@@ -1,6 +1,13 @@
 "use client";
 
-import { GitCommit, Github, ArrowUpCircle, CheckCircle2, ChevronUp, Globe } from "lucide-react";
+import {
+  GitCommit,
+  Github,
+  ArrowUpCircle,
+  CheckCircle2,
+  ChevronUp,
+  Globe,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { useLocale } from "next-intl";
@@ -13,6 +20,8 @@ const languages: Record<string, string> = {
   id: "Bahasa Indonesia",
   ms: "Bahasa Melayu",
   zh: "中文",
+  tl: "Tagalog",
+  jp: "日本語",
 };
 
 export default function BelowScreenFooter() {
@@ -29,9 +38,7 @@ export default function BelowScreenFooter() {
   };
 
   useEffect(() => {
-    fetch(
-      "https://api.github.com/repos/netgoat-xyz/frontend/commits/main",
-    )
+    fetch("https://api.github.com/repos/netgoat-xyz/frontend/commits/main")
       .then((res) => res.json())
       .then((data) => {
         if (data.sha) {
@@ -45,7 +52,7 @@ export default function BelowScreenFooter() {
     latestCommit && serverCommit !== "dev" && latestCommit !== serverCommit;
 
   return (
-    <footer className="relative bottom-0 mt-auto w-full z-20 max-w-full py-10 px-4 sm:px-6 lg:px-8 mx-auto bg-neutral-900/85 filter backdrop-blur border-t border-neutral-800/95">
+    <footer className="relative bottom-0 mt-[10svh] w-full z-20 max-w-full py-10 px-4 sm:px-6 lg:px-8 mx-auto bg-neutral-900/85 filter backdrop-blur border-t border-neutral-800/95">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-10">
         <div className="col-span-full hidden lg:col-span-1 lg:block">
           <a
@@ -55,19 +62,25 @@ export default function BelowScreenFooter() {
           >
             Netgoat
           </a>
-          <p className="mt-3 text-xs sm:text-sm text-neutral-300/85">
+          <p
+            className="mt-3 text-xs sm:text-sm text-neutral-300/85"
+            suppressHydrationWarning
+          >
             © {new Date().getFullYear()} The NetgoatOSS Foundation.
           </p>
-          
+
           <div className="mt-4 flex flex-col gap-2">
             <div className="flex items-center gap-2 text-xs text-neutral-500 font-mono">
-               <GitCommit className="size-3" />
-               <span>{serverCommit.substring(0, 7)}</span>
-               {isOutdated && (
-                   <span className="flex items-center gap-1 text-amber-500" title="Update available">
-                       <ArrowUpCircle className="size-3" />
-                   </span>
-               )}
+              <GitCommit className="size-3" />
+              <span>{serverCommit.substring(0, 7)}</span>
+              {isOutdated && (
+                <span
+                  className="flex items-center gap-1 text-amber-500"
+                  title="Update available"
+                >
+                  <ArrowUpCircle className="size-3" />
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -86,8 +99,7 @@ export default function BelowScreenFooter() {
                 Pricing
               </a>
             </p>
-            */
-            }
+            */}
             <p>
               <a
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
@@ -136,9 +148,7 @@ export default function BelowScreenFooter() {
               >
                 Contributing
               </a>
-              <span className="inline text-blue-500">
-                — We're Searching!
-              </span>
+              <span className="inline text-blue-500">— We're Searching!</span>
             </p>
             <p>
               <a
@@ -208,12 +218,12 @@ export default function BelowScreenFooter() {
               </a>
             </p>
             <p>
-                <a
-                    className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
-                    href="https://github.com/netgoat-xyz/netgoat"
-                >
-                    GitHub - Backend
-                </a>
+              <a
+                className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
+                href="https://github.com/netgoat-xyz/netgoat"
+              >
+                GitHub - Backend
+              </a>
             </p>
           </div>
         </div>
@@ -229,7 +239,7 @@ export default function BelowScreenFooter() {
                 className="inline-flex items-center gap-x-2 text-sm text-neutral-400 hover:text-neutral-200 transition-colors py-2"
               >
                 <Globe className="size-4" />
-                <span>{languages[locale] || "Select Language"}</span>
+                <span>{languages[locale]}</span>
                 <ChevronUp
                   className={`size-4 transition-transform ${isLangOpen ? "rotate-180" : ""}`}
                 />
@@ -249,7 +259,9 @@ export default function BelowScreenFooter() {
                       onClick={() => handleLanguageChange(key)}
                       variant={locale === key ? "primary" : "primary"} // Could add 'active' style if supported, else just default
                       rightSlot={
-                        locale === key && <CheckCircle2 className="size-4 text-emerald-500" />
+                        locale === key && (
+                          <CheckCircle2 className="size-4 text-emerald-500" />
+                        )
                       }
                     />
                   ))}
@@ -282,13 +294,13 @@ export default function BelowScreenFooter() {
             <div className="mt-3 sm:hidden">
               <a
                 className="flex-none font-semibold text-xl text-gray-800 dark:text-neutral-200 focus:outline-hidden focus:opacity-80"
-                href="#"
-                aria-label="Brand"
+                href="/"
+                aria-label="Netgoat"
               >
-                Brand
+                Netgoat
               </a>
               <p className="mt-1 text-xs sm:text-sm text-gray-600 dark:text-neutral-300">
-                © 2026 Preline Labs.
+                © {new Date().getFullYear()} The NetgoatOSS Foundation.
               </p>
             </div>
 

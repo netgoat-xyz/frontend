@@ -33,7 +33,7 @@ export default async function DashboardLayout({
     >
       <WhatsNewPopup post={latestWhatsNew} />
       <NavigationTop />
-      <main className="flex-1 p-6">{children}</main>
+      <main className="min-h-svh p-6">{children}</main>
       <BelowScreenFooter />
     </div>
   );

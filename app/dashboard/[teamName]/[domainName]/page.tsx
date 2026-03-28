@@ -4,6 +4,17 @@ import { SecurityStatusCards } from '@/components/interface/domains/overview/Sec
 import { QuickActionsCard } from '@/components/interface/domains/overview/QuickActionsCard';
 import { loadDomainByRoute } from './_lib/domain-data'
 import { getTranslations } from 'next-intl/server'
+import { Button } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import { IconFolderCode } from "@tabler/icons-react"
+import { ArrowUpRightIcon } from "lucide-react"
 
 type Props = {
   params: {
@@ -15,13 +26,23 @@ type Props = {
 const DomainDashboard = async ({ params }: Props) => {
   const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
   const t = await getTranslations('DashboardPages.domain')
-  
+  const takenFromToolbarLol = await getTranslations('DashboardPages.homeToolbar')
   if (!domain || !domainData) {
     return (
-      <div className="min-h-svh p-4 sm:p-6 lg:p-8">
-        <h2 className="text-2xl font-semibold">{t('notFound.title')}</h2>
-        <p className="text-muted">{t('notFound.description', { domainName, teamName })}</p>
-      </div>
+          <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <IconFolderCode />
+        </EmptyMedia>
+        <EmptyTitle>{t('notFound.title')}</EmptyTitle>
+        <EmptyDescription>
+          {t('notFound.description', { domainName, teamName })}
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent className="flex-row justify-center gap-2">
+        <Button>{takenFromToolbarLol('actions.addNew')}</Button>
+      </EmptyContent>
+    </Empty>
     )
   }
 

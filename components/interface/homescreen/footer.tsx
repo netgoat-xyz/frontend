@@ -14,6 +14,7 @@ const languages: Record<string, string> = {
   ms: "Bahasa Melayu",
   zh: "中文",
   tl: "Tagalog",
+  jp: "日本語",
 };
 
 const LOCALE_SWITCH_TRACKER_KEY = "TOTALLY_VERY_IMPORTANT_AND_NOT_AT_ALL_SUSPICIOUS_LOCALE_SWITCH_TRACKER";
