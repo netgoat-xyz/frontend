@@ -5,6 +5,29 @@ import User from "@/models/User";
 import Settings from "@/models/Settings";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { revalidateTag, unstable_cache } from "next/cache";
+
+type FeatureFlag = {
+    key: string;
+    isActive?: boolean;
+    percentage?: number;
+};
+
+function serialize<T>(value: T): T {
+    return JSON.parse(JSON.stringify(value));
+}
+
+const getCachedFeatureFlags = unstable_cache(
+    async (): Promise<FeatureFlag[]> => {
+        await dbConnect();
+        const settings = await Settings.findOne().select("featureFlags").lean<{
+            featureFlags?: FeatureFlag[];
+        }>();
+        return serialize(settings?.featureFlags || []);
+    },
+    ["feature-flags"],
+    { revalidate: 60, tags: ["feature-flags"] },
+);
 
 async function getUser() {
     try {
@@ -18,12 +41,10 @@ async function getUser() {
 }
 
 export async function getExperiments() {
-    await dbConnect();
-    const user = await getUser();
-    
-    // Get global settings
-    const settings = await Settings.findOne();
-    const globalFlags = settings?.featureFlags || [];
+    const [user, globalFlags] = await Promise.all([
+        getUser(),
+        getCachedFeatureFlags(),
+    ]);
 
     // Helper map - stores boolean true or the variant string
     const flagsMap: Record<string, boolean | string> = {};
@@ -46,7 +67,10 @@ export async function getExperiments() {
 
     // 2. Process User Overrides
     if (user) {
-        const userDoc = await User.findById(user.id);
+        await dbConnect();
+        const userDoc = await User.findById(user.id).select("experiments").lean<{
+            experiments?: string[];
+        }>();
         if (userDoc && userDoc.experiments) {
             userDoc.experiments.forEach((rawKey: string) => {
                 // Check if it's a variant: "key=variant"
@@ -64,22 +88,18 @@ export async function getExperiments() {
 }
 
 export async function getAllAvailableExperiments() {
-    await dbConnect();
-    const settings = await Settings.findOne();
-    // Return POJO
-    return JSON.parse(JSON.stringify(settings?.featureFlags || []));
+    return getCachedFeatureFlags();
 }
 
 export async function enableAllExperiments() {
-    await dbConnect();
     const user = await getUser();
     if (!user) {
         throw new Error("Must be logged in to enable experiments");
     }
 
-    // Get all available flags from Settings
-    const settings = await Settings.findOne();
-    const allFlags = settings?.featureFlags?.map((f: any) => f.key) || [];
+    const allFlags = (await getCachedFeatureFlags()).map((f) => f.key);
+
+    await dbConnect();
 
     await User.updateOne(
         { _id: user.id },
@@ -97,7 +117,9 @@ export async function setExperimentValue(key: string, value: string | null) {
     }
 
     // First remove any existing entries for this key (base key or variants)
-    const userDoc = await User.findById(user.id);
+    const userDoc = await User.findById(user.id).select("experiments").lean<{
+        experiments?: string[];
+    }>();
     if (!userDoc) throw new Error("User not found");
 
     const currentExperiments = userDoc.experiments || [];
@@ -139,6 +161,7 @@ export async function adminAddExperiment(key: string, description: string, varia
     await Settings.findOneAndUpdate({}, {
         $push: { featureFlags: { key, description, isActive: false, percentage: 0, variants } }
     }, { upsert: true });
+    revalidateTag("feature-flags");
     return { success: true };
 }
 
@@ -155,5 +178,6 @@ export async function adminUpdateExperiment(key: string, update: { isActive?: bo
         { "featureFlags.key": key },
         { $set: updateQuery }
     );
+    revalidateTag("feature-flags");
     return { success: true };
 }

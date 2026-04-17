@@ -1,6 +1,6 @@
 import {
   getCategorizedGitHubReleases,
-  getReleaseDescription,
+  getReleaseDescriptionsBatch,
   type GitHubRelease,
 } from "@/actions/github";
 import Header from "@/components/interface/homescreen/header";
@@ -18,7 +18,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default function ChangelogPage() {
   return (
@@ -121,12 +121,7 @@ async function ChangelogContent() {
 }
 
 async function getReleasesWithDescriptions(releases: GitHubRelease[]) {
-  return Promise.all(
-    releases.map(async (release) => ({
-      release,
-      description: await getReleaseDescription(release),
-    })),
-  );
+  return getReleaseDescriptionsBatch(releases);
 }
 
 function ReleaseCategorySection(props: {

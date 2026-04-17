@@ -7,7 +7,7 @@ import Header from "@/components/interface/homescreen/header";
 import ShaderBackground from "@/components/interface/homescreen/shader-background";
 import Footer from "@/components/interface/homescreen/footer";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 function estimateReadingTime(content: string): number {
   const words = content.trim().split(/\s+/).length;
@@ -48,6 +48,9 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                 <img
                   src={post.coverImage}
                   alt={post.title}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent" />

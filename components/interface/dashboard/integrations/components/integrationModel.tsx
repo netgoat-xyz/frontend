@@ -5,13 +5,14 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface Integration {
   name: string;
   category: string;
   description: string;
   logo: string;
-  status?: string;
+  status?: "installed" | "disabled";
   details?: string;
 }
 
@@ -26,6 +27,8 @@ export default function IntegrationModal({
   onClose,
   integration,
 }: IntegrationModalProps) {
+  const t = useTranslations("DashboardPages.integrations.shared");
+
   useEffect(() => {
     if (isOpen) {
       document.documentElement.style.overflow = "hidden";
@@ -46,9 +49,9 @@ export default function IntegrationModal({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto">
+        <div className="fixed inset-0 z-100 p-4 md:p-6">
           <motion.div
-            className="fixed inset-0 bg-black/60 backdrop-blur-md"
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -56,7 +59,7 @@ export default function IntegrationModal({
           />
 
           <motion.div
-            className="relative z-10 w-full max-w-lg mx-4 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 md:p-8 shadow-2xl"
+            className="fixed left-1/2 top-1/2 z-10 w-[min(100%-2rem,32rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto -translate-x-1/2 -translate-y-1/2 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 md:p-8 shadow-2xl"
             initial={{ scale: 0.95, opacity: 0, y: 10 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -65,6 +68,7 @@ export default function IntegrationModal({
           >
             <button
               onClick={onClose}
+              aria-label={t("actions.close")}
               className="absolute top-5 right-5 text-neutral-500 hover:text-white transition-colors p-1"
             >
               <XMarkIcon className="size-5" />
@@ -105,7 +109,7 @@ export default function IntegrationModal({
                 onClick={onClose}
                 className="flex-1 px-4 py-2.5 text-sm font-medium rounded-lg text-neutral-300 border border-neutral-800 hover:bg-neutral-800 transition-colors"
               >
-                Cancel
+                {t("actions.cancel")}
               </button>
 
               <button
@@ -115,7 +119,9 @@ export default function IntegrationModal({
                     : "bg-white text-black hover:bg-neutral-200"
                 }`}
               >
-                {integration.status === "installed" ? "Uninstall" : "Install"}
+                {integration.status === "installed"
+                  ? t("actions.uninstall")
+                  : t("actions.install")}
               </button>
             </div>
           </motion.div>

@@ -6,6 +6,7 @@ import ShaderBackground from "@/components/interface/homescreen/shader-backgroun
 import ScrollIndicator from "@/components/interface/homescreen/scroll-indicator";
 import LaunchWrapper from "@/components/interface/homescreen/launch-wrapper";
 import { getExperiments } from "@/actions/experiments";
+import { getGitHubStats } from "@/actions/github";
 
 const Features = dynamic(
   () => import("@/components/interface/homescreen/features"),
@@ -33,7 +34,11 @@ const Footer = dynamic(
 );
 
 export default async function ShaderShowcase() {
-  const flags = await getExperiments();
+  const [flags, githubStats] = await Promise.all([
+    getExperiments(),
+    getGitHubStats(),
+  ]);
+
   if (flags["fuhThisShit"]) {
     return <p>Fuh all this</p>;
   }
@@ -57,7 +62,13 @@ export default async function ShaderShowcase() {
           id="content-start"
           className="relative z-10 bg-black/30 backdrop-blur-3xl"
         >
-          <Stats />
+          <Stats
+            initialStats={{
+              commits: githubStats.commits,
+              stars: githubStats.stars,
+              contributors: githubStats.contributors,
+            }}
+          />
           <Features />
           <Brands />
           <HowItWorks />

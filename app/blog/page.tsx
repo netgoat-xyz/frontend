@@ -9,7 +9,7 @@ import { Calendar, ArrowRight, BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 interface BlogPost {
   _id: string;
@@ -140,6 +140,9 @@ async function BlogPostsList() {
               <img
                 src={ogUrl}
                 alt={featured.title}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-linear-to-r from-black/40 via-black/20 to-transparent" />
@@ -201,6 +204,8 @@ async function BlogPostsList() {
                   <img
                     src={post.coverImage}
                     alt={post.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>

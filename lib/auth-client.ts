@@ -1,19 +1,14 @@
-import { createAuthClient } from "better-auth/react"
-import { emailOTPClient, magicLinkClient } from "better-auth/client/plugins"
+import { createAuthClient } from "better-auth/react";
+import { emailOTPClient, magicLinkClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-    plugins: [
-        emailOTPClient(),
-        magicLinkClient()
-    ],
-    baseURL: process.env.BETTER_AUTH_URL
-})
+  plugins: [emailOTPClient(), magicLinkClient()],
+  baseURL: process.env.BETTER_AUTH_URL,
+  sessionOptions: {
+    refetchOnWindowFocus: false,
+    refetchInterval: 0,
+    refetchWhenOffline: false,
+  },
+});
 
-export const { 
-    signIn, 
-    signOut, 
-    signUp, 
-    useSession 
-} = authClient
-
-
+export const { signIn, signOut, signUp, useSession } = authClient;

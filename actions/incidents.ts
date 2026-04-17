@@ -2,12 +2,23 @@
 
 import dbConnect from "@/lib/mongoose";
 import Incident from "@/models/Incident";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+
+function serialize<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
+const getIncidentsCached = unstable_cache(
+  async () => {
+    await dbConnect();
+    return serialize(await Incident.find().sort({ createdAt: -1 }).lean());
+  },
+  ["incidents-list"],
+  { revalidate: 30, tags: ["incidents"] },
+);
 
 export async function getIncidents() {
-  await dbConnect();
-  const incidents = await Incident.find().sort({ createdAt: -1 }).lean();
-  return JSON.parse(JSON.stringify(incidents));
+  return getIncidentsCached();
 }
 
 export async function createIncident(data: {
@@ -20,6 +31,7 @@ export async function createIncident(data: {
   await Incident.create(data);
   revalidatePath("/status");
   revalidatePath("/admin/incidents");
+  revalidateTag("incidents");
   return { success: true };
 }
 
@@ -32,6 +44,7 @@ export async function updateIncidentStarted(id: string, data: any) {
   await Incident.findByIdAndUpdate(id, data);
   revalidatePath("/status");
   revalidatePath("/admin/incidents");
+  revalidateTag("incidents");
   return { success: true };
 }
 
@@ -40,5 +53,6 @@ export async function deleteIncident(id: string) {
   await Incident.findByIdAndDelete(id);
   revalidatePath("/status");
   revalidatePath("/admin/incidents");
+  revalidateTag("incidents");
   return { success: true };
 }

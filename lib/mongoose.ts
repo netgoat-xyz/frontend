@@ -32,9 +32,11 @@ async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      tls: true,
-      tlsAllowInvalidCertificates: true,
-      tlsAllowInvalidHostnames: true,
+      maxPoolSize: 10,
+      minPoolSize: 1,
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      family: 4,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
@@ -46,7 +48,15 @@ async function dbConnect() {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
-    throw e;
+
+    const message =
+      e instanceof Error ? e.message : 'Unknown database connection error';
+
+    // Log full details server-side, but throw a plain serializable error to UI boundaries.
+    console.error('MongoDB connection failed:', e);
+    throw new Error(
+      `Database connection failed. Check MONGODB_URI, Atlas network access, and cluster status. Original error: ${message}`
+    );
   }
 
   return cached.conn;

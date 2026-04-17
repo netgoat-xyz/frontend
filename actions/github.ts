@@ -315,8 +315,102 @@ export async function getGitHubStats(): Promise<GitHubStats> {
   }
 }
 
+function getReleaseDescriptionCacheKey(release: GitHubRelease): string {
+  return `${release.category}:${release.tagName}:${release.publishedAt}`
+}
+
+export async function getReleaseDescriptionsBatch(
+  releases: GitHubRelease[]
+): Promise<Array<{ release: GitHubRelease; description: string }>> {
+  if (releases.length === 0) {
+    return []
+  }
+
+  const now = Date.now()
+  const descriptionsByKey = new Map<string, string>()
+  const unresolved: GitHubRelease[] = []
+
+  for (const release of releases) {
+    const cacheKey = getReleaseDescriptionCacheKey(release)
+    const cached = releaseDescriptionCache.get(cacheKey)
+
+    if (cached && cached.expiresAt > now) {
+      descriptionsByKey.set(cacheKey, cached.value)
+      continue
+    }
+
+    unresolved.push(release)
+  }
+
+  let stillUnresolved = unresolved
+
+  if (unresolved.length > 0) {
+    try {
+      await dbConnect()
+
+      const cacheKeys = unresolved.map((release) =>
+        getReleaseDescriptionCacheKey(release)
+      )
+
+      const persistedRecords = await ReleaseSummary.find({
+        cacheKey: { $in: cacheKeys },
+        source: 'ai',
+      })
+        .select({ cacheKey: 1, bodyHash: 1, summary: 1, _id: 0 })
+        .lean<Array<{ cacheKey: string; bodyHash: string; summary: string }>>()
+
+      const persistedByKey = new Map(
+        persistedRecords.map((record) => [record.cacheKey, record])
+      )
+
+      stillUnresolved = []
+
+      for (const release of unresolved) {
+        const cacheKey = getReleaseDescriptionCacheKey(release)
+        const persistedRecord = persistedByKey.get(cacheKey)
+
+        if (persistedRecord && persistedRecord.bodyHash === getBodyHash(release.body)) {
+          descriptionsByKey.set(cacheKey, persistedRecord.summary)
+          releaseDescriptionCache.set(cacheKey, {
+            value: persistedRecord.summary,
+            expiresAt: now + RELEASE_DESCRIPTION_CACHE_DURATION,
+          })
+          continue
+        }
+
+        stillUnresolved.push(release)
+      }
+    } catch {
+      stillUnresolved = unresolved
+    }
+  }
+
+  if (stillUnresolved.length > 0) {
+    const generatedDescriptions = await Promise.all(
+      stillUnresolved.map(async (release) => ({
+        cacheKey: getReleaseDescriptionCacheKey(release),
+        description: await getReleaseDescription(release),
+      }))
+    )
+
+    for (const generated of generatedDescriptions) {
+      descriptionsByKey.set(generated.cacheKey, generated.description)
+    }
+  }
+
+  return releases.map((release) => {
+    const cacheKey = getReleaseDescriptionCacheKey(release)
+
+    return {
+      release,
+      description:
+        descriptionsByKey.get(cacheKey) || generateFallbackReleaseDescription(release),
+    }
+  })
+}
+
 export async function getReleaseDescription(release: GitHubRelease): Promise<string> {
-  const cacheKey = `${release.category}:${release.tagName}:${release.publishedAt}`
+  const cacheKey = getReleaseDescriptionCacheKey(release)
   const now = Date.now()
   const cached = releaseDescriptionCache.get(cacheKey)
   const bodyHash = getBodyHash(release.body)

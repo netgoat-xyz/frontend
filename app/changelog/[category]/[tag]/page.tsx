@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900;
 
 type ChangelogDetailPageProps = {
   params: Promise<{ category: string; tag: string }>;

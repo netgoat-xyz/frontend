@@ -2,17 +2,17 @@
 
 import { motion } from "motion/react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface Integration {
   name: string;
   category: string;
   description: string;
   logo: string;
-  status?: string;
-  details?: string; // Add details here as well
+  status?: "installed" | "disabled";
+  details?: string;
 }
 
-// NOTE: This component will now accept an `onClick` prop
 export default function IntegrationCard({
   item,
   onClick,
@@ -20,6 +20,8 @@ export default function IntegrationCard({
   item: Integration;
   onClick: () => void;
 }) {
+  const t = useTranslations("DashboardPages.integrations.shared");
+
   return (
     <motion.div
       whileHover={{ y: -2 }}
@@ -44,12 +46,12 @@ export default function IntegrationCard({
 
         {item.status == "installed" && (
           <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20 font-medium uppercase tracking-wider">
-            Installed
+            {t("status.installed")}
           </span>
         )}
         {item.status == "disabled" && (
           <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded-full border border-red-500/20 font-medium uppercase tracking-wider">
-            Disabled
+            {t("status.disabled")}
           </span>
         )}
       </div>
@@ -71,10 +73,10 @@ export default function IntegrationCard({
           onClick={(e) => {
             e.stopPropagation();
             onClick();
-          }} // Prevent card click from triggering modal twice
+          }}
           className="text-xs text-neutral-300 hover:text-white font-medium opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          View Details →
+          {t("actions.viewDetails")}
         </button>
       </div>
     </motion.div>

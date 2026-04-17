@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { useAppSession } from "@/components/auth/AppSessionContext";
 import { useState, useRef } from "react";
 import { Dropdown, DropdownItem } from "@/components/elements/Dropdown";
 import { ChevronDown, Menu, X } from "lucide-react";
@@ -16,7 +17,7 @@ export default function Header() {
   const pathname = usePathname();
   const t = useTranslations("HomePage");
 
-  const { data: session, isPending } = authClient.useSession();
+  const session = useAppSession() ?? null;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -109,15 +110,7 @@ export default function Header() {
         </Dropdown>
 
         <AnimatePresence mode="wait">
-          {isPending ? (
-            <motion.div
-              key="loader"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="h-8 w-24 bg-white/5 animate-pulse rounded-full"
-            />
-          ) : session ? (
+          {session ? (
             <motion.div
               key="user-menu"
               initial={{ opacity: 0, scale: 0.95 }}

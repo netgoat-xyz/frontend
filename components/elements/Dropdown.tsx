@@ -102,7 +102,7 @@ export function DropdownItem({
     </>
   );
 
-  const classes = `${base} ${variants[variant]} ${className}`;
+  const classes = `${base} ${variants[variant]} ${className} flex item-center`;
 
   if (href && variant !== "disabled") {
     return (

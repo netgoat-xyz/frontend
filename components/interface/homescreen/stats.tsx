@@ -2,58 +2,40 @@
 
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Counter } from "@/components/ui/counter";
-import { getGitHubStats } from "@/actions/github";
 
-export default function Stats() {
+type StatsProps = {
+  initialStats: {
+    commits: number;
+    stars: number;
+    contributors: number;
+  };
+};
+
+export default function Stats({ initialStats }: StatsProps) {
   const t = useTranslations("HomePage.stats");
-  const [githubStats, setGithubStats] = useState({
-    commits: 200,
-    stars: 600,
-    contributors: 5
-  });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const stats = await getGitHubStats();
-        setGithubStats({
-          commits: stats.commits,
-          stars: stats.stars,
-          contributors: stats.contributors
-        });
-      } catch (error) {
-        console.error('Failed to fetch GitHub stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, []);
 
   const stats = useMemo(() => [
     { 
       id: "commits", 
-      value: githubStats.commits, 
+      value: initialStats.commits, 
       color: "from-violet-400 to-indigo-400",
       suffix: "+"
     },
     { 
       id: "stars", 
-      value: githubStats.stars, 
+      value: initialStats.stars, 
       color: "from-amber-300 to-orange-400",
       suffix: "+"
     },
     { 
       id: "contributors", 
-      value: githubStats.contributors, 
+      value: initialStats.contributors, 
       color: "from-emerald-400 to-teal-400",
       suffix: "+"
     },
-  ], [githubStats]);
+  ], [initialStats]);
 
   return (
     <section className="relative z-20 py-20 border-y border-white/5">
@@ -71,15 +53,11 @@ export default function Stats() {
               <div
                 className={`text-5xl md:text-6xl font-extralight tracking-tight text-transparent bg-clip-text bg-linear-to-br ${stat.color} mb-3`}
               >
-                {loading ? (
-                  <span className="animate-pulse">...</span>
-                ) : (
-                  <Counter 
-                    to={stat.value} 
-                    duration={2} 
-                    suffix={stat.suffix}
-                  />
-                )}
+                <Counter 
+                  to={stat.value} 
+                  duration={2} 
+                  suffix={stat.suffix}
+                />
               </div>
               <div className="text-[11px] font-light text-white/35 uppercase tracking-[0.2em]">
                 {t(stat.id)}

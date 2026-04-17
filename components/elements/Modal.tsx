@@ -24,8 +24,16 @@ const Modal = ({ isOpen, onClose, title, children, actionButtons, onConfirm }: M
   // Lock Scroll
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+      document.documentElement.style.overflow = isOpen ? 'hidden' : '';
+      document.body.style.overflow = isOpen ? 'hidden' : '';
     }
+
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+      }
+    };
   }, [isOpen]);
 
   const [mounted, setMounted] = useState(false);
@@ -36,7 +44,7 @@ const Modal = ({ isOpen, onClose, title, children, actionButtons, onConfirm }: M
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center h-full p-4">
+        <div className="fixed inset-0 z-100 p-4">
           
           {/* Backdrop Fade */}
           <motion.div 
@@ -49,7 +57,7 @@ const Modal = ({ isOpen, onClose, title, children, actionButtons, onConfirm }: M
 
           {/* Modal Content - The "Origin" Animation */}
           <motion.div 
-            className="relative bg-neutral-900 border border-neutral-800 w-full max-w-lg rounded-xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed left-1/2 top-1/2 z-10 w-[min(100%-2rem,32rem)] max-h-[calc(100dvh-2rem)] -translate-x-1/2 -translate-y-1/2 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}

@@ -1,7 +1,8 @@
 import NavigationTop from "@/components/elements/NavigationTop";
+import { AppSessionProvider } from "@/components/auth/AppSessionContext";
 import { auth } from "@/lib/auth";
-import { redirect } from "next/dist/client/components/navigation";
-import { headers } from "next/dist/server/request/headers";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
 import { getLatestWhatsNew } from "@/actions/content";
 import dynamic from "next/dynamic";
@@ -24,17 +25,27 @@ export default async function DashboardLayout({
     redirect("/auth");
   }
 
+  const sessionForClient = {
+    user: {
+      name: session.user.name ?? null,
+      email: session.user.email ?? null,
+      image: session.user.image ?? null,
+    },
+  };
+
   const latestWhatsNew = await getLatestWhatsNew();
 
   return (
-    <div
-      suppressHydrationWarning
-      className="min-h-svh w-full flex flex-col bg-neutral-50 dark:bg-neutral-950 text-foreground"
-    >
-      <WhatsNewPopup post={latestWhatsNew} />
-      <NavigationTop />
-      <main className="min-h-svh p-6">{children}</main>
-      <BelowScreenFooter />
-    </div>
+    <AppSessionProvider session={sessionForClient}>
+      <div
+        suppressHydrationWarning
+        className="min-h-svh w-full flex flex-col bg-neutral-50 dark:bg-neutral-950 text-foreground"
+      >
+        <WhatsNewPopup post={latestWhatsNew} />
+        <NavigationTop />
+        <main className="min-h-svh p-6">{children}</main>
+        <BelowScreenFooter />
+      </div>
+    </AppSessionProvider>
   );
 }

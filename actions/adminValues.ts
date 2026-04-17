@@ -7,6 +7,35 @@ import Settings from "@/models/Settings";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import os from "os";
+import { revalidateTag, unstable_cache } from "next/cache";
+import { getRuntimeLogs } from "@/lib/runtime-logs";
+
+function serialize<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
+const getPublicSettingsCached = unstable_cache(
+  async () => {
+    await dbConnect();
+
+    return Settings.findOneAndUpdate(
+      {},
+      {
+        $setOnInsert: {
+          siteName: "NetGoat",
+          registrationEnabled: true,
+        },
+      },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      },
+    ).lean().then((settings) => serialize(settings));
+  },
+  ["public-settings"],
+  { revalidate: 300, tags: ["public-settings"] },
+);
 
 // Helper to check admin permission
 export async function checkAdmin() {
@@ -45,18 +74,7 @@ export async function getGlobalSettings() {
 }
 
 export async function getPublicSettings() {
-  await dbConnect();
-
-  let settings = await Settings.findOne();
-  if (!settings) {
-    settings = await Settings.create({
-      siteName: "NetGoat",
-      registrationEnabled: true
-    });
-  }
-
-  // Convert to POJO to avoid serialization issues with Mongoose docs
-  return JSON.parse(JSON.stringify(settings));
+  return getPublicSettingsCached();
 }
 
 export async function updateGlobalSettings(newSettings: any) {
@@ -70,9 +88,11 @@ export async function updateGlobalSettings(newSettings: any) {
     {}, // find the first one
     { $set: updateData },
     { new: true, upsert: true }
-  );
+  ).lean();
 
-  return JSON.parse(JSON.stringify(settings));
+  revalidateTag("public-settings");
+
+  return serialize(settings);
 }
 
 export async function getUsers(page = 1, limit = 10, search = "") {
@@ -89,13 +109,15 @@ export async function getUsers(page = 1, limit = 10, search = "") {
   }
 
   const skip = (page - 1) * limit;
-  const users = await User.find(query).skip(skip).limit(limit).sort({ createdAt: -1 });
-  const total = await User.countDocuments(query);
+  const [users, total] = await Promise.all([
+    User.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }).lean(),
+    User.countDocuments(query),
+  ]);
 
   return {
-    users: JSON.parse(JSON.stringify(users)),
+    users: serialize(users),
     total,
-    pages: Math.ceil(total / limit)
+    pages: Math.ceil(total / limit),
   };
 }
 
@@ -111,8 +133,9 @@ export async function updateUser(userId: string, data: any) {
      console.warn("Password change requested but not fully implemented in direct DB mode via this action");
   }
 
-  const updatedUser = await User.findByIdAndUpdate(userId, { $set: data }, { new: true });
-  return JSON.parse(JSON.stringify(updatedUser));
+  return serialize(
+    await User.findByIdAndUpdate(userId, { $set: data }, { new: true }).lean(),
+  );
 }
 
 export async function getSystemSpecs() {
@@ -136,8 +159,6 @@ export async function getSystemSpecs() {
     os: `${type} ${platform}`,
   };
 }
-
-import { getRuntimeLogs } from "@/lib/runtime-logs";
 
 export async function adminRestartSystem() {
   await checkAdmin();

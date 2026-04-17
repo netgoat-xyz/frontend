@@ -3,43 +3,68 @@
 import dbConnect from "@/lib/mongoose";
 import Post from "@/models/Post";
 import { checkAdmin } from "./adminValues";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 // --- Public Actions ---
 
+function serialize<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
+const getPostsCached = unstable_cache(
+  async (type: string, page: number, limit: number) => {
+    await dbConnect();
+
+    const query = { type, published: true };
+    const skip = (page - 1) * limit;
+
+    const [posts, total] = await Promise.all([
+      Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Post.countDocuments(query),
+    ]);
+
+    return {
+      posts: serialize(posts),
+      total,
+      pages: Math.ceil(total / limit),
+    };
+  },
+  ["content-public-posts"],
+  { revalidate: 300, tags: ["content-posts"] },
+);
+
+const getPostBySlugCached = unstable_cache(
+  async (slug: string) => {
+    await dbConnect();
+    return serialize(await Post.findOne({ slug, published: true }).lean());
+  },
+  ["content-post-by-slug"],
+  { revalidate: 300, tags: ["content-post-by-slug"] },
+);
+
+const getLatestWhatsNewCached = unstable_cache(
+  async () => {
+    await dbConnect();
+    return serialize(
+      await Post.findOne({ type: "whats-new", published: true })
+        .sort({ createdAt: -1 })
+        .lean(),
+    );
+  },
+  ["content-latest-whats-new"],
+  { revalidate: 120, tags: ["content-whats-new"] },
+);
+
 export async function getPosts(type: string, page = 1, limit = 10) {
-  await dbConnect();
-  
-  const query = { type, published: true };
-  const skip = (page - 1) * limit;
-  
-  const posts = await Post.find(query)
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
-    
-  const total = await Post.countDocuments(query);
-  
-  return {
-    posts: JSON.parse(JSON.stringify(posts)),
-    total,
-    pages: Math.ceil(total / limit)
-  };
+  return getPostsCached(type, page, limit);
 }
 
 export async function getPostBySlug(slug: string) {
-  await dbConnect();
-  const post = await Post.findOne({ slug, published: true });
-  if (!post) return null;
-  return JSON.parse(JSON.stringify(post));
+  return getPostBySlugCached(slug);
 }
 
 export async function getLatestWhatsNew() {
-  await dbConnect();
-  const post = await Post.findOne({ type: "whats-new", published: true })
-    .sort({ createdAt: -1 });
-  if (!post) return null;
-  return JSON.parse(JSON.stringify(post));
+  return getLatestWhatsNewCached();
 }
 
 // --- Admin Actions ---
@@ -52,26 +77,22 @@ export async function getAdminPosts(type?: string, page = 1, limit = 20) {
   if (type && type !== "all") query.type = type;
 
   const skip = (page - 1) * limit;
-  const posts = await Post.find(query)
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
-    
-  const total = await Post.countDocuments(query);
+  const [posts, total] = await Promise.all([
+    Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    Post.countDocuments(query),
+  ]);
 
   return {
-    posts: JSON.parse(JSON.stringify(posts)),
+    posts: serialize(posts),
     total,
-    pages: Math.ceil(total / limit)
+    pages: Math.ceil(total / limit),
   };
 }
 
 export async function getPostById(id: string) {
   await checkAdmin();
   await dbConnect();
-  const post = await Post.findById(id);
-  if (!post) return null;
-  return JSON.parse(JSON.stringify(post));
+  return serialize(await Post.findById(id).lean());
 }
 
 export async function createPost(data: any) {
@@ -100,7 +121,10 @@ export async function createPost(data: any) {
   revalidatePath("/blog");
   revalidatePath("/changelog");
   revalidatePath("/admin/content");
-  return JSON.parse(JSON.stringify(post));
+  revalidateTag("content-posts");
+  revalidateTag("content-post-by-slug");
+  revalidateTag("content-whats-new");
+  return serialize(post.toObject());
 }
 
 export async function updatePost(id: string, data: any) {
@@ -108,17 +132,20 @@ export async function updatePost(id: string, data: any) {
   await dbConnect();
 
   data.updatedAt = new Date();
-  
-  const post = await Post.findByIdAndUpdate(id, { $set: data }, { new: true });
+
+  const post = await Post.findByIdAndUpdate(id, { $set: data }, { new: true }).lean();
   revalidatePath("/blog");
   revalidatePath("/changelog");
   revalidatePath("/admin/content");
+  revalidateTag("content-posts");
+  revalidateTag("content-post-by-slug");
+  revalidateTag("content-whats-new");
   
-  if (post.slug && post.type === "blog") {
+  if (post?.slug && post.type === "blog") {
      revalidatePath(`/blog/${post.slug}`);
   }
-  
-  return JSON.parse(JSON.stringify(post));
+
+  return serialize(post);
 }
 
 export async function deletePost(id: string) {
@@ -128,4 +155,7 @@ export async function deletePost(id: string) {
   revalidatePath("/admin/content");
   revalidatePath("/blog");
   revalidatePath("/changelog");
+  revalidateTag("content-posts");
+  revalidateTag("content-post-by-slug");
+  revalidateTag("content-whats-new");
 }

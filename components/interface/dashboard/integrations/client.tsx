@@ -8,85 +8,84 @@ import { useTranslations } from "next-intl";
 
 const IntegrationModal = dynamic(() => import("./components/integrationModel"));
 
+type IntegrationCategory =
+  | "cloud"
+  | "networking"
+  | "monitoring"
+  | "security"
+  | "observability";
+
+type IntegrationFilter = "all" | IntegrationCategory;
+
 interface Integration {
   name: string;
+  categoryKey: IntegrationCategory;
   category: string;
   description: string;
   logo: string;
-  status?: string;
-  details?: string; // Add details here as well
+  status?: "installed" | "disabled";
+  details?: string;
 }
 
-const CATEGORIES = [
-  "All",
-  "Cloud",
-  "Networking",
-  "Monitoring",
-  "Security",
+interface IntegrationDefinition {
+  key:
+    | "cloudflare"
+    | "sentry"
+    | "grafana"
+    | "tailscale"
+    | "googleCloud"
+    | "amazonWebServices"
+    | "ngrok";
+  category: IntegrationCategory;
+  logo: string;
+  status?: "installed" | "disabled";
+}
+
+const CATEGORIES: IntegrationFilter[] = [
+  "all",
+  "cloud",
+  "networking",
+  "monitoring",
+  "security",
+  "observability",
 ];
 
-const INTEGRATIONS: Integration[] = [
+const INTEGRATION_DEFINITIONS: IntegrationDefinition[] = [
   {
-    name: "Cloudflare",
-    category: "Networking",
-    description:
-      "Secure and accelerate your websites with Cloudflare's global network.",
-    details:
-      "Use netgoat as a Reverse Proxy with Cloudflare for enhanced security and performance.",
+    key: "cloudflare",
+    category: "networking",
     logo: "/integrations/cloudflare.jpeg",
   },
   {
-    name: "Sentry",
-    category: "Monitoring",
-    description:
-      "Real-time error tracking to help you optimize the performance of your code.",
-    details:
-      "Sentry provides real-time error monitoring and performance tracking for all your applications. Quickly identify and resolve issues with detailed stack traces and context.",
+    key: "sentry",
+    category: "monitoring",
     logo: "/integrations/sentry.jpeg",
     status: "installed",
   },
   {
-    name: "Grafana",
-    category: "Observability",
-    description: "Modern monitoring and security for cloud-scale applications.",
-    details:
-      "Grafana is a monitoring and visualization tool that allows you to create dashboards and alerts for your infrastructure and applications.",
+    key: "grafana",
+    category: "observability",
     logo: "/integrations/grafana.jpeg",
   },
   {
-    name: "Tailscale",
-    category: "Networking",
-    description: "Tailscale is a zero-config VPN for secure networking.",
-    details:
-      "Use netgoat as a MITM for your tailscale devices.",
+    key: "tailscale",
+    category: "networking",
     logo: "/integrations/tailscale.png",
   },
   {
-    name: "Google Cloud Platform",
-    category: "Cloud",
-    description:
-      "The suite of cloud computing services that runs on the same infrastructure that Google uses internally.",
-    details:
-      "Spin up virtual machines and have them already setup to use netgoat as a proxy.",
+    key: "googleCloud",
+    category: "cloud",
     logo: "/integrations/gcp.jpeg",
     status: "installed",
   },
   {
-    name: "Amazon Web Services",
-    category: "Cloud",
-    description:
-      "Comprehensive and broadly adopted cloud platform offering over 200 fully featured services.",
-    details:
-      "Spin up virtual machines and have them already setup to use netgoat as a proxy.",
+    key: "amazonWebServices",
+    category: "cloud",
     logo: "/integrations/aws.jpeg",
   },
   {
-    name: "Ngrok",
-    category: "Networking",
-    description:
-      "Secure introspectable tunnels to localhost for easy testing and sharing.",
-    details:
-      "Ngrok allows you to expose a local server to the internet securely. Use netgoat to monitor and analyze traffic passing through your ngrok tunnels.",
+    key: "ngrok",
+    category: "networking",
     logo: "/integrations/ngrok.jpeg",
   }
 ];
@@ -96,18 +95,11 @@ const IntegrationsSidebar = memo(({
   onSelectCategory,
   t,
 }: { 
-  selectedCategory: string; 
-  onSelectCategory: (category: string) => void;
+  selectedCategory: IntegrationFilter;
+  onSelectCategory: (category: IntegrationFilter) => void;
   t: ReturnType<typeof useTranslations>;
 }) => {
-  const getCategoryLabel = (category: string) => {
-    if (category === "All") return t("categories.all");
-    if (category === "Cloud") return t("categories.cloud");
-    if (category === "Networking") return t("categories.networking");
-    if (category === "Monitoring") return t("categories.monitoring");
-    if (category === "Security") return t("categories.security");
-    return category;
-  };
+  const getCategoryLabel = (category: IntegrationFilter) => t(`categories.${category}`);
 
   return (
     <aside className="w-full lg:w-48 shrink-0">
@@ -145,7 +137,7 @@ const IntegrationsSidebar = memo(({
 
 IntegrationsSidebar.displayName = "IntegrationsSidebar";
 
-const IntegrationsContent = memo(({ selectedCategory }: { selectedCategory: string }) => {
+const IntegrationsContent = memo(({ selectedCategory }: { selectedCategory: IntegrationFilter }) => {
   const t = useTranslations("DashboardPages.integrations");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -153,6 +145,20 @@ const IntegrationsContent = memo(({ selectedCategory }: { selectedCategory: stri
   const [hasOpened, setHasOpened] = useState(false);
   const [selectedIntegration, setSelectedIntegration] =
     useState<Integration | null>(null);
+
+  const integrations = useMemo(
+    () =>
+      INTEGRATION_DEFINITIONS.map((integration) => ({
+        name: t(`items.${integration.key}.name`),
+        categoryKey: integration.category,
+        category: t(`categories.${integration.category}`),
+        description: t(`items.${integration.key}.description`),
+        details: t(`items.${integration.key}.details`),
+        logo: integration.logo,
+        status: integration.status,
+      })),
+    [t],
+  );
 
   // Debounce search term to prevent excessive filtering during typing
   useEffect(() => {
@@ -164,17 +170,17 @@ const IntegrationsContent = memo(({ selectedCategory }: { selectedCategory: stri
   }, [searchTerm]);
 
   const filteredIntegrations = useMemo(() => {
-    return INTEGRATIONS.filter((integration) => {
+    return integrations.filter((integration) => {
       const matchesSearch =
         integration.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
         integration.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
       
       const matchesCategory =
-        selectedCategory === "All" || integration.category === selectedCategory;
+        selectedCategory === "all" || integration.categoryKey === selectedCategory;
         
       return matchesSearch && matchesCategory;
     });
-  }, [debouncedSearchTerm, selectedCategory]);
+  }, [debouncedSearchTerm, integrations, selectedCategory]);
 
   const handleCardClick = useCallback((integration: Integration) => {
     setSelectedIntegration(integration);
@@ -228,7 +234,7 @@ IntegrationsContent.displayName = "IntegrationsContent";
 
 export default function IntegrationsPage() {
   const t = useTranslations("DashboardPages.integrations");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<IntegrationFilter>("all");
 
   return (
     <div className="">

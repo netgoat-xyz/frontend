@@ -1,20 +1,50 @@
 // Updated auth.ts with new email templates
 import { betterAuth, APIError } from "better-auth";
-import { emailOTP, magicLink } from "better-auth/plugins";
+import { admin, emailOTP, magicLink } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
 import { Resend } from "resend";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import dbConnect from "@/lib/mongoose";
 import Settings from "@/models/Settings";
-import { Team } from "@/models/Team";
-import mongoose from "mongoose";
-import { renderMagicLinkEmail, renderOTPEmail } from "@/lib/email/index";
 
-const client = new MongoClient(process.env.MONGODB_URI!, {
-  tls: true,
-  tlsAllowInvalidCertificates: true,
-  tlsAllowInvalidHostnames: true,
+const mongoUri = process.env.MONGODB_URI;
+if (!mongoUri) {
+  throw new Error("MONGODB_URI is required for auth database.");
+}
+
+type GlobalWithAuthMongo = typeof globalThis & {
+  _authMongoClient?: MongoClient;
+  _authMongoConnectPromise?: Promise<MongoClient>;
+};
+
+const globalWithAuthMongo = globalThis as GlobalWithAuthMongo;
+
+const client =
+  globalWithAuthMongo._authMongoClient ??
+  new MongoClient(mongoUri, {
+    tls: true,
+    tlsAllowInvalidCertificates: true,
+    tlsAllowInvalidHostnames: true,
+    maxPoolSize: 20,
+    minPoolSize: 1,
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    family: 4,
+  });
+
+if (!globalWithAuthMongo._authMongoClient) {
+  globalWithAuthMongo._authMongoClient = client;
+  globalWithAuthMongo._authMongoConnectPromise = client
+    .connect()
+    .then(() => client);
+}
+
+void (
+  globalWithAuthMongo._authMongoConnectPromise ?? client.connect().then(() => client)
+).catch((error) => {
+  console.error("Auth MongoDB preconnect failed:", error);
 });
+
 const db = client.db();
 const resendApiKey = process.env.RESEND_APIKEY;
 if (!resendApiKey) {
@@ -26,15 +56,22 @@ const appName = "Netgoat";
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
+  ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for", "x-vercel-forwarded-for", "x-real-ip", "x-netgoat-cip"],
+  experimental: {
+    joins: true,
+  },
   trustedOrigins: [process.env.NEXT_PUBLIC_SITE_URL as string],
   logger: {
-    level: "debug",
+    level: process.env.NODE_ENV === "development" ? "warn" : "error",
   },
   plugins: [
+    admin(),
     magicLink({
+      storeToken: "hashed",
       sendMagicLink: async ({ email, url }) => {
+        const { renderMagicLinkEmail } = await import("@/lib/email");
         const html = await renderMagicLinkEmail(url, appName);
-        
+
         await resend.emails.send({
           from: `${appName} <${emailFrom}>`,
           to: email,
@@ -45,18 +82,20 @@ export const auth = betterAuth({
       },
     }),
     emailOTP({
+      storeOTP: "hashed",
       overrideDefaultEmailVerification: true,
       sendVerificationOnSignUp: true,
       sendVerificationOTP: async ({ email, otp, type }) => {
+        const { renderOTPEmail } = await import("@/lib/email");
         const html = await renderOTPEmail(otp, type, appName);
-        
+
         const typeLabel =
           type === "email-verification"
             ? "Verify your email"
             : type === "forget-password"
               ? "Reset your password"
               : "Sign in code";
-        
+
         await resend.emails.send({
           from: `${appName} <${emailFrom}>`,
           to: email,
@@ -73,11 +112,11 @@ export const auth = betterAuth({
       if (reqUrl?.includes("/sign-up/email")) {
         await dbConnect();
         const settings = await Settings.findOne();
-        
+
         if (settings && settings.registrationEnabled === false) {
-           throw new APIError("BAD_REQUEST", { 
-             message: "Registration is currently disabled." 
-           });
+          throw new APIError("BAD_REQUEST", {
+            message: "Registration is currently disabled.",
+          });
         }
       }
     },
@@ -86,12 +125,20 @@ export const auth = betterAuth({
       if (reqUrl?.includes("/sign-up/email")) {
         setImmediate(async () => {
           try {
+            const mongoose = (await import("mongoose")).default;
+            const { Team } = await import("@/models/Team");
+
             await dbConnect();
-            const users = await db.collection('user').find().sort({_id: -1}).limit(1).toArray();
+            const users = await db
+              .collection("user")
+              .find()
+              .sort({ _id: -1 })
+              .limit(1)
+              .toArray();
             const user = users[0];
-            
+
             if (!user) return;
-            
+
             const rawUserId = user?._id ?? user?.id;
             if (!rawUserId) return;
             const userId = mongoose.isValidObjectId(rawUserId)
@@ -99,35 +146,39 @@ export const auth = betterAuth({
               : null;
             if (!userId) return;
             const userEmail = user.email;
-            const userName = user.name || userEmail?.split('@')[0] || 'User';
-            
+            const userName = user.name || userEmail?.split("@")[0] || "User";
+
             const personalSlug = `@me-${userId}`;
-            
+
             const existingTeam = await Team.findOne({
-              slug: personalSlug
+              slug: personalSlug,
             });
-            
+
             if (!existingTeam) {
               await Team.create({
                 name: `${userName}'s Personal Team`,
                 slug: personalSlug,
-                description: 'Your personal team',
-                members: [{
-                  user_id: userId,
-                  role: 'owner',
-                  joined_at: new Date()
-                }],
-                active: true
+                description: "Your personal team",
+                members: [
+                  {
+                    user_id: userId,
+                    role: "owner",
+                    joined_at: new Date(),
+                  },
+                ],
+                active: true,
               });
-              
-              console.log(`Created personal team ${personalSlug} for user ${userId}`);
+
+              console.log(
+                `Created personal team ${personalSlug} for user ${userId}`,
+              );
             }
           } catch (error) {
-            console.error('Failed to create personal team:', error);
+            console.error("Failed to create personal team:", error);
           }
         });
       }
-      
+
       return ctx;
     },
   },
@@ -168,4 +219,5 @@ export const auth = betterAuth({
       clientSecret: process.env.GITLAB_CLIENT_SECRET as string,
     },
   },
+  appName: "NetGoat",
 });

@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import type { ComponentType } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Modal from "./Modal";
 import Avatar from "./Avatar";
 import SlashSeparator from "./Seperator";
@@ -19,29 +20,67 @@ import {
   Settings,
   Shield,
   Users,
-  Zap,
   FileText,
-  Layers,
-  Network,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import useLastTeamName from "@/hooks/lastTeam";
 import NavSelectDrapdown from "./NavSelectDrapdown";
 import { getTeam } from "@/actions/teams";
-import { useSession } from "@/lib/auth-client";
+import { useAppSession } from "@/components/auth/AppSessionContext";
+
+type TeamPlan = "free" | "pro" | "enterprise";
+type TeamNavData = {
+  name?: string | null;
+  plan?: TeamPlan | string | null;
+};
+type NavigationTab = {
+  title: string;
+  href: string;
+  icon?: ComponentType<{ className?: string }>;
+};
+
+function normalizeTeamPlan(value: unknown): TeamPlan | null {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (normalized === "free") return "free";
+  if (normalized === "pro") return "pro";
+  if (normalized === "enterprise") return "enterprise";
+  return null;
+}
+
+function getPlanBadgeConfig(plan: TeamPlan | null) {
+  if (plan === "enterprise") {
+    return {
+      label: "Enterprise",
+      className:
+        "border-amber-400/35 bg-amber-400/10 text-amber-200",
+    };
+  }
+
+  if (plan === "pro") {
+    return {
+      label: "Pro",
+      className: "border-sky-400/35 bg-sky-400/10 text-sky-200",
+    };
+  }
+
+  if (plan === "free") {
+    return {
+      label: "Free",
+      className:
+        "border-neutral-500/35 bg-neutral-500/10 text-neutral-300",
+    };
+  }
+
+  return null;
+}
 
 export default function NavigationTop() {
-  const {
-    data: session,
-    isPending, //loading state
-    error, //error object
-    refetch, //refetch the session
-  } = useSession();
+  const session = useAppSession();
 
   const pathname = usePathname() || "";
   const teamNameConfusion = useLastTeamName();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
-  const [teamData, setTeamData] = useState<any>(null);
+  const [teamData, setTeamData] = useState<TeamNavData | null>(null);
   const [loadingTeam, setLoadingTeam] = useState(false);
 
   const segments = pathname.split("/").filter(Boolean);
@@ -64,8 +103,8 @@ export default function NavigationTop() {
       try {
         setLoadingTeam(true);
         const team = await getTeam(teamName);
-        setTeamData(team);
-      } catch (error) {
+        setTeamData(team as TeamNavData);
+      } catch {
         // Silently fail - team name will fallback to URL slug
         setTeamData(null);
       } finally {
@@ -100,36 +139,37 @@ export default function NavigationTop() {
     ? `/dashboard/${teamName}/${domainName}`
     : null;
 
-  let tabs = useMemo(() => {
-  if (isAccount) {
-    return [
-      { title: "Overview", href: "/account", icon: Home },
-      { title: "Activity", href: "/account/activity", icon: Activity },
-      { title: "Settings", href: "/account/settings", icon: Settings },
-    ];
-  } else if (isAdmin) {
-    return [
-      { title: "Overview", href: "/admin", icon: LayoutDashboard },
-      { title: "Users", href: "/admin/users", icon: Users },
-      { title: "Settings", href: "/admin/settings", icon: Settings },
-      { title: "Logs", href: "/admin/logs", icon: Activity },
-      { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-      { title: "Dashboard Alerts", href: "/admin/alerts", icon: Activity },
-      { title: "Status Incidents", href: "/admin/incidents", icon: Activity },
-      { title: "Content", href: "/admin/content", icon: FileText },
-    ];
-  } else if (projectPath) {
-    return [
-      { title: "Overview", href: projectPath, icon: LayoutDashboard },
-      { title: "Subdomains", href: `${projectPath}/subdomains`, icon: LayoutDashboard },
-      { title: "DNS", href: `${projectPath}/dns`, icon: Globe },
-      { title: "Reverse-Proxies", href: `${projectPath}/reverse-proxies`, icon: Globe },
-      { title: "SSL Certificates", href: `${projectPath}/ssl`, icon: Lock },
-      { title: "WAF Rules", href: `${projectPath}/waf`, icon: Shield },
-      { title: "Analytics", href: `${projectPath}/analytics`, icon: BarChart3 },
-      { title: "Settings", href: `${projectPath}/settings`, icon: Settings },
-    ];
-  } else {
+  const tabs = useMemo<NavigationTab[]>(() => {
+    if (isAccount) {
+      return [
+        { title: "Overview", href: "/account", icon: Home },
+        { title: "Activity", href: "/account/activity", icon: Activity },
+        { title: "Settings", href: "/account/settings", icon: Settings },
+      ];
+    } else if (isAdmin) {
+      return [
+        { title: "Overview", href: "/admin", icon: LayoutDashboard },
+        { title: "Users", href: "/admin/users", icon: Users },
+        { title: "Settings", href: "/admin/settings", icon: Settings },
+        { title: "Logs", href: "/admin/logs", icon: Activity },
+        { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+        { title: "Dashboard Alerts", href: "/admin/alerts", icon: Activity },
+        { title: "Status Incidents", href: "/admin/incidents", icon: Activity },
+        { title: "Content", href: "/admin/content", icon: FileText },
+      ];
+    } else if (projectPath) {
+      return [
+        { title: "Overview", href: projectPath, icon: LayoutDashboard },
+        { title: "Subdomains", href: `${projectPath}/subdomains`, icon: LayoutDashboard },
+        { title: "DNS", href: `${projectPath}/dns`, icon: Globe },
+        { title: "Reverse-Proxies", href: `${projectPath}/reverse-proxies`, icon: Globe },
+        { title: "SSL Certificates", href: `${projectPath}/ssl`, icon: Lock },
+        { title: "WAF Rules", href: `${projectPath}/waf`, icon: Shield },
+        { title: "Analytics", href: `${projectPath}/analytics`, icon: BarChart3 },
+        { title: "Settings", href: `${projectPath}/settings`, icon: Settings },
+      ];
+    }
+
     return [
       {
         title: "Overview",
@@ -148,7 +188,6 @@ export default function NavigationTop() {
         icon: Settings,
       },
     ];
-  }
   }, [isAccount, isAdmin, projectPath, teamNameConfusion]);
 
   const activeTab = useMemo(() =>
@@ -166,6 +205,10 @@ export default function NavigationTop() {
   , [tabs, pathname, isAccount, isAdmin, teamPath, projectPath]);
 
   const activeTitle = activeTab?.title || "Overview";
+  const teamPlanBadge = useMemo(() => {
+    const plan = normalizeTeamPlan(teamData?.plan);
+    return getPlanBadgeConfig(plan);
+  }, [teamData?.plan]);
 
   return (
     <div className="flex flex-col bg-neutral-950 text-white">
@@ -174,11 +217,11 @@ export default function NavigationTop() {
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Link href="/dashboard" aria-label="Home">
               <Image
-                src="/branding/netgoat_no_text.png"
+                src="/branding/netgoat_ico.png"
                 alt="Logo"
-                width={28}
-                height={28}
-                className="rounded-full border border-neutral-700 hover:border-neutral-500 transition-colors"
+                width={40}
+                height={40}
+                className=""
               />
             </Link>
 
@@ -226,6 +269,13 @@ export default function NavigationTop() {
                       <span className="text-sm font-medium truncate max-w-32 sm:max-w-48">
                         {teamData?.name || decodeURIComponent(teamName)}
                       </span>
+                      {teamPlanBadge && (
+                        <span
+                          className={`inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-semibold leading-none ${teamPlanBadge.className}`}
+                        >
+                          {teamPlanBadge.label}
+                        </span>
+                      )}
                     </>
                   )}
                   <NavSelectDrapdown />
@@ -296,7 +346,7 @@ export default function NavigationTop() {
               return (
                 <Link
                   key={tab.title}
-                  href={tab.href as any}
+                  href={tab.href}
                   className={`relative h-full flex items-center px-1 transition-colors duration-200 ${
                     isActive ? "text-white" : "hover:text-neutral-200"
                   }`}

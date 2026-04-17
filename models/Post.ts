@@ -20,4 +20,6 @@ const PostSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 }, { collection: "posts" });
 
+PostSchema.index({ type: 1, published: 1, createdAt: -1 });
+
 export default mongoose.models.Post || mongoose.model("Post", PostSchema);

@@ -1,14 +1,36 @@
 import NavigationTop from "@/components/elements/NavigationTop";
+import { AppSessionProvider } from "@/components/auth/AppSessionContext";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/auth");
+  }
+
+  const sessionForClient = {
+    user: {
+      name: session.user.name ?? null,
+      email: session.user.email ?? null,
+      image: session.user.image ?? null,
+    },
+  };
+
   return (
-    <>
-      <NavigationTop />
-      <main className="min-h-svh bg-neutral-950">{children}</main>
-    </>
+    <AppSessionProvider session={sessionForClient}>
+      <>
+        <NavigationTop />
+        <main className="min-h-svh bg-neutral-950">{children}</main>
+      </>
+    </AppSessionProvider>
   );
 }

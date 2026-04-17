@@ -281,7 +281,58 @@
         "cloud": "Nube",
         "networking": "Redes",
         "monitoring": "Monitoreo",
-        "security": "Seguridad"
+        "security": "Seguridad",
+        "observability": "Observability"
+      },
+      "items": {
+        "cloudflare": {
+          "name": "Cloudflare",
+          "description": "Secure and accelerate your websites with Cloudflare's global network.",
+          "details": "Use NetGoat as a reverse proxy with Cloudflare for enhanced security and performance."
+        },
+        "sentry": {
+          "name": "Sentry",
+          "description": "Real-time error tracking to help you optimize the performance of your code.",
+          "details": "Sentry provides real-time error monitoring and performance tracking for all your applications. Quickly identify and resolve issues with detailed stack traces and context."
+        },
+        "grafana": {
+          "name": "Grafana",
+          "description": "Modern monitoring and security for cloud-scale applications.",
+          "details": "Grafana is a monitoring and visualization tool that allows you to create dashboards and alerts for your infrastructure and applications."
+        },
+        "tailscale": {
+          "name": "Tailscale",
+          "description": "Tailscale is a zero-config VPN for secure networking.",
+          "details": "Use NetGoat as a MITM for your Tailscale devices."
+        },
+        "googleCloud": {
+          "name": "Google Cloud Platform",
+          "description": "The suite of cloud computing services that runs on the same infrastructure that Google uses internally.",
+          "details": "Spin up virtual machines and have them already configured to use NetGoat as a proxy."
+        },
+        "amazonWebServices": {
+          "name": "Amazon Web Services",
+          "description": "Comprehensive and broadly adopted cloud platform offering over 200 fully featured services.",
+          "details": "Spin up virtual machines and have them already configured to use NetGoat as a proxy."
+        },
+        "ngrok": {
+          "name": "Ngrok",
+          "description": "Secure introspectable tunnels to localhost for easy testing and sharing.",
+          "details": "Ngrok lets you expose a local server to the internet securely. Use NetGoat to monitor and analyze traffic passing through your Ngrok tunnels."
+        }
+      },
+      "shared": {
+        "status": {
+          "installed": "Installed",
+          "disabled": "Disabled"
+        },
+        "actions": {
+          "viewDetails": "View Details",
+          "cancel": "Cancel",
+          "install": "Install",
+          "uninstall": "Uninstall",
+          "close": "Close"
+        }
       }
     },
     "settings": {
@@ -305,6 +356,188 @@
       },
       "actions": {
         "save": "Guardar"
+      },
+      "common": {
+        "notAvailable": "N/A"
+      },
+      "placeholders": {
+        "optional": "Optional"
+      },
+      "billing": {
+        "planAndUsage": {
+          "title": "Plan & Usage",
+          "description": "Review your current plan and payment preferences.",
+          "currentPlanLabel": "Current Plan",
+          "currentPlanValue": "Pro Team",
+          "pricePerMonth": "{amount} / month",
+          "domainUsageLabel": "Domain Usage",
+          "domainUsageValue": "{used} of {total} domains used"
+        },
+        "form": {
+          "billingContactEmail": "Billing Contact Email",
+          "autoRecharge": "Automatically recharge credits when balance is low"
+        },
+        "actions": {
+          "save": "Save billing settings"
+        }
+      },
+      "invoices": {
+        "preferences": {
+          "title": "Invoice Preferences",
+          "description": "Configure where invoices are sent and optional accounting metadata.",
+          "invoiceRecipientEmail": "Invoice Recipient Email",
+          "poNumber": "PO Number"
+        },
+        "recent": {
+          "title": "Recent Invoices",
+          "issued": "{period} · Issued {issuedOn}"
+        },
+        "status": {
+          "paid": "Paid",
+          "pending": "Pending"
+        },
+        "actions": {
+          "savePreferences": "Save invoice preferences",
+          "downloadPdf": "Download PDF"
+        },
+        "downloadContent": {
+          "invoiceId": "Invoice ID: {id}",
+          "period": "Period: {period}",
+          "amount": "Amount: {amount}",
+          "status": "Status: {status}",
+          "issuedOn": "Issued On: {issuedOn}",
+          "recipient": "Recipient: {recipient}",
+          "poNumber": "PO Number: {value}"
+        }
+      },
+      "members": {
+        "title": "Team Members",
+        "description": "Manage member roles and monitor account activity.",
+        "inviteTitle": "Invite Member",
+        "emailLabel": "Email",
+        "roleLabel": "Role",
+        "placeholders": {
+          "email": "name@company.com"
+        },
+        "roles": {
+          "owner": "Owner",
+          "admin": "Admin",
+          "member": "Member",
+          "viewer": "Viewer"
+        },
+        "lastActive": {
+          "minutesAgo2": "2 minutes ago",
+          "minutesAgo15": "15 minutes ago",
+          "yesterday": "Yesterday",
+          "justInvited": "Just invited"
+        },
+        "actions": {
+          "sendInvite": "Send Invite"
+        }
+      },
+      "accessGroups": {
+        "title": "Access Groups",
+        "description": "Assign permission bundles to simplify access management.",
+        "labels": {
+          "membersCount": "{count} members",
+          "permissionsCount": "{count} permissions"
+        },
+        "form": {
+          "newNameLabel": "New Access Group Name",
+          "descriptionLabel": "Group Description",
+          "defaultAccessLabel": "Default Access for New Members"
+        },
+        "placeholders": {
+          "newName": "e.g. Incident Responders",
+          "optional": "Optional"
+        },
+        "defaults": {
+          "platformAdmins": {
+            "name": "Platform Admins",
+            "description": "Full access to domains, analytics, and incident tooling."
+          },
+          "securityTeam": {
+            "name": "Security Team",
+            "description": "Read access with security policy and incident response rights."
+          },
+          "support": {
+            "name": "Support",
+            "description": "Limited account and team visibility with no billing access."
+          },
+          "customDescription": "Custom access group."
+        },
+        "actions": {
+          "create": "Create Access Group"
+        }
+      },
+      "webhooks": {
+        "title": "Webhooks",
+        "description": "Send events to your systems in near real-time.",
+        "endpointUrlLabel": "Endpoint URL",
+        "signingSecretLabel": "Signing Secret",
+        "eventsLabel": "Events",
+        "events": {
+          "incidentUpdates": "Incident updates",
+          "domainStatusChanges": "Domain status changes",
+          "billingEvents": "Billing events"
+        },
+        "placeholders": {
+          "endpointUrl": "https://api.example.com/webhooks/netgoat",
+          "signingSecret": "whsec_..."
+        },
+        "actions": {
+          "sending": "Sending...",
+          "sendTestEvent": "Send Test Event",
+          "save": "Save Webhook"
+        },
+        "summary": {
+          "activeEndpoint": "Active endpoint: {url}",
+          "secret": "Secret: {value}",
+          "events": "Events: {value}",
+          "lastUpdated": "Last updated: {value}"
+        }
+      },
+      "securityPrivacy": {
+        "title": "Security & Privacy",
+        "description": "Harden authentication and define privacy defaults.",
+        "require2fa": "Require two-factor authentication for all members",
+        "emailMethods": "Email verification methods",
+        "enableMagicLink": "Enable Magic Link verification via email",
+        "enableEmailCode": "Enable Code verification via email",
+        "retentionDaysLabel": "Data Retention Window (days)",
+        "messages": {
+          "saved": "Security settings saved.",
+          "enableMethodBeforeSave": "Enable Magic Link or Email Code before saving.",
+          "atLeastOneMethodEnabled": "At least one email verification method must remain enabled."
+        },
+        "actions": {
+          "save": "Save security settings"
+        }
+      },
+      "toasts": {
+        "teamNameEmpty": "Team name cannot be empty.",
+        "teamNameSaved": "Team name saved.",
+        "billingEmailInvalid": "Enter a valid billing email.",
+        "billingSaved": "Billing settings saved.",
+        "invoiceEmailInvalid": "Enter a valid invoice recipient email.",
+        "invoiceSaved": "Invoice preferences saved.",
+        "invoiceDownloaded": "Downloaded {id}.",
+        "memberEmailInvalid": "Enter a valid member email.",
+        "memberExists": "This member already exists.",
+        "invitationCreated": "Invitation created.",
+        "accessGroupNameRequired": "Access group name is required.",
+        "accessGroupExists": "An access group with this name already exists.",
+        "accessGroupCreated": "Access group created.",
+        "webhookUrlInvalid": "Enter a valid webhook URL.",
+        "webhookSecretTooShort": "Signing secret should be at least 8 characters.",
+        "webhookEventRequired": "Enable at least one webhook event.",
+        "webhookSaved": "Webhook settings saved.",
+        "webhookInvalidBeforeTest": "Set a valid endpoint URL before sending a test event.",
+        "webhookTestFailedStatus": "Webhook test failed with status {status}.",
+        "webhookTestSent": "Webhook test event sent.",
+        "webhookTestFailed": "Webhook test failed. Check endpoint availability and CORS.",
+        "securityMethodRequired": "Enable at least one email verification method.",
+        "securitySaved": "Security settings saved."
       }
     },
     "domain": {

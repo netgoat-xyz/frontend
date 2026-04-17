@@ -315,3 +315,73 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
     </Html>
   );
 };
+
+interface TeamInviteEmailProps {
+  inviteLink: string;
+  teamName: string;
+  roleName: string;
+  invitedByName: string;
+  appName: string;
+}
+
+function formatRoleName(roleName: string) {
+  return roleName
+    .replace(/[_-]+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(" ");
+}
+
+export const TeamInviteEmail: React.FC<TeamInviteEmailProps> = ({
+  inviteLink,
+  teamName,
+  roleName,
+  invitedByName,
+  appName,
+}) => {
+  const prettyRole = formatRoleName(roleName);
+
+  return (
+    <Html>
+      <Head />
+      <Preview>{invitedByName} invited you to join {teamName}</Preview>
+      <Body style={styles.main}>
+        <Container style={styles.container}>
+          <EmailHeader appName={appName} />
+
+          <Section style={styles.section}>
+            <Heading style={styles.heading}>You're invited to join {teamName}</Heading>
+            <Text style={styles.paragraph}>
+              <strong>{invitedByName}</strong> invited you to collaborate in <strong>{teamName}</strong> on {appName}.
+            </Text>
+
+            <Text style={styles.paragraph}>
+              Assigned role: <strong>{prettyRole}</strong>
+            </Text>
+
+            <Button href={inviteLink} style={styles.button}>
+              Accept Team Invite
+            </Button>
+
+            <Hr style={styles.hr} />
+
+            <Text style={{ ...styles.paragraph, fontSize: "13px", color: "#666" }}>
+              This invite link expires in 7 days. If this wasn&apos;t expected, you can ignore this email.
+            </Text>
+
+            <Text style={{ ...styles.paragraph, fontSize: "13px", color: "#666", marginBottom: 0 }}>
+              If the button does not work, use this link:
+              <br />
+              <Link href={inviteLink} style={{ color: "#888", textDecoration: "underline" }}>
+                {inviteLink}
+              </Link>
+            </Text>
+          </Section>
+
+          <EmailFooter appName={appName} />
+        </Container>
+      </Body>
+    </Html>
+  );
+};
