@@ -13,9 +13,32 @@
     "source_code": "Source Code",
     "discord": "Discord",
     "public_beta": "✨ Public Beta - Coming Soon...",
+    "hero": {
+      "learnMore": "Learn more",
+      "countdown": {
+        "months": "Months",
+        "days": "Days",
+        "hours": "Hours",
+        "minutes": "Mins",
+        "seconds": "Secs"
+      }
+    },
+    "scrollIndicator": {
+      "label": "Explore"
+    },
     "netgoat": "NetGoat",
     "login": "Login",
+    "header": {
+      "accountLabel": "Account",
+      "dashboard": "Dashboard",
+      "settings": "Settings",
+      "signOut": "Sign out",
+      "userFallback": "User",
+      "userAlt": "User avatar"
+    },
     "features": {
+      "heading": "Built for the modern stack",
+      "description": "Everything you need to build, deploy, and scale your network infrastructure.",
       "speed": {
         "title": "Lightning Fast",
         "description": "Optimized specifically for low-latency connections globally."
@@ -52,10 +75,12 @@
       }
     },
     "testimonials": {
-      "title": "Trusted by developers worldwide"
+      "title": "Trusted by developers worldwide",
+      "comingSoon": "Coming Soon"
     },
     "how_it_works": {
       "title": "How it works",
+      "stepLabel": "Step {number}",
       "step1": {
         "title": "Connect",
         "desc": "Install our lightweight agent on any device."
@@ -76,10 +101,24 @@
     },
     "cta": {
       "title": "Ready to secure your network?",
+      "description": "Deploy in minutes. No credit card required.",
       "button": "Start for free"
     },
     "footer": {
-      "rights": "© 2026 The NetGoat OSS Foundation. All rights reserved."
+      "rights": "© 2026 The NetGoat OSS Foundation. All rights reserved.",
+      "language": "Language",
+      "changeLanguage": "Change language",
+      "close": "Close",
+      "links": {
+        "status": "Status",
+        "docs": "Docs",
+        "github": "GitHub",
+        "discord": "Discord"
+      },
+      "easterEgg": {
+        "label": "Easter egg image popup",
+        "alt": "Easter egg"
+      }
     },
     "blog": {
       "title": "Blog",
@@ -198,6 +237,49 @@
       "description": "You do not have permission to access this sector.",
       "action": "Turn Back Around",
       "imageAlt": "Forbidden access animation"
+    },
+    "banned": {
+      "badge": "Account Restricted",
+      "title": "Your account has been banned",
+      "description": "Access to this workspace is disabled for your account right now. If you think this was a mistake, contact support and include your account email plus any relevant context.",
+      "contactSupport": "Contact Support",
+      "signOut": "Sign Out",
+      "emailSubject": "Account ban appeal"
+    }
+  },
+  "Docs": {
+    "hero": {
+      "badge": "Documentation",
+      "title": "Netgoat Docs",
+      "description": "Everything you need to build, deploy, and scale your network infrastructure."
+    },
+    "mobileNav": "Navigation Menu",
+    "sidebar": {
+      "sections": {
+        "gettingStarted": "Getting Started",
+        "architectureComponents": "Architecture Components",
+        "advanced": "Advanced",
+        "community": "Community & Contribution"
+      },
+      "items": {
+        "introduction": "Introduction",
+        "installation": "Installation",
+        "frontendAdmin": "Frontend & Admin",
+        "controlPlane": "Control Plane",
+        "edgeProxy": "Edge Proxy Engine",
+        "dataStore": "Distributed Data Store",
+        "databaseSchema": "Database Schema",
+        "apiReference": "API Reference",
+        "translations": "Translations"
+      },
+      "subItems": {
+        "backendDatabaseLayer": "Backend Database Layer",
+        "exampleSync": "Example Sync",
+        "netgoatHeaders": "Netgoat Headers",
+        "apiDomains": "Domains",
+        "apiDnsRecords": "DNS Records",
+        "apiEdgeProxy": "Edge Proxy Configurations"
+      }
     }
   },
   "ChangelogDetail": {

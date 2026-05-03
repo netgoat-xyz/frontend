@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
-    "@better-auth/infra": "^0.2.3",
+    "@better-auth/infra": "^0.2.5",
+    "@fontsource/plus-jakarta-sans": "^5.2.8",
     "@headlessui/react": "^2.2.10",
     "@heroicons/react": "^2.2.0",
     "@hugeicons/core-free-icons": "^3.3.0",

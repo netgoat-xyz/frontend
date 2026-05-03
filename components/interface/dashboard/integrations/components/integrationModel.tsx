@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -28,28 +28,33 @@ export default function IntegrationModal({
   integration,
 }: IntegrationModalProps) {
   const t = useTranslations("DashboardPages.integrations.shared");
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => setMounted(true), []);
+
+  // Lock scroll
   useEffect(() => {
-    if (isOpen) {
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-    } else {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
+    if (typeof document !== "undefined") {
+      document.documentElement.style.overflow = isOpen ? "hidden" : "";
+      document.body.style.overflow = isOpen ? "hidden" : "";
     }
 
     return () => {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
+      if (typeof document !== "undefined") {
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+      }
     };
   }, [isOpen]);
 
-  if (!integration) return null;
+  if (!mounted || !integration) return null;
 
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-100 p-4 md:p-6">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6">
+          
+          {/* Backdrop */}
           <motion.div
             className="absolute inset-0 bg-black/60 backdrop-blur-md"
             initial={{ opacity: 0 }}
@@ -58,14 +63,16 @@ export default function IntegrationModal({
             onClick={onClose}
           />
 
+          {/* Modal */}
           <motion.div
-            className="fixed left-1/2 top-1/2 z-10 w-[min(100%-2rem,32rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto -translate-x-1/2 -translate-y-1/2 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 md:p-8 shadow-2xl"
             initial={{ scale: 0.95, opacity: 0, y: 10 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 400 }}
             onClick={(e) => e.stopPropagation()}
+            className="relative z-10 w-[min(100%-2rem,32rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto bg-neutral-900 border border-neutral-800 rounded-2xl p-6 md:p-8 shadow-2xl"
           >
+            {/* Close */}
             <button
               onClick={onClose}
               aria-label={t("actions.close")}
@@ -74,6 +81,7 @@ export default function IntegrationModal({
               <XMarkIcon className="size-5" />
             </button>
 
+            {/* Header */}
             <div className="flex items-center space-x-4 mb-6">
               {integration.logo ? (
                 <Image
@@ -100,10 +108,12 @@ export default function IntegrationModal({
               </div>
             </div>
 
+            {/* Body */}
             <p className="text-neutral-400 text-sm leading-relaxed mb-8">
               {integration.details || integration.description}
             </p>
 
+            {/* Actions */}
             <div className="flex items-center gap-3">
               <button
                 onClick={onClose}

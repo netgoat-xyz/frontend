@@ -8,7 +8,13 @@ import {
   runBillingDebugTests,
   updateBillingSettings,
 } from "@/actions/billing";
+import {
+  runDeveloperAnalyticsProbe,
+  sendDeveloperDebugEmail,
+  type DebugEmailTemplate,
+} from "@/actions/debug";
 import { getExperiments } from "@/actions/experiments";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -19,6 +25,8 @@ type BillingSettingsResponse = Awaited<ReturnType<typeof updateBillingSettings>>
 type DebugInvoiceResponse = Awaited<ReturnType<typeof createDebugInvoice>>;
 type PolarCheckoutResponse = Awaited<ReturnType<typeof createPolarCheckoutSession>>;
 type PolarPortalResponse = Awaited<ReturnType<typeof createPolarCustomerPortalSession>>;
+type DebugEmailResponse = Awaited<ReturnType<typeof sendDeveloperDebugEmail>>;
+type AnalyticsProbeResponse = Awaited<ReturnType<typeof runDeveloperAnalyticsProbe>>;
 type BillingInterval = "monthly" | "annual";
 
 type LastActionPayload =
@@ -28,6 +36,8 @@ type LastActionPayload =
   | DebugInvoiceResponse
   | PolarCheckoutResponse
   | PolarPortalResponse
+  | DebugEmailResponse
+  | AnalyticsProbeResponse
   | null;
 
 function formatMoney(amount: number, currency: string) {
@@ -92,6 +102,22 @@ export default function TestBillingPage() {
   const [lastPayload, setLastPayload] = useState<LastActionPayload>(null);
   const [canViewTestingTools, setCanViewTestingTools] = useState(false);
   const [flagCheckComplete, setFlagCheckComplete] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState("");
+  const [emailTemplate, setEmailTemplate] =
+    useState<DebugEmailTemplate>("welcome");
+  const [inviteTeamName, setInviteTeamName] = useState("Debug Team");
+  const [inviteRoleName, setInviteRoleName] = useState("member");
+  const [inviteLink, setInviteLink] = useState("");
+  const [magicLinkUrl, setMagicLinkUrl] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [sendingDebugEmail, setSendingDebugEmail] = useState(false);
+  const [debugEmailResult, setDebugEmailResult] =
+    useState<DebugEmailResponse | null>(null);
+  const [analyticsPath, setAnalyticsPath] = useState("/debug");
+  const [analyticsVisitorId, setAnalyticsVisitorId] = useState("");
+  const [runningAnalyticsProbe, setRunningAnalyticsProbe] = useState(false);
+  const [analyticsProbeResult, setAnalyticsProbeResult] =
+    useState<AnalyticsProbeResponse | null>(null);
 
   const normalizedSlug = useMemo(() => {
     const trimmed = slug.trim();
@@ -148,6 +174,13 @@ export default function TestBillingPage() {
       setBillingEmail(response.billingEmail || "");
       setInvoiceEmail(response.invoiceEmail || "");
       setPoNumber(response.poNumber || "");
+      setEmailRecipient((current) => {
+        if (current.trim().length > 0) {
+          return current;
+        }
+
+        return response.billingEmail || response.invoiceEmail || "";
+      });
       setAutoRecharge(Boolean(response.autoRecharge));
       setRequestedInterval(response.billingInterval === "annual" ? "annual" : "monthly");
       setRequestedSeats(Math.max(1, Math.floor(Number(response.seatCount || 1) || 1)));
@@ -279,6 +312,56 @@ export default function TestBillingPage() {
     }
   }
 
+  async function handleSendDebugEmail(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!emailRecipient.trim()) {
+      toast.error("Enter an email recipient first.");
+      return;
+    }
+
+    try {
+      setSendingDebugEmail(true);
+      const response = await sendDeveloperDebugEmail({
+        to: emailRecipient,
+        template: emailTemplate,
+        teamName: inviteTeamName,
+        roleName: inviteRoleName,
+        inviteLink,
+        magicLinkUrl,
+        otpCode,
+      });
+
+      setDebugEmailResult(response);
+      trackAction("sendDeveloperDebugEmail", response);
+      toast.success(`Debug ${emailTemplate} email sent.`);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to send debug email."));
+    } finally {
+      setSendingDebugEmail(false);
+    }
+  }
+
+  async function handleRunAnalyticsProbe(e: React.FormEvent) {
+    e.preventDefault();
+
+    try {
+      setRunningAnalyticsProbe(true);
+      const response = await runDeveloperAnalyticsProbe({
+        path: analyticsPath,
+        visitorId: analyticsVisitorId,
+      });
+
+      setAnalyticsProbeResult(response);
+      trackAction("runDeveloperAnalyticsProbe", response);
+      toast.success("Analytics probe events tracked.");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to run analytics probe."));
+    } finally {
+      setRunningAnalyticsProbe(false);
+    }
+  }
+
   const isBusy = busyAction !== null;
 
   if (!flagCheckComplete) {
@@ -293,10 +376,9 @@ export default function TestBillingPage() {
     <div className="mx-6">
       <div className="mx-auto max-w-7xl px-6 py-10 text-white">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Test Billing</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Developer Debug Console</h1>
           <p className="mt-2 text-sm text-neutral-400">
-            Use this page to test billing actions end-to-end without going through the full
-            settings workflow.
+            Test payment, email, and analytics flows from one place.
           </p>
         </header>
 
@@ -416,40 +498,42 @@ export default function TestBillingPage() {
             <div className="space-y-4 text-sm">
               <label className="block space-y-1">
                 <span className="text-neutral-300">Checkout Plan</span>
-                <select
+                <CustomSelect
                   value={requestedPlan}
-                  onChange={(event) =>
+                  onValueChange={(value) =>
                     setRequestedPlan(
-                      event.target.value === "enterprise"
+                      value === "enterprise"
                         ? "enterprise"
-                        : event.target.value === "free"
+                        : value === "free"
                           ? "free"
                           : "pro",
                     )
                   }
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
-                >
-                  <option value="free">free</option>
-                  <option value="pro">pro</option>
-                  <option value="enterprise">enterprise</option>
-                </select>
+                  options={[
+                    { value: "free", label: "free" },
+                    { value: "pro", label: "pro" },
+                    { value: "enterprise", label: "enterprise" },
+                  ]}
+                  triggerClassName="w-full border-neutral-700 bg-neutral-800 focus-visible:border-neutral-500"
+                />
               </label>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block space-y-1">
                   <span className="text-neutral-300">Billing Interval</span>
-                  <select
+                  <CustomSelect
                     value={requestedInterval}
-                    onChange={(event) =>
+                    onValueChange={(value) =>
                       setRequestedInterval(
-                        event.target.value === "annual" ? "annual" : "monthly",
+                        value === "annual" ? "annual" : "monthly",
                       )
                     }
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
-                  >
-                    <option value="monthly">monthly</option>
-                    <option value="annual">annual</option>
-                  </select>
+                    options={[
+                      { value: "monthly", label: "monthly" },
+                      { value: "annual", label: "annual" },
+                    ]}
+                    triggerClassName="w-full border-neutral-700 bg-neutral-800 focus-visible:border-neutral-500"
+                  />
                 </label>
 
                 <label className="block space-y-1">
@@ -494,6 +578,165 @@ export default function TestBillingPage() {
                 Checkout and portal are opened in a new tab so you can keep this test page open.
               </p>
             </div>
+          </section>
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
+            <h2 className="mb-4 text-lg font-semibold">Email Delivery Test</h2>
+
+            <form onSubmit={handleSendDebugEmail} className="space-y-4 text-sm">
+              <label className="block space-y-1">
+                <span className="text-neutral-300">Recipient</span>
+                <input
+                  type="email"
+                  value={emailRecipient}
+                  onChange={(event) => setEmailRecipient(event.target.value)}
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
+                  placeholder="qa@example.com"
+                />
+              </label>
+
+              <label className="block space-y-1">
+                <span className="text-neutral-300">Template</span>
+                <CustomSelect
+                  value={emailTemplate}
+                  onValueChange={(value) =>
+                    setEmailTemplate(value as DebugEmailTemplate)
+                  }
+                  options={[
+                    { value: "welcome", label: "welcome" },
+                    { value: "teamInvite", label: "team invite" },
+                    { value: "magicLink", label: "magic link" },
+                    { value: "otp", label: "otp" },
+                  ]}
+                  triggerClassName="w-full border-neutral-700 bg-neutral-800 focus-visible:border-neutral-500"
+                />
+              </label>
+
+              {emailTemplate === "teamInvite" && (
+                <>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="block space-y-1">
+                      <span className="text-neutral-300">Team Name</span>
+                      <input
+                        value={inviteTeamName}
+                        onChange={(event) => setInviteTeamName(event.target.value)}
+                        className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
+                        placeholder="Debug Team"
+                      />
+                    </label>
+
+                    <label className="block space-y-1">
+                      <span className="text-neutral-300">Role Name</span>
+                      <input
+                        value={inviteRoleName}
+                        onChange={(event) => setInviteRoleName(event.target.value)}
+                        className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
+                        placeholder="member"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="block space-y-1">
+                    <span className="text-neutral-300">Invite URL (optional)</span>
+                    <input
+                      value={inviteLink}
+                      onChange={(event) => setInviteLink(event.target.value)}
+                      className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
+                      placeholder="https://example.com/invite/token"
+                    />
+                  </label>
+                </>
+              )}
+
+              {emailTemplate === "magicLink" && (
+                <label className="block space-y-1">
+                  <span className="text-neutral-300">Magic Link URL (optional)</span>
+                  <input
+                    value={magicLinkUrl}
+                    onChange={(event) => setMagicLinkUrl(event.target.value)}
+                    className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
+                    placeholder="https://example.com/auth/callback"
+                  />
+                </label>
+              )}
+
+              {emailTemplate === "otp" && (
+                <label className="block space-y-1">
+                  <span className="text-neutral-300">OTP Code (optional)</span>
+                  <input
+                    value={otpCode}
+                    onChange={(event) => setOtpCode(event.target.value)}
+                    className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
+                    placeholder="482951"
+                  />
+                </label>
+              )}
+
+              <button
+                type="submit"
+                disabled={sendingDebugEmail}
+                className="rounded-md border border-neutral-600 px-3 py-2 transition hover:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {sendingDebugEmail ? "Sending..." : "Send Debug Email"}
+              </button>
+            </form>
+
+            {debugEmailResult && (
+              <div className="mt-4 rounded-md border border-neutral-800 bg-neutral-800/60 p-3 text-xs text-neutral-300">
+                <p>
+                  Sent to <strong>{debugEmailResult.to}</strong> using <strong>{debugEmailResult.template}</strong>.
+                </p>
+                <p className="mt-1">Message ID: {debugEmailResult.messageId || "(not provided)"}</p>
+              </div>
+            )}
+          </section>
+
+          <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
+            <h2 className="mb-4 text-lg font-semibold">Analytics Probe</h2>
+
+            <form onSubmit={handleRunAnalyticsProbe} className="space-y-4 text-sm">
+              <label className="block space-y-1">
+                <span className="text-neutral-300">Path</span>
+                <input
+                  value={analyticsPath}
+                  onChange={(event) => setAnalyticsPath(event.target.value)}
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
+                  placeholder="/debug"
+                />
+              </label>
+
+              <label className="block space-y-1">
+                <span className="text-neutral-300">Visitor ID (optional)</span>
+                <input
+                  value={analyticsVisitorId}
+                  onChange={(event) => setAnalyticsVisitorId(event.target.value)}
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:border-neutral-500"
+                  placeholder="debug-visitor-1"
+                />
+              </label>
+
+              <button
+                type="submit"
+                disabled={runningAnalyticsProbe}
+                className="rounded-md border border-neutral-600 px-3 py-2 transition hover:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {runningAnalyticsProbe ? "Running..." : "Run Analytics Probe"}
+              </button>
+            </form>
+
+            {analyticsProbeResult && (
+              <div className="mt-4 rounded-md border border-neutral-800 bg-neutral-800/60 p-3 text-xs text-neutral-300">
+                <p>
+                  Tracked events for <strong>{analyticsProbeResult.path}</strong> with visitor <strong>{analyticsProbeResult.visitorId}</strong>.
+                </p>
+                <p className="mt-1">
+                  Sample metric: {analyticsProbeResult.sampledMetric.name}={" "}
+                  {analyticsProbeResult.sampledMetric.value} ({analyticsProbeResult.sampledMetric.rating})
+                </p>
+              </div>
+            )}
           </section>
         </div>
 

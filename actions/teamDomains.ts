@@ -8,6 +8,11 @@ import { Team } from '@/models/Team'
 import DNSRecord from '@/models/DNSRecord'
 import ProxyConfig from '@/models/ProxyConfig'
 import { revalidatePath } from 'next/cache'
+import {
+  isValidSubdomainLabel,
+  sanitizeSubdomainLabel,
+  validateDomainWithOnlineTld
+} from '@/lib/domain-validation'
 
 async function resolveTeam(teamSlug: string, userId: string, userName: string) {
   // Decode URL-encoded parameters (e.g., %40me -> @me)
@@ -130,6 +135,22 @@ export async function createDomainForTeam(
     throw new Error(`Domain limit reached (${team.max_domains} max)`)
   }
 
+  const domainValidation = await validateDomainWithOnlineTld(data.domain)
+  if (!domainValidation.valid) {
+    throw new Error(domainValidation.message || 'Invalid domain name')
+  }
+
+  const normalizedDomain = domainValidation.sanitized
+
+  const existingDomain = await Domain.findOne({
+    team_id: team._id,
+    domain: normalizedDomain
+  }).lean()
+
+  if (existingDomain) {
+    throw new Error('Domain already exists for this team')
+  }
+
   // Use provided token or generate a new one
   const crypto = require('crypto')
   const verificationToken = data.verification_token || `netgoat-verify-${crypto.randomBytes(32).toString('hex')}`
@@ -140,7 +161,7 @@ export async function createDomainForTeam(
 
   const domain = await Domain.create({
     team_id: team._id,
-    domain: data.domain,
+    domain: normalizedDomain,
     target_url: data.target_url,
     certificate_pem: data.certificate_pem || null,
     private_key_pem: data.private_key_pem || null,
@@ -418,9 +439,22 @@ export async function addSubdomain(
     throw new Error('Domain not found')
   }
 
-  const fullDomain = `${data.subdomain}.${domain.domain}`
+  const sanitizedSubdomain = sanitizeSubdomainLabel(data.subdomain)
+  if (!isValidSubdomainLabel(sanitizedSubdomain)) {
+    throw new Error('Invalid subdomain label')
+  }
 
-  await domain.addSubdomain(data.subdomain, data.target_url, {
+  const subdomainExists = Array.isArray(domain.subdomains)
+    ? domain.subdomains.some((entry: any) => entry.subdomain === sanitizedSubdomain)
+    : false
+
+  if (subdomainExists) {
+    throw new Error('Subdomain already exists for this domain')
+  }
+
+  const fullDomain = `${sanitizedSubdomain}.${domain.domain}`
+
+  await domain.addSubdomain(sanitizedSubdomain, data.target_url, {
     certificate_pem: data.certificate_pem,
     private_key_pem: data.private_key_pem
   })
@@ -458,7 +492,12 @@ export async function removeSubdomain(teamSlug: string, domainId: string, subdom
     throw new Error('Domain not found')
   }
 
-  await domain.removeSubdomain(subdomain)
+  const sanitizedSubdomain = sanitizeSubdomainLabel(subdomain)
+  if (!isValidSubdomainLabel(sanitizedSubdomain)) {
+    throw new Error('Invalid subdomain label')
+  }
+
+  await domain.removeSubdomain(sanitizedSubdomain)
 
   revalidatePath(`/dashboard/${teamSlug}`)
   return { success: true }
@@ -591,8 +630,13 @@ export async function addSubdomainWAFRule(
     throw new Error('Domain not found')
   }
 
+  const sanitizedSubdomain = sanitizeSubdomainLabel(subdomain)
+  if (!isValidSubdomainLabel(sanitizedSubdomain)) {
+    throw new Error('Invalid subdomain label')
+  }
+
   await domain.addSubdomainWAFRule(
-    subdomain,
+    sanitizedSubdomain,
     data.name,
     data.expression,
     data.action || 'BLOCK',
@@ -637,7 +681,12 @@ export async function removeSubdomainWAFRule(
     throw new Error('Domain not found')
   }
 
-  await domain.removeSubdomainWAFRule(subdomain, ruleName)
+  const sanitizedSubdomain = sanitizeSubdomainLabel(subdomain)
+  if (!isValidSubdomainLabel(sanitizedSubdomain)) {
+    throw new Error('Invalid subdomain label')
+  }
+
+  await domain.removeSubdomainWAFRule(sanitizedSubdomain, ruleName)
 
   revalidatePath(`/dashboard/${teamSlug}`)
   return { success: true }

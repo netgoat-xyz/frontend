@@ -13,9 +13,32 @@
     "source_code": "Quellcode",
     "discord": "Discord",
     "public_beta": "✨ Öffentliche Beta - Kommt bald...",
+    "hero": {
+      "learnMore": "Mehr erfahren",
+      "countdown": {
+        "months": "Monate",
+        "days": "Tage",
+        "hours": "Stunden",
+        "minutes": "Min.",
+        "seconds": "Sek."
+      }
+    },
+    "scrollIndicator": {
+      "label": "Entdecken"
+    },
     "netgoat": "NetGoat",
     "login": "Anmelden",
+    "header": {
+      "accountLabel": "Konto",
+      "dashboard": "Dashboard",
+      "settings": "Einstellungen",
+      "signOut": "Abmelden",
+      "userFallback": "Benutzer",
+      "userAlt": "Benutzeravatar"
+    },
     "features": {
+      "heading": "Für den modernen Stack gebaut",
+      "description": "Alles, was Sie zum Aufbau, zur Bereitstellung und Skalierung Ihrer Netzwerkinfrastruktur benötigen.",
       "speed": {
         "title": "Blitzschnell",
         "description": "Optimiert für geringe Latenz weltweit."
@@ -52,10 +75,12 @@
       }
     },
     "testimonials": {
-      "title": "Weltweit von Entwicklern vertraut"
+      "title": "Weltweit von Entwicklern vertraut",
+      "comingSoon": "Kommt bald"
     },
     "how_it_works": {
       "title": "Wie es funktioniert",
+      "stepLabel": "Schritt {number}",
       "step1": {
         "title": "Verbinden",
         "desc": "Installieren Sie unseren leichtgewichtigen Agenten auf jedem Gerät."
@@ -76,10 +101,24 @@
     },
     "cta": {
       "title": "Bereit, Ihr Netzwerk zu sichern?",
+      "description": "In Minuten bereitstellen. Keine Kreditkarte erforderlich.",
       "button": "Kostenlos starten"
     },
     "footer": {
-      "rights": "© 2026 Die NetGoat OSS Foundation. Alle Rechte vorbehalten."
+      "rights": "© 2026 Die NetGoat OSS Foundation. Alle Rechte vorbehalten.",
+      "language": "Sprache",
+      "changeLanguage": "Sprache ändern",
+      "close": "Schließen",
+      "links": {
+        "status": "Status",
+        "docs": "Docs",
+        "github": "GitHub",
+        "discord": "Discord"
+      },
+      "easterEgg": {
+        "label": "Easter-Egg-Bild-Popup",
+        "alt": "Easter Egg"
+      }
     },
     "blog": {
       "title": "Blog",
@@ -198,6 +237,49 @@
       "description": "Sie haben keine Berechtigung, auf diesen Sektor zuzugreifen.",
       "action": "Umkehren",
       "imageAlt": "Verweigerter Zugriff Animation"
+    },
+    "banned": {
+      "badge": "Konto eingeschränkt",
+      "title": "Ihr Konto wurde gesperrt",
+      "description": "Der Zugriff auf diesen Workspace ist für Ihr Konto derzeit deaktiviert. Wenn Sie glauben, dass dies ein Fehler ist, kontaktieren Sie den Support und fügen Sie Ihre Konto-E-Mail sowie relevante Details hinzu.",
+      "contactSupport": "Support kontaktieren",
+      "signOut": "Abmelden",
+      "emailSubject": "Einspruch gegen Kontosperre"
+    }
+  },
+  "Docs": {
+    "hero": {
+      "badge": "Dokumentation",
+      "title": "Netgoat-Dokumentation",
+      "description": "Alles, was Sie zum Aufbau, zur Bereitstellung und Skalierung Ihrer Netzwerkinfrastruktur benötigen."
+    },
+    "mobileNav": "Navigationsmenü",
+    "sidebar": {
+      "sections": {
+        "gettingStarted": "Erste Schritte",
+        "architectureComponents": "Architekturkomponenten",
+        "advanced": "Erweitert",
+        "community": "Community & Beitrag"
+      },
+      "items": {
+        "introduction": "Einführung",
+        "installation": "Installation",
+        "frontendAdmin": "Frontend & Admin",
+        "controlPlane": "Kontrollebene",
+        "edgeProxy": "Edge-Proxy-Engine",
+        "dataStore": "Verteilter Datenspeicher",
+        "databaseSchema": "Datenbankschema",
+        "apiReference": "API-Referenz",
+        "translations": "Übersetzungen"
+      },
+      "subItems": {
+        "backendDatabaseLayer": "Backend-Datenbankschicht",
+        "exampleSync": "Beispiel-Sync",
+        "netgoatHeaders": "Netgoat-Header",
+        "apiDomains": "Domains",
+        "apiDnsRecords": "DNS-Einträge",
+        "apiEdgeProxy": "Edge-Proxy-Konfigurationen"
+      }
     }
   },
   "ChangelogDetail": {

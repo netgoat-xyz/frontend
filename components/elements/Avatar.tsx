@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { Dropdown, DropdownItem } from "./Dropdown";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 interface AvatarProps {
   src?: string;
@@ -19,6 +21,8 @@ export default function Avatar({
   className = "",
   size = "sm",
 }: AvatarProps) {
+  const router = useRouter();
+
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -50,7 +54,10 @@ export default function Avatar({
         `}
       >
         <Image
-          src={src || `https://tapback.co/api/avatar/${encodeURIComponent(username)}`}
+          src={
+            src ||
+            `https://tapback.co/api/avatar/${encodeURIComponent(username)}`
+          }
           alt={username}
           width={sizePx}
           height={sizePx}
@@ -77,7 +84,12 @@ export default function Avatar({
             <DropdownItem label="Dashboard" href="/dashboard" />
             <DropdownItem label="Settings" href="/account/settings" />
             <div className="h-px bg-neutral-800 my-1.5 mx-1" />
-            <DropdownItem label="Sign out" href="/logout" />
+            <button
+              onClick={() => authClient.signOut().then(() => router.refresh())}
+              className="cursor-pointer w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+            >
+              Sign out
+            </button>
           </div>
         </Dropdown>
       )}

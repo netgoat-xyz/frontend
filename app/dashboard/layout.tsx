@@ -1,6 +1,7 @@
 import NavigationTop from "@/components/elements/NavigationTop";
 import { AppSessionProvider } from "@/components/auth/AppSessionContext";
 import { auth } from "@/lib/auth";
+import { isBannedSessionUser } from "@/lib/user-status";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
@@ -23,6 +24,10 @@ export default async function DashboardLayout({
 
   if (!session) {
     redirect("/auth");
+  }
+
+  if (isBannedSessionUser(session)) {
+    redirect("/banned");
   }
 
   const sessionForClient = {

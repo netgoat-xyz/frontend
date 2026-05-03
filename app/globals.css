@@ -152,50 +152,50 @@
 
 @layer components {
   .docs-prose {
-    @apply prose-headings:font-light prose-headings:text-white prose-headings:tracking-tight prose-p:font-light prose-p:text-white/60 prose-p:leading-relaxed prose-li:font-light prose-li:text-white/60 prose-strong:text-white/90 prose-strong:font-normal prose-code:text-white/80 prose-code:font-light prose-pre:text-white/70;
+    @apply prose-headings:font-semibold prose-headings:text-foreground prose-headings:tracking-tight prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-foreground prose-strong:font-semibold prose-code:text-foreground/90 prose-code:bg-muted/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-[0.9em] prose-pre:text-muted-foreground;
   }
 
   .docs-prose :where(a) {
-    @apply text-white border-b border-white/20 no-underline transition-all hover:border-white hover:text-white pb-0.5;
+    @apply text-primary font-medium hover:underline hover:text-primary/80 transition-colors;
   }
 
   .docs-prose :where(hr) {
-    @apply border-white/6;
+    @apply border-border my-8;
   }
 
   .docs-prose :where(h1) {
-    @apply text-4xl md:text-5xl tracking-tight mb-8;
+    @apply text-3xl md:text-4xl tracking-tight mb-6 mt-2;
   }
 
   .docs-prose :where(h2) {
-    @apply text-2xl md:text-3xl tracking-tight mt-12 mb-6;
+    @apply text-2xl md:text-3xl tracking-tight mt-10 mb-4 border-b border-border pb-2;
   }
 
   .docs-prose :where(h3) {
-    @apply text-xl md:text-2xl mt-8 mb-4;
+    @apply text-xl md:text-2xl mt-8 mb-4 tracking-tight;
   }
 
   .docs-prose :where(blockquote) {
-    @apply rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-white/50 backdrop-blur-lg;
-  }
-
-  .docs-prose :where(code):not(:where(pre code)) {
-    @apply rounded-lg border border-white/6 bg-white/[0.03] px-1.5 py-0.5 text-[0.85em] font-mono shadow-sm;
+    @apply border-l-4 border-primary bg-muted/30 px-6 py-4 text-muted-foreground italic rounded-r-lg my-6;
   }
 
   .docs-prose :where(pre) {
-    @apply rounded-3xl border border-white/6 bg-black/40 shadow-2xl p-6;
+    @apply rounded-xl border border-border bg-card/60 shadow-sm p-4 my-6 overflow-x-auto text-[0.9em];
   }
 
   .docs-prose :where(table) {
-    @apply w-full overflow-hidden rounded-2xl border border-white/6 bg-white/[0.02] backdrop-blur-xl shadow-xl;
+    @apply w-full overflow-hidden rounded-lg border border-border bg-card/40 shadow-sm my-8 text-sm;
   }
 
   .docs-prose :where(thead) {
-    @apply bg-white/5 border-b border-white/6;
+    @apply bg-muted/50 border-b border-border text-left;
   }
 
   .docs-prose :where(th, td) {
-    @apply border-b border-white/6 p-4 font-light text-white/60;
+    @apply border-b border-border p-3 text-muted-foreground;
+  }
+  
+  .docs-prose :where(th) {
+    @apply font-medium text-foreground;
   }
 }

@@ -2,8 +2,10 @@
 
 import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ScrollIndicator() {
+  const t = useTranslations("HomePage.scrollIndicator");
   const scrollToContent = () => {
     const content = document.getElementById("content-start");
     if (content) {
@@ -22,11 +24,11 @@ export default function ScrollIndicator() {
       }}
       className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 cursor-pointer group"
     >
-      <span className="text-[10px] font-light text-white/30 tracking-[0.15em] uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        Explore
+      <span className="text-[10px] font-light text-muted-foreground/70 tracking-[0.15em] uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {t("label")}
       </span>
-      <div className="p-2 rounded-full flex items-center justify-center bg-white/3 backdrop-blur-sm border border-white/8 group-hover:bg-white/8 group-hover:border-white/15 transition-all duration-300">
-        <ChevronDown className="w-4 h-4 text-white/50" />
+      <div className="p-2 rounded-full flex items-center justify-center bg-foreground/5 backdrop-blur-sm border border-border/60 group-hover:bg-foreground/10 group-hover:border-border transition-all duration-300">
+        <ChevronDown className="w-4 h-4 text-muted-foreground" />
       </div>
     </motion.button>
   );

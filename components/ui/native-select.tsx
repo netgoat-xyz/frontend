@@ -1,53 +1,134 @@
-import * as React from "react"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { UnfoldMoreIcon } from "@hugeicons/core-free-icons"
+import * as React from "react";
+
+import { CustomSelect, type CustomSelectOption } from "@/components/ui/custom-select";
+import { cn } from "@/lib/utils";
 
 type NativeSelectProps = Omit<React.ComponentProps<"select">, "size"> & {
-  size?: "sm" | "default"
+  size?: "sm" | "default";
+};
+
+type NativeOptionLikeProps = React.ComponentProps<"option">;
+type NativeOptGroupLikeProps = React.ComponentProps<"optgroup">;
+
+function toLabel(node: React.ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") {
+    return String(node);
+  }
+
+  if (Array.isArray(node)) {
+    return node.map(toLabel).join("");
+  }
+
+  return "";
+}
+
+function parseOption(option: React.ReactElement<NativeOptionLikeProps>): CustomSelectOption | null {
+  if (option.props.value === undefined || option.props.value === null) {
+    return null;
+  }
+
+  const value = String(option.props.value);
+  return {
+    value,
+    label: toLabel(option.props.children) || value,
+    disabled: Boolean(option.props.disabled),
+  };
+}
+
+function parseChildrenToOptions(children: React.ReactNode): CustomSelectOption[] {
+  const options: CustomSelectOption[] = [];
+
+  React.Children.forEach(children, (child) => {
+    if (!React.isValidElement(child)) {
+      return;
+    }
+
+    if (child.type === NativeSelectOptGroup || child.type === "optgroup") {
+      React.Children.forEach(child.props.children, (groupChild) => {
+        if (!React.isValidElement(groupChild)) {
+          return;
+        }
+
+        if (groupChild.type === NativeSelectOption || groupChild.type === "option") {
+          const parsed = parseOption(groupChild as React.ReactElement<NativeOptionLikeProps>);
+          if (parsed) {
+            options.push(parsed);
+          }
+        }
+      });
+      return;
+    }
+
+    if (child.type === NativeSelectOption || child.type === "option") {
+      const parsed = parseOption(child as React.ReactElement<NativeOptionLikeProps>);
+      if (parsed) {
+        options.push(parsed);
+      }
+    }
+  });
+
+  return options;
 }
 
 function NativeSelect({
   className,
   size = "default",
+  value,
+  defaultValue,
+  onChange,
+  children,
+  disabled,
+  id,
   ...props
 }: NativeSelectProps) {
+  const options = React.useMemo(() => parseChildrenToOptions(children), [children]);
+
+  const handleValueChange = React.useCallback(
+    (nextValue: string) => {
+      if (!onChange) {
+        return;
+      }
+
+      const syntheticEvent = {
+        target: { value: nextValue },
+      } as React.ChangeEvent<HTMLSelectElement>;
+
+      onChange(syntheticEvent);
+    },
+    [onChange],
+  );
+
   return (
     <div
-      className={cn(
-        "group/native-select relative w-fit has-[select:disabled]:opacity-50",
-        className
-      )}
+      className={cn("group/native-select relative w-fit", className)}
       data-slot="native-select-wrapper"
       data-size={size}
     >
-      <select
-        data-slot="native-select"
-        data-size={size}
-        className="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent py-1 pr-8 pl-2.5 text-sm shadow-xs transition-[color,box-shadow] select-none focus-visible:ring-[3px] aria-invalid:ring-[3px] data-[size=sm]:h-8 outline-none disabled:pointer-events-none disabled:cursor-not-allowed"
-        {...props}
+      <CustomSelect
+        id={id}
+        ariaLabel={typeof props["aria-label"] === "string" ? props["aria-label"] : undefined}
+        value={typeof value === "string" ? value : undefined}
+        defaultValue={typeof defaultValue === "string" ? defaultValue : undefined}
+        onValueChange={handleValueChange}
+        options={options}
+        disabled={disabled}
+        triggerClassName={cn(
+          "border-input dark:bg-input/30 dark:hover:bg-input/50",
+          size === "sm" ? "h-8" : "h-9",
+        )}
       />
-      <HugeiconsIcon icon={UnfoldMoreIcon} strokeWidth={2} className="text-muted-foreground top-1/2 right-2.5 size-4 -translate-y-1/2 pointer-events-none absolute select-none" aria-hidden="true" data-slot="native-select-icon" />
     </div>
-  )
+  );
 }
 
-function NativeSelectOption({ ...props }: React.ComponentProps<"option">) {
-  return <option data-slot="native-select-option" {...props} />
+function NativeSelectOption(_: React.ComponentProps<"option">) {
+  return null;
 }
 
-function NativeSelectOptGroup({
-  className,
-  ...props
-}: React.ComponentProps<"optgroup">) {
-  return (
-    <optgroup
-      data-slot="native-select-optgroup"
-      className={cn(className)}
-      {...props}
-    />
-  )
+function NativeSelectOptGroup(_: NativeOptGroupLikeProps) {
+  return null;
 }
 
-export { NativeSelect, NativeSelectOptGroup, NativeSelectOption }
+export { NativeSelect, NativeSelectOptGroup, NativeSelectOption };

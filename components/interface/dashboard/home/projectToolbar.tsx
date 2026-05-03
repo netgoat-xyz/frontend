@@ -12,6 +12,7 @@ import { SearchIcon, FilterIcon, GridIcon, ListIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Dropdown, DropdownItem } from "../../../elements/Dropdown"; // Assuming it's in the same directory
+import { CustomSelect } from "@/components/ui/custom-select";
 import type { DomainsViewMode, DomainStatusFilter } from "./dashboardDomainsPanel";
 
 type ProjectToolbarProps = {
@@ -56,16 +57,20 @@ export default function ProjectToolbar({
         {/* Filter Button */}
         <div className="relative">
           <FilterIcon className="size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" />
-          <select
+          <CustomSelect
             value={statusFilter}
-            onChange={(e) => onStatusFilterChange(e.target.value as DomainStatusFilter)}
-            className="h-10 min-w-42.5 pl-8 pr-3 rounded-md border border-neutral-800 bg-neutral-900 text-sm text-neutral-300 focus:outline-none focus:border-neutral-700"
-            aria-label={t("filterLabel")}
-          >
-            <option value="all">{t("filters.all")}</option>
-            <option value="verified">{t("filters.verified")}</option>
-            <option value="needs-verification">{t("filters.needsVerification")}</option>
-          </select>
+            onValueChange={(value) => onStatusFilterChange(value as DomainStatusFilter)}
+            ariaLabel={t("filterLabel")}
+            options={[
+              { value: "all", label: t("filters.all") },
+              { value: "verified", label: t("filters.verified") },
+              {
+                value: "needs-verification",
+                label: t("filters.needsVerification"),
+              },
+            ]}
+            triggerClassName="h-10 min-w-42.5 pl-8 rounded-md border-neutral-800 bg-neutral-900 text-sm text-neutral-300 focus-visible:border-neutral-700"
+          />
         </div>
         {/* View Switcher (Grid/List) */}
         <div className="hidden lg:flex bg-neutral-900 border border-neutral-800 rounded-md p-1">

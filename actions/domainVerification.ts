@@ -13,6 +13,7 @@ import crypto from 'crypto'
 import dns from 'dns'
 import { promisify } from 'util'
 import { revalidatePath } from 'next/cache'
+import { validateDomainWithOnlineTld } from '@/lib/domain-validation'
 
 const resolveTxt = promisify(dns.resolveTxt)
 
@@ -77,8 +78,15 @@ export async function generateDomainVerification(
       throw new Error('Insufficient permissions')
     }
 
+    const domainValidation = await validateDomainWithOnlineTld(domain)
+    if (!domainValidation.valid) {
+      throw new Error(domainValidation.message || 'Invalid domain name')
+    }
+
+    const normalizedDomain = domainValidation.sanitized
+
     // Check if domain already exists
-    const existingDomain = await Domain.findOne({ domain })
+    const existingDomain = await Domain.findOne({ domain: normalizedDomain })
     if (existingDomain) {
       throw new Error('Domain already exists in the system')
     }
@@ -91,7 +99,7 @@ export async function generateDomainVerification(
 
     return {
       success: true,
-      domain,
+      domain: normalizedDomain,
       token,
       recordName: '_netgoat-verify',
       recordType: 'TXT'
@@ -163,8 +171,15 @@ export async function verifyDomainOwnership(
       throw new Error('Insufficient permissions')
     }
 
+    const domainValidation = await validateDomainWithOnlineTld(domain)
+    if (!domainValidation.valid) {
+      throw new Error(domainValidation.message || 'Invalid domain name')
+    }
+
+    const normalizedDomain = domainValidation.sanitized
+
     // Check DNS TXT record
-    const verificationHost = `_netgoat-verify.${domain}`
+    const verificationHost = `_netgoat-verify.${normalizedDomain}`
     
     const records = await resolveTxt(verificationHost)
     
@@ -185,7 +200,7 @@ export async function verifyDomainOwnership(
     return {
       success: true,
       verified: true,
-      domain,
+      domain: normalizedDomain,
       message: 'Domain ownership verified successfully'
     }
   } catch (error: any) {
@@ -210,7 +225,16 @@ export async function verifyDomainOwnership(
  */
 export async function checkDNSPropagation(domain: string) {
   try {
-    const records = await resolveTxt(`_netgoat-verify.${domain}`)
+    const domainValidation = await validateDomainWithOnlineTld(domain)
+    if (!domainValidation.valid) {
+      return {
+        success: false,
+        propagated: false,
+        error: domainValidation.message || 'Invalid domain name'
+      }
+    }
+
+    const records = await resolveTxt(`_netgoat-verify.${domainValidation.sanitized}`)
     return {
       success: true,
       propagated: true,
@@ -276,10 +300,17 @@ export async function verifyDomain(teamSlug: string, domainName: string) {
       throw new Error('Insufficient permissions')
     }
 
+    const domainValidation = await validateDomainWithOnlineTld(domainName)
+    if (!domainValidation.valid) {
+      throw new Error(domainValidation.message || 'Invalid domain name')
+    }
+
+    const normalizedDomain = domainValidation.sanitized
+
     // Find the domain
     const domain = await Domain.findOne({
       team_id: team._id,
-      domain: domainName,
+      domain: normalizedDomain,
       active: true
     })
 
@@ -296,7 +327,7 @@ export async function verifyDomain(teamSlug: string, domainName: string) {
     domain.verification_attempts = (domain.verification_attempts || 0) + 1
 
     // Check DNS TXT record
-    const verificationHost = `_netgoat-verify.${domainName}`
+    const verificationHost = `_netgoat-verify.${normalizedDomain}`
     
     try {
       const records = await resolveTxt(verificationHost)
@@ -313,7 +344,7 @@ export async function verifyDomain(teamSlug: string, domainName: string) {
 
         // Revalidate the dashboard to show updated status
         revalidatePath(`/dashboard/${teamSlug}`)
-        revalidatePath(`/dashboard/${teamSlug}/${domainName}`)
+        revalidatePath(`/dashboard/${teamSlug}/${normalizedDomain}`)
 
         return {
           success: true,

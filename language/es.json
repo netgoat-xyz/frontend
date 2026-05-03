@@ -13,9 +13,32 @@
     "source_code": "Código Fuente",
     "discord": "Discord",
     "public_beta": "✨ Beta Pública - Próximamente...",
+    "hero": {
+      "learnMore": "Saber más",
+      "countdown": {
+        "months": "Meses",
+        "days": "Días",
+        "hours": "Horas",
+        "minutes": "Min.",
+        "seconds": "Seg."
+      }
+    },
+    "scrollIndicator": {
+      "label": "Explorar"
+    },
     "netgoat": "NetGoat",
     "login": "Iniciar sesión",
+    "header": {
+      "accountLabel": "Cuenta",
+      "dashboard": "Panel",
+      "settings": "Configuración",
+      "signOut": "Cerrar sesión",
+      "userFallback": "Usuario",
+      "userAlt": "Avatar de usuario"
+    },
     "features": {
+      "heading": "Creado para el stack moderno",
+      "description": "Todo lo que necesitas para construir, desplegar y escalar tu infraestructura de red.",
       "speed": {
         "title": "Ultra Rápido",
         "description": "Optimizado específicamente para conexiones de baja latencia globalmente."
@@ -52,10 +75,12 @@
       }
     },
     "testimonials": {
-      "title": "Confiado por desarrolladores en todo el mundo"
+      "title": "Confiado por desarrolladores en todo el mundo",
+      "comingSoon": "Próximamente"
     },
     "how_it_works": {
       "title": "Cómo funciona",
+      "stepLabel": "Paso {number}",
       "step1": {
         "title": "Conectar",
         "desc": "Instala nuestro agente ligero en cualquier dispositivo."
@@ -76,10 +101,24 @@
     },
     "cta": {
       "title": "¿Listo para asegurar tu red?",
+      "description": "Despliega en minutos. No se requiere tarjeta de crédito.",
       "button": "Empezar gratis"
     },
     "footer": {
-      "rights": "© 2026 La Fundación NetGoat OSS. Todos los derechos reservados."
+      "rights": "© 2026 La Fundación NetGoat OSS. Todos los derechos reservados.",
+      "language": "Idioma",
+      "changeLanguage": "Cambiar idioma",
+      "close": "Cerrar",
+      "links": {
+        "status": "Estado",
+        "docs": "Documentos",
+        "github": "GitHub",
+        "discord": "Discord"
+      },
+      "easterEgg": {
+        "label": "Ventana emergente de huevo de pascua",
+        "alt": "Huevo de pascua"
+      }
     },
     "blog": {
       "title": "Blog",
@@ -198,6 +237,49 @@
       "description": "No tienes permiso para acceder a este sector.",
       "action": "Dar la Vuelta",
       "imageAlt": "Animación de acceso denegado"
+    },
+    "banned": {
+      "badge": "Cuenta restringida",
+      "title": "Tu cuenta ha sido bloqueada",
+      "description": "El acceso a este espacio de trabajo está deshabilitado para tu cuenta en este momento. Si crees que fue un error, contacta al soporte e incluye el correo de tu cuenta y cualquier contexto relevante.",
+      "contactSupport": "Contactar soporte",
+      "signOut": "Cerrar sesión",
+      "emailSubject": "Apelación de bloqueo de cuenta"
+    }
+  },
+  "Docs": {
+    "hero": {
+      "badge": "Documentación",
+      "title": "Docs de Netgoat",
+      "description": "Todo lo que necesitas para construir, desplegar y escalar tu infraestructura de red."
+    },
+    "mobileNav": "Menú de navegación",
+    "sidebar": {
+      "sections": {
+        "gettingStarted": "Primeros pasos",
+        "architectureComponents": "Componentes de arquitectura",
+        "advanced": "Avanzado",
+        "community": "Comunidad y contribución"
+      },
+      "items": {
+        "introduction": "Introducción",
+        "installation": "Instalación",
+        "frontendAdmin": "Frontend y Admin",
+        "controlPlane": "Plano de control",
+        "edgeProxy": "Motor de proxy perimetral",
+        "dataStore": "Almacén de datos distribuido",
+        "databaseSchema": "Esquema de base de datos",
+        "apiReference": "Referencia de API",
+        "translations": "Traducciones"
+      },
+      "subItems": {
+        "backendDatabaseLayer": "Capa de base de datos backend",
+        "exampleSync": "Ejemplo de sincronización",
+        "netgoatHeaders": "Encabezados de Netgoat",
+        "apiDomains": "Dominios",
+        "apiDnsRecords": "Registros DNS",
+        "apiEdgeProxy": "Configuraciones de proxy perimetral"
+      }
     }
   },
   "ChangelogDetail": {

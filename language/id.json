@@ -13,9 +13,32 @@
     "source_code": "Kode Sumber",
     "discord": "Discord",
     "public_beta": "✨ Beta Publik - Segera Hadir...",
+    "hero": {
+      "learnMore": "Pelajari lebih lanjut",
+      "countdown": {
+        "months": "Bulan",
+        "days": "Hari",
+        "hours": "Jam",
+        "minutes": "Mnt",
+        "seconds": "Dtk"
+      }
+    },
+    "scrollIndicator": {
+      "label": "Jelajahi"
+    },
     "netgoat": "NetGoat",
     "login": "Masuk",
+    "header": {
+      "accountLabel": "Akun",
+      "dashboard": "Dasbor",
+      "settings": "Pengaturan",
+      "signOut": "Keluar",
+      "userFallback": "Pengguna",
+      "userAlt": "Avatar pengguna"
+    },
     "features": {
+      "heading": "Dibangun untuk stack modern",
+      "description": "Semua yang Anda butuhkan untuk membangun, menerapkan, dan menskalakan infrastruktur jaringan Anda.",
       "speed": {
         "title": "Sangat Cepat",
         "description": "Dioptimalkan khusus untuk koneksi latensi rendah secara global."
@@ -52,10 +75,12 @@
       }
     },
     "testimonials": {
-      "title": "Dipercaya oleh pengembang di seluruh dunia"
+      "title": "Dipercaya oleh pengembang di seluruh dunia",
+      "comingSoon": "Segera hadir"
     },
     "how_it_works": {
       "title": "Cara kerja",
+      "stepLabel": "Langkah {number}",
       "step1": {
         "title": "Hubungkan",
         "desc": "Instal agen ringan kami di perangkat apa pun."
@@ -76,10 +101,24 @@
     },
     "cta": {
       "title": "Siap mengamankan jaringan Anda?",
+      "description": "Deploy dalam hitungan menit. Tanpa kartu kredit.",
       "button": "Mulai gratis"
     },
     "footer": {
-      "rights": "© 2026 Yayasan NetGoat OSS. Hak cipta dilindungi."
+      "rights": "© 2026 Yayasan NetGoat OSS. Hak cipta dilindungi.",
+      "language": "Bahasa",
+      "changeLanguage": "Ubah bahasa",
+      "close": "Tutup",
+      "links": {
+        "status": "Status",
+        "docs": "Dokumen",
+        "github": "GitHub",
+        "discord": "Discord"
+      },
+      "easterEgg": {
+        "label": "Popup gambar easter egg",
+        "alt": "Easter egg"
+      }
     },
     "blog": {
       "title": "Blog",
@@ -198,6 +237,49 @@
       "description": "Anda tidak memiliki izin untuk mengakses sektor ini.",
       "action": "Putar Balik",
       "imageAlt": "Animasi akses ditolak"
+    },
+    "banned": {
+      "badge": "Akun dibatasi",
+      "title": "Akun Anda telah diblokir",
+      "description": "Akses ke workspace ini dinonaktifkan untuk akun Anda saat ini. Jika Anda merasa ini adalah kesalahan, hubungi dukungan dan sertakan email akun Anda serta konteks terkait.",
+      "contactSupport": "Hubungi dukungan",
+      "signOut": "Keluar",
+      "emailSubject": "Banding pemblokiran akun"
+    }
+  },
+  "Docs": {
+    "hero": {
+      "badge": "Dokumentasi",
+      "title": "Dokumentasi Netgoat",
+      "description": "Semua yang Anda butuhkan untuk membangun, menerapkan, dan menskalakan infrastruktur jaringan Anda."
+    },
+    "mobileNav": "Menu navigasi",
+    "sidebar": {
+      "sections": {
+        "gettingStarted": "Mulai",
+        "architectureComponents": "Komponen arsitektur",
+        "advanced": "Lanjutan",
+        "community": "Komunitas & Kontribusi"
+      },
+      "items": {
+        "introduction": "Pengantar",
+        "installation": "Instalasi",
+        "frontendAdmin": "Frontend & Admin",
+        "controlPlane": "Control Plane",
+        "edgeProxy": "Mesin Edge Proxy",
+        "dataStore": "Penyimpanan data terdistribusi",
+        "databaseSchema": "Skema basis data",
+        "apiReference": "Referensi API",
+        "translations": "Terjemahan"
+      },
+      "subItems": {
+        "backendDatabaseLayer": "Lapisan basis data backend",
+        "exampleSync": "Contoh sinkronisasi",
+        "netgoatHeaders": "Header Netgoat",
+        "apiDomains": "Domain",
+        "apiDnsRecords": "Catatan DNS",
+        "apiEdgeProxy": "Konfigurasi Edge Proxy"
+      }
     }
   },
   "ChangelogDetail": {

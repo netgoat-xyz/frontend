@@ -119,7 +119,7 @@ export default function UsageCard() {
         >
           <svg
             className={`w-4 h-4 text-neutral-500 transform transition-transform ${
-              usageOpen ? "rotate-180" : "rotate-0"
+              usageOpen ? "rotate-0" : "rotate-180"
             }`}
             fill="none"
             viewBox="0 0 24 24"

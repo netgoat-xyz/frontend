@@ -27,7 +27,9 @@ import type { TeamCapability } from "@/models/Team";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { toast } from "sonner";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 type IntegrationStatus = "installed" | "disabled";
 type IntegrationId = "cloudflare" | "sentry" | "grafana";
@@ -299,9 +301,9 @@ export default function SettingsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [teamSlug, setTeamSlug] = useState<string | null>(null);
   const [name, setName] = useState("Netgoat");
-  const [billingEmail, setBillingEmail] = useState("billing@netgoat.io");
+  const [billingEmail, setBillingEmail] = useState("billing@my-nuts.com"); // Lowk backend
   const [autoRecharge, setAutoRecharge] = useState(true);
-  const [invoiceEmail, setInvoiceEmail] = useState("finance@netgoat.io");
+  const [invoiceEmail, setInvoiceEmail] = useState("finance@is-a-scam.com");
   const [poNumber, setPoNumber] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<InviteRole>("member");
@@ -312,7 +314,7 @@ export default function SettingsPage() {
   const [defaultAccess, setDefaultAccess] = useState<AccessDefaultRole>("viewer");
   const [domainsUsed, setDomainsUsed] = useState(0);
   const [totalDomains, setTotalDomains] = useState(0);
-  const [currentPlan, setCurrentPlan] = useState("pro");
+  const [currentPlan, setCurrentPlan] = useState("free");
   const [currentPlanCost, setCurrentPlanCost] = useState(0);
   const [billingInterval, setBillingInterval] = useState<BillingInterval>("monthly");
   const [seatCount, setSeatCount] = useState(1);
@@ -1618,19 +1620,20 @@ export default function SettingsPage() {
                         <label className="block text-sm text-neutral-300 mb-2">
                           Billing interval
                         </label>
-                        <select
+                        <CustomSelect
                           value={billingInterval}
-                          onChange={(e) =>
+                          onValueChange={(value) =>
                             setBillingInterval(
-                              e.target.value === "annual" ? "annual" : "monthly",
+                              value === "annual" ? "annual" : "monthly",
                             )
                           }
                           disabled={!canManageBilling || savingBilling || loadingServerData}
-                          className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
-                        >
-                          <option value="monthly">Monthly</option>
-                          <option value="annual">Annual</option>
-                        </select>
+                          options={[
+                            { value: "monthly", label: "Monthly" },
+                            { value: "annual", label: "Annual" },
+                          ]}
+                          triggerClassName="w-full bg-neutral-800 border-neutral-700 text-sm text-white focus-visible:border-neutral-600 focus-visible:ring-neutral-600/40"
+                        />
                       </div>
 
                       <div>
@@ -1787,6 +1790,13 @@ export default function SettingsPage() {
                           ? t("billing.debug.actions.creating")
                           : t("billing.debug.actions.createTestInvoice")}
                       </button>
+
+                      <Link
+                        href="/account/debug"
+                        className="border border-neutral-700 text-neutral-200 text-sm font-medium px-4 py-2 rounded-md hover:bg-neutral-800 transition-all"
+                      >
+                        Open Debug Route
+                      </Link>
                     </div>
 
                     {billingDebugReport && (
@@ -1969,24 +1979,20 @@ export default function SettingsPage() {
                               {roleLabel(member.role)}
                             </span>
                           ) : (
-                            <select
+                            <CustomSelect
                               value={member.role}
-                              onChange={(e) =>
-                                handleMemberRoleUpdate(member, e.target.value)
-                              }
+                              onValueChange={(value) => handleMemberRoleUpdate(member, value)}
                               disabled={
                                 !member.userId ||
                                 updatingMemberId === member.userId ||
                                 loadingServerData
                               }
-                              className="bg-neutral-800 border border-neutral-700 rounded-md px-3 py-1.5 text-xs text-white outline-none focus:border-neutral-600"
-                            >
-                              {memberAssignableRoles.map((role) => (
-                                <option key={role.key} value={role.key}>
-                                  {roleLabel(role.key)}
-                                </option>
-                              ))}
-                            </select>
+                              options={memberAssignableRoles.map((role) => ({
+                                value: role.key,
+                                label: roleLabel(role.key),
+                              }))}
+                              triggerClassName="h-8 min-w-34 bg-neutral-800 border-neutral-700 text-xs text-white focus-visible:border-neutral-600"
+                            />
                           )}
 
                           {canManageMembers && member.role !== "owner" && member.userId && (
@@ -2076,18 +2082,16 @@ export default function SettingsPage() {
                         <label className="block text-sm text-neutral-300 mb-2">
                           {t("members.roleLabel")}
                         </label>
-                        <select
+                        <CustomSelect
                           value={inviteRole}
-                          onChange={(e) => setInviteRole(e.target.value as InviteRole)}
+                          onValueChange={(value) => setInviteRole(value as InviteRole)}
                           disabled={!canManageMembers || invitingMember || loadingServerData}
-                          className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
-                        >
-                          {memberAssignableRoles.map((role) => (
-                            <option key={role.key} value={role.key}>
-                              {roleLabel(role.key)}
-                            </option>
-                          ))}
-                        </select>
+                          options={memberAssignableRoles.map((role) => ({
+                            value: role.key,
+                            label: roleLabel(role.key),
+                          }))}
+                          triggerClassName="w-full bg-neutral-800 border-neutral-700 text-sm text-white focus-visible:border-neutral-600 focus-visible:ring-neutral-600/40"
+                        />
                       </div>
 
                       <button
@@ -2189,19 +2193,23 @@ export default function SettingsPage() {
                           <label className="block text-sm text-neutral-300 mb-2">
                             {t("members.customRoles.form.inherits")}
                           </label>
-                          <select
+                          <CustomSelect
                             value={newRoleInherits}
-                            onChange={(e) =>
-                              setNewRoleInherits(e.target.value as RoleInheritance)
+                            onValueChange={(value) =>
+                              setNewRoleInherits(value as RoleInheritance)
                             }
                             disabled={!canManageRoles || creatingRole || loadingServerData}
-                            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
-                          >
-                            <option value="admin">{t("members.roles.admin")}</option>
-                            <option value="billing_manager">{t("members.roles.billingManager")}</option>
-                            <option value="member">{t("members.roles.member")}</option>
-                            <option value="viewer">{t("members.roles.viewer")}</option>
-                          </select>
+                            options={[
+                              { value: "admin", label: t("members.roles.admin") },
+                              {
+                                value: "billing_manager",
+                                label: t("members.roles.billingManager"),
+                              },
+                              { value: "member", label: t("members.roles.member") },
+                              { value: "viewer", label: t("members.roles.viewer") },
+                            ]}
+                            triggerClassName="w-full bg-neutral-800 border-neutral-700 text-sm text-white focus-visible:border-neutral-600 focus-visible:ring-neutral-600/40"
+                          />
                         </div>
                       </div>
 
@@ -2338,20 +2346,21 @@ export default function SettingsPage() {
                       <label className="block text-sm text-neutral-300 mb-2">
                         {t("accessGroups.form.defaultAccessLabel")}
                       </label>
-                      <select
+                      <CustomSelect
                         value={defaultAccess}
-                        onChange={(e) =>
-                          setDefaultAccess(e.target.value as AccessDefaultRole)
+                        onValueChange={(value) =>
+                          setDefaultAccess(value as AccessDefaultRole)
                         }
                         disabled={
                           !canManageAccessGroups || loadingServerData || savingAccessGroup
                         }
-                        className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
-                      >
-                        <option value="viewer">{t("members.roles.viewer")}</option>
-                        <option value="member">{t("members.roles.member")}</option>
-                        <option value="admin">{t("members.roles.admin")}</option>
-                      </select>
+                        options={[
+                          { value: "viewer", label: t("members.roles.viewer") },
+                          { value: "member", label: t("members.roles.member") },
+                          { value: "admin", label: t("members.roles.admin") },
+                        ]}
+                        triggerClassName="w-full bg-neutral-800 border-neutral-700 text-sm text-white focus-visible:border-neutral-600 focus-visible:ring-neutral-600/40"
+                      />
                     </div>
 
                     <button

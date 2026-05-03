@@ -45,7 +45,6 @@ export default async function ShaderShowcase() {
 
   return (
     <ShaderBackground>
-      {/* Hero — full viewport */}
       <div className="relative min-h-svh flex flex-col">
         <Header />
         <div className="grow relative w-full">
@@ -56,11 +55,10 @@ export default async function ShaderShowcase() {
         </div>
       </div>
 
-      {/* Below-the-fold content */}
       <LaunchWrapper>
         <div
           id="content-start"
-          className="relative z-10 bg-black/30 backdrop-blur-3xl"
+          className="relative z-10"
         >
           <Stats
             initialStats={{
@@ -76,7 +74,6 @@ export default async function ShaderShowcase() {
         </div>
       </LaunchWrapper>
 
-      {/* Keep footer visible even before launch date */}
       <Footer />
     </ShaderBackground>
   );

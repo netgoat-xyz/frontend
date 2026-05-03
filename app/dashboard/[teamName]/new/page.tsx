@@ -33,6 +33,7 @@ import {
 } from "@/actions/domainVerification";
 import { getTeam } from "@/actions/teams";
 import { createDomainForTeam } from "@/actions/teamDomains";
+import { sanitizeDomainInput, validateDomainSyntax } from "@/lib/domain-validation";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -66,18 +67,22 @@ export default function NewDomainPage() {
       toast.error(t("errors.enterDomain"));
       return;
     }
-    
-    // Basic domain validation
-    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
-    if (!domainRegex.test(domain) && domain !== "localhost") {
+
+    const domainValidation = validateDomainSyntax(domain);
+    if (!domainValidation.valid) {
       toast.error(t("errors.invalidDomain"));
       return;
+    }
+
+    const sanitizedDomain = domainValidation.sanitized;
+    if (sanitizedDomain !== domain) {
+      setDomain(sanitizedDomain);
     }
 
     try {
       setVerifying(true);
       // Generate verification token securely on the server
-      const result = await generateDomainVerification(teamSlug, domain);
+      const result = await generateDomainVerification(teamSlug, sanitizedDomain);
       
       if (result.success && result.token) {
         setVerificationToken(result.token);
@@ -93,12 +98,23 @@ export default function NewDomainPage() {
   };
 
   const handleVerify = async () => {
+    const domainValidation = validateDomainSyntax(domain);
+    if (!domainValidation.valid) {
+      toast.error(t("errors.invalidDomain"));
+      return;
+    }
+
+    const sanitizedDomain = domainValidation.sanitized;
+    if (sanitizedDomain !== domain) {
+      setDomain(sanitizedDomain);
+    }
+
     setVerifying(true);
     // Simulate verification delay for better UX
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     try {
-      const result = await verifyDomainOwnership(teamSlug, domain, verificationToken);
+      const result = await verifyDomainOwnership(teamSlug, sanitizedDomain, verificationToken);
       
       if (result.success) {
         setVerified(true);
@@ -106,14 +122,14 @@ export default function NewDomainPage() {
         
         // Auto-create domain and navigate to its dashboard upon success
         await createDomainForTeam(teamSlug, {
-          domain,
+          domain: sanitizedDomain,
           target_url: "", // Set later by user
           auto_ssl: true,
           verification_token: verificationToken,
         });
 
         toast.success(t("toasts.added"));
-        router.push(`/dashboard/${teamSlug}/${domain}`);
+        router.push(`/dashboard/${teamSlug}/${sanitizedDomain}`);
       } else {
         toast.error(t("errors.verifyFailed"));
       }
@@ -126,19 +142,30 @@ export default function NewDomainPage() {
 
   // Mock successful complete (for hackathon)
   const bypassVerification = async () => {
+    const domainValidation = validateDomainSyntax(domain);
+    if (!domainValidation.valid) {
+      toast.error(t("errors.invalidDomain"));
+      return;
+    }
+
+    const sanitizedDomain = domainValidation.sanitized;
+    if (sanitizedDomain !== domain) {
+      setDomain(sanitizedDomain);
+    }
+
     setVerifying(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setVerified(true);
     
     try {
       await createDomainForTeam(teamSlug, {
-        domain,
+        domain: sanitizedDomain,
         target_url: "", // Target set dynamically
         auto_ssl: true,
         verification_token: verificationToken,
       });
       toast.success(t("toasts.bypassAdded"));
-      router.push(`/dashboard/${teamSlug}/${domain}`);
+      router.push(`/dashboard/${teamSlug}/${sanitizedDomain}`);
     } catch (error: any) {
       toast.error(error.message || t("errors.createFailed"));
     } finally {
@@ -265,9 +292,7 @@ export default function NewDomainPage() {
                       id="domain"
                       placeholder={t("input.placeholder")}
                       value={domain}
-                      onChange={(e) =>
-                        setDomain(e.target.value.toLowerCase().trim())
-                      }
+                      onChange={(e) => setDomain(sanitizeDomainInput(e.target.value))}
                       className="pl-10 h-12 text-base transition-shadow focus-visible:ring-2 focus-visible:ring-indigo-500/20"
                       autoComplete="off"
                       autoCorrect="off"

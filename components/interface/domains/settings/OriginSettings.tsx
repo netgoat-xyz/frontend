@@ -1,8 +1,12 @@
 "use client";
 
 import { Server, Save } from "lucide-react";
+import { useState } from "react";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 export function OriginSettings() {
+  const [originProtocol, setOriginProtocol] = useState("http");
+
   return (
     <div className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800/50 rounded-xl p-5">
       <h3 className="font-semibold text-sm flex items-center gap-2 mb-4">
@@ -31,10 +35,15 @@ export function OriginSettings() {
           </div>
           <div>
             <label className="text-xs font-medium text-neutral-400 block mb-2">Origin Protocol</label>
-            <select className="w-full px-3 py-2 bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-neutral-600 focus:border-neutral-600 transition-all">
-              <option value="http">HTTP</option>
-              <option value="https">HTTPS</option>
-            </select>
+            <CustomSelect
+              value={originProtocol}
+              onValueChange={setOriginProtocol}
+              options={[
+                { value: "http", label: "HTTP" },
+                { value: "https", label: "HTTPS" },
+              ]}
+              triggerClassName="w-full bg-neutral-800/50 border-neutral-700/50 text-sm focus-visible:border-neutral-600"
+            />
           </div>
         </div>
 

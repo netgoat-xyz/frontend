@@ -11,34 +11,34 @@ export default function Features() {
     {
       id: "speed",
       icon: Zap,
-      gradient: "from-amber-500/15 to-transparent",
-      iconBg: "bg-amber-500/10",
-      iconColor: "text-amber-300",
+      gradient: "from-chart-1/20 to-transparent",
+      iconBg: "bg-chart-1/15",
+      iconColor: "text-chart-1",
     },
     {
       id: "security",
       icon: Shield,
-      gradient: "from-emerald-500/15 to-transparent",
-      iconBg: "bg-emerald-500/10",
-      iconColor: "text-emerald-300",
+      gradient: "from-chart-2/20 to-transparent",
+      iconBg: "bg-chart-2/15",
+      iconColor: "text-chart-2",
     },
     {
       id: "scalability",
       icon: Network,
-      gradient: "from-blue-500/15 to-transparent",
-      iconBg: "bg-blue-500/10",
-      iconColor: "text-blue-300",
+      gradient: "from-chart-3/20 to-transparent",
+      iconBg: "bg-chart-3/15",
+      iconColor: "text-chart-3",
     },
   ];
 
   return (
     <section className="relative z-20 py-28 px-6 md:px-12 max-w-5xl mx-auto">
       <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-4xl font-light text-white tracking-tight mb-4">
-          Built for the modern stack
+        <h2 className="text-3xl md:text-4xl font-medium text-foreground tracking-tight mb-4">
+          {t("heading")}
         </h2>
-        <p className="text-sm text-white/35 font-light max-w-md mx-auto">
-          Everything you need to build, deploy, and scale your network infrastructure.
+        <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto">
+          {t("description")}
         </p>
       </div>
 
@@ -50,7 +50,7 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1, duration: 0.5 }}
             viewport={{ once: true }}
-            className="group relative p-8 rounded-2xl bg-white/2 border border-white/6 overflow-hidden hover:border-white/12 transition-all duration-500"
+            className="group relative p-8 rounded-xl bg-card border border-border/60 overflow-hidden hover:border-border transition-all duration-500"
           >
             {/* Hover Glow */}
             <div
@@ -64,11 +64,11 @@ export default function Features() {
                 <feature.icon size={20} strokeWidth={1.5} />
               </div>
 
-              <h3 className="text-lg font-light text-white mb-2 tracking-tight">
+              <h3 className="text-lg font-medium text-foreground mb-2 tracking-tight">
                 {t(`${feature.id}.title`)}
               </h3>
 
-              <p className="text-sm font-light text-white/40 leading-relaxed">
+              <p className="text-sm font-medium text-muted-foreground leading-relaxed">
                 {t(`${feature.id}.description`)}
               </p>
             </div>

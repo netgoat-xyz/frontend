@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  FileText, 
-  Plus, 
-  Edit, 
+import {
+  FileText,
+  Plus,
+  Edit,
   Trash2,
   MoreVertical,
   Globe,
@@ -13,7 +13,7 @@ import {
   Calendar,
   Search,
   LayoutGrid,
-  List as ListIcon
+  List as ListIcon,
 } from "lucide-react";
 import { deletePost } from "@/actions/content";
 import { toast } from "sonner";
@@ -42,18 +42,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { motion, AnimatePresence } from "motion/react";
 
-export default function ContentManager({ 
-  initialData, 
-  type, 
-  page 
-}: { 
-  initialData: any, 
-  type: string, 
-  page: number 
+export default function ContentManager({
+  initialData,
+  type,
+  page,
+}: {
+  initialData: any;
+  type: string;
+  page: number;
 }) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleDelete = async () => {
@@ -62,7 +62,7 @@ export default function ContentManager({
       await deletePost(deletingId);
       toast.success("Post deleted permanently");
       setDeletingId(null);
-      router.refresh(); 
+      router.refresh();
     } catch (e) {
       toast.error("Failed to delete post");
     }
@@ -72,30 +72,40 @@ export default function ContentManager({
     router.push(`/admin/content?type=${val}` as any);
   };
 
-  const filteredPosts = initialData.posts.filter((post: any) => 
-    post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.slug?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredPosts = initialData.posts.filter(
+    (post: any) =>
+      post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.slug?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.05 }
-    }
+      transition: { staggerChildren: 0.05 },
+    },
   };
 
   const item = {
     hidden: { opacity: 0, scale: 0.98, y: 10 },
-    show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring" as const, stiffness: 350, damping: 25 } }
+    show: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 350, damping: 25 },
+    },
   };
 
   const getTypeColor = (postType: string) => {
-    switch(postType) {
-      case 'blog': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50';
-      case 'changelog': return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50';
-      case 'whats-new': return 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-900/50';
-      default: return 'bg-neutral-500/10 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800';
+    switch (postType) {
+      case "blog":
+        return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50";
+      case "changelog":
+        return "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50";
+      case "whats-new":
+        return "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-900/50";
+      default:
+        return "bg-neutral-500/10 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800";
     }
   };
 
@@ -111,174 +121,298 @@ export default function ContentManager({
             Manage your blog posts, changelogs, and announcements
           </p>
         </div>
-        <Button onClick={() => router.push("/admin/content/new" as any)} size="lg" className="shadow-lg shadow-primary/20 rounded-full px-6 transition-all hover:scale-105 active:scale-95">
-          <Plus className="mr-2 h-5 w-5" /> New Article
-        </Button>
+        <button
+          className="cursor-pointer text-sm font-medium bg-neutral-100 text-neutral-900 px-7 py-2.5 rounded-md hover:bg-neutral-300 transition-colors"
+          onClick={() => router.push("/admin/content/new" as any)}
+        >
+          New Article
+        </button>
       </div>
 
       {/* Filters & Controls */}
-      <div className="flex flex-col xl:flex-row justify-between gap-4 items-start xl:items-center bg-card/50 p-3 rounded-2xl border border-border/50 shadow-sm backdrop-blur-xl supports-backdrop-filter:bg-background/40">
-        <Tabs defaultValue={type} onValueChange={handleTabChange} className="w-full xl:w-auto overflow-x-auto pb-2 xl:pb-0 scrollbar-hide">
-          <TabsList className="bg-transparent h-auto p-1 gap-1">
-            <TabsTrigger value="all" className="rounded-xl px-4 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">All Posts</TabsTrigger>
-            <TabsTrigger value="blog" className="rounded-xl px-4 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Blog</TabsTrigger>
-            <TabsTrigger value="changelog" className="rounded-xl px-4 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Changelog</TabsTrigger>
-            <TabsTrigger value="whats-new" className="rounded-xl px-4 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">What's New</TabsTrigger>
+      <div className="flex flex-col xl:flex-row justify-between gap-3 w-full items-start xl:items-center">
+        {/* Tabs styled like the reference filters/buttons */}
+        <Tabs
+          defaultValue={type}
+          onValueChange={handleTabChange}
+          className="w-full xl:w-auto"
+        >
+          <TabsList className="flex w-full xl:w-auto justify-start bg-neutral-900 border border-neutral-800 rounded-md p-1 gap-1 h-auto">
+            <TabsTrigger
+              value="all"
+              className="px-3 py-1.5 text-sm text-neutral-400 rounded-md transition-all data-[state=active]:bg-neutral-800 data-[state=active]:text-white data-[state=active]:shadow-sm hover:text-neutral-300"
+            >
+              All Posts
+            </TabsTrigger>
+            <TabsTrigger
+              value="blog"
+              className="px-3 py-1.5 text-sm text-neutral-400 rounded-md transition-all data-[state=active]:bg-neutral-800 data-[state=active]:text-white data-[state=active]:shadow-sm hover:text-neutral-300"
+            >
+              Blog
+            </TabsTrigger>
+            <TabsTrigger
+              value="changelog"
+              className="px-3 py-1.5 text-sm text-neutral-400 rounded-md transition-all data-[state=active]:bg-neutral-800 data-[state=active]:text-white data-[state=active]:shadow-sm hover:text-neutral-300"
+            >
+              Changelog
+            </TabsTrigger>
+            <TabsTrigger
+              value="whats-new"
+              className="px-3 py-1.5 text-sm text-neutral-400 rounded-md transition-all data-[state=active]:bg-neutral-800 data-[state=active]:text-white data-[state=active]:shadow-sm hover:text-neutral-300"
+            >
+              What's New
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="flex items-center gap-3 w-full xl:w-auto">
-          <div className="relative w-full xl:w-72 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-            <Input 
-              placeholder="Search posts..." 
+        <div className="flex flex-row items-center gap-2 w-full xl:w-auto">
+          {/* Search Input Group */}
+          <div className="relative flex-1 xl:w-72 group">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-white transition-colors">
+              <Search className="size-5" />
+            </div>
+            <input
+              type="search"
+              placeholder="Search posts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-muted/30 border-transparent rounded-xl focus-visible:ring-primary/30 focus-visible:bg-background transition-all hover:bg-muted/50 w-full"
+              className="w-full bg-neutral-900 border border-neutral-800 rounded-md py-2 pl-10 pr-4 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-700 transition-all"
             />
           </div>
-          <div className="flex items-center bg-muted/30 p-1 rounded-xl shrink-0">
-            <Button variant="ghost" size="icon" onClick={() => setViewMode("list")} className={cn("h-9 w-9 rounded-lg transition-all", viewMode === "list" ? "bg-background shadow-sm text-primary hover:bg-background hover:text-primary" : "text-muted-foreground hover:text-foreground")}>
-              <ListIcon className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => setViewMode("grid")} className={cn("h-9 w-9 rounded-lg transition-all", viewMode === "grid" ? "bg-background shadow-sm text-primary hover:bg-background hover:text-primary" : "text-muted-foreground hover:text-foreground")}>
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
+
+          {/* View Switcher (Desktop) */}
+          <div className="hidden lg:flex bg-neutral-900 border border-neutral-800 rounded-md p-1 shrink-0">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-1 rounded-md transition-all ${
+                viewMode === "grid"
+                  ? "bg-neutral-800 text-white shadow-sm"
+                  : "text-neutral-500 hover:text-neutral-300"
+              }`}
+            >
+              <LayoutGrid className="size-5" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-1 rounded-md transition-all ${
+                viewMode === "list"
+                  ? "bg-neutral-800 text-white shadow-sm"
+                  : "text-neutral-500 hover:text-neutral-300"
+              }`}
+            >
+              <ListIcon className="size-5" />
+            </button>
           </div>
+
+          {/* View Switcher (Mobile Toggle) */}
+          <button
+            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+            className="lg:hidden flex items-center justify-center p-2 rounded-md border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors shrink-0"
+          >
+            {viewMode === "grid" ? (
+              <ListIcon className="size-5" />
+            ) : (
+              <LayoutGrid className="size-5" />
+            )}
+          </button>
         </div>
       </div>
 
       {/* Content Area */}
-      {filteredPosts.length === 0 ? (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center justify-center p-16 mt-8 bg-card/30 border border-border/50 border-dashed rounded-[2rem] text-center backdrop-blur-sm">
-            <div className="w-24 h-24 bg-primary/5 rounded-full flex items-center justify-center mb-6 ring-8 ring-primary/5">
-                <FileText className="h-10 w-10 text-primary/40" />
+      <div className="w-full mt-8">
+        {filteredPosts.length === 0 ? (
+          searchQuery ? (
+            /* Empty State: No Search Results */
+            <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-8">
+              <div className="flex flex-col items-center justify-center text-center space-y-3">
+                <h3 className="text-base font-semibold text-neutral-100">
+                  No matching posts
+                </h3>
+                <p className="text-sm text-neutral-400">
+                  We couldn't find any documents matching "{searchQuery}". Try a
+                  different term.
+                </p>
+              </div>
             </div>
-            <h3 className="text-2xl font-bold mb-3">No publications found</h3>
-            <p className="text-muted-foreground max-w-sm mb-8 text-base">
-                {searchQuery ? "We couldn't find any documents matching your search criteria. Try a different term." : "You haven't published anything here yet. Get started by writing your first article."}
-            </p>
-            {!searchQuery && (
-                <Button onClick={() => router.push("/admin/content/new" as any)} variant="outline" className="rounded-full px-6 h-12 bg-background hover:bg-muted font-medium">
-                    Create your first post
+          ) : (
+            /* Empty State: No Content Published */
+            <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-12">
+              <div className="flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-neutral-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-neutral-100 mb-2">
+                    No publications found
+                  </h3>
+                  <p className="text-sm text-neutral-400 mb-6 max-w-sm mx-auto">
+                    You haven't published anything here yet. Get started by
+                    writing your first article.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => router.push("/admin/content/new" as any)}
+                  className="bg-neutral-100 text-neutral-900 hover:bg-white transition-colors"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create your first post
                 </Button>
+              </div>
+            </div>
+          )
+        ) : (
+          /* Data Grid / List View */
+          <div
+            className={cn(
+              viewMode === "grid"
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                : "grid grid-cols-1 gap-4",
             )}
-        </motion.div>
-      ) : (
-        <AnimatePresence mode="popLayout">
-            <motion.div 
-                key={viewMode}
-                variants={container} 
-                initial="hidden" 
-                animate="show"
+          >
+            {filteredPosts.map((post: any) => (
+              <div
+                key={post._id}
                 className={cn(
-                    "grid gap-4",
-                    viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1 flex flex-col"
+                  "group flex bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-xl p-5 transition-all",
+                  viewMode === "grid"
+                    ? "flex-col h-full min-h-[220px]"
+                    : "flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6",
                 )}
-            >
-              {filteredPosts.map((post: any) => (
-                <motion.div key={post._id} variants={item} layoutId={`post-${post._id}`}>
-                    <div className={cn(
-                        "group relative flex bg-card border border-border/40 hover:border-primary/40 rounded-2xl p-5 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5",
-                        viewMode === "grid" ? "flex-col h-full min-h-55" : "flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6"
-                    )}>
-                        {/* Status indicator pill */}
-                        <div className={cn(
-                            "absolute top-5 right-5 flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full border shadow-sm backdrop-blur-md transition-colors",
-                            post.published 
-                                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/30" 
-                                : "bg-neutral-500/10 text-neutral-600 dark:text-neutral-400 border-neutral-500/20 group-hover:bg-neutral-500/20 group-hover:border-neutral-500/30"
-                        )}>
-                            {post.published ? <Globe className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
-                            {post.published ? "Published" : "Draft"}
-                        </div>
-
-                        <div className={cn(
-                            "flex flex-col gap-3 flex-1",
-                            viewMode === "grid" ? "mt-8 h-full flex flex-col" : "w-full min-w-0"
-                        )}>
-                            <div className="flex flex-col">
-                                <Badge variant="outline" className={cn("w-fit mb-3 text-[10px] uppercase font-bold tracking-wider", getTypeColor(post.type))}>
-                                    {post.type.replace("-", " ")}
-                                </Badge>
-                                <h3 className="text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2 pr-16 sm:pr-0">
-                                    {post.title}
-                                </h3>
-                                <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground group-hover:text-foreground/80 transition-colors">
-                                    <span className="font-mono text-[11px] bg-muted/50 px-2 py-0.5 rounded-md truncate max-w-50" title={post.slug}>
-                                        /{post.slug}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className={cn(
-                                "flex items-center justify-between text-xs text-muted-foreground",
-                                viewMode === "grid" ? "mt-auto pt-4 border-t border-border/40 group-hover:border-primary/20 transition-colors" : "sm:w-auto shrink-0 justify-end w-full sm:mt-0 mt-4 pt-4 sm:pt-0 border-t border-border/40 sm:border-0"
-                            )}>
-                                <div className="flex items-center gap-1.5 font-medium bg-muted/40 px-2 py-1 rounded-md">
-                                    <Calendar className="w-3.5 h-3.5 opacity-70" />
-                                    {new Date(post.createdAt).toLocaleDateString(undefined, {
-                                        year: 'numeric',
-                                        month: 'short',
-                                        day: 'numeric'
-                                    })}
-                                </div>
-
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger className={cn(
-                                        buttonVariants({ variant: "ghost", size: "icon" }), 
-                                        "h-8 w-8 rounded-full opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all data-[state=open]:opacity-100 data-[state=open]:bg-primary/10 data-[state=open]:text-primary focus:opacity-100 outline-none hover:bg-primary/5 hover:text-primary"
-                                    )}>
-                                        <MoreVertical className="h-4 w-4" />
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-52 p-2 rounded-xl border-border/50 shadow-xl bg-background/95 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
-                                        <DropdownMenuGroup>
-                                            <DropdownMenuItem 
-                                                onClick={() => router.push(`/admin/content/${post._id}` as any)} 
-                                                className="rounded-lg cursor-pointer focus:bg-primary/10 focus:text-primary p-2.5"
-                                            >
-                                                <Edit className="mr-2 h-4 w-4" /> Edit Content
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator className="bg-border/50 my-1" />
-                                            <DropdownMenuItem 
-                                                onClick={() => setDeletingId(post._id)}
-                                                className="rounded-lg cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive p-2.5"
-                                            >
-                                                <Trash2 className="mr-2 h-4 w-4" /> Delete Post...
-                                            </DropdownMenuItem>
-                                        </DropdownMenuGroup>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
-                        </div>
+              >
+                <div
+                  className={cn(
+                    "flex flex-col gap-3 flex-1",
+                    viewMode === "grid"
+                      ? "h-full flex flex-col"
+                      : "w-full min-w-0",
+                  )}
+                >
+                  {/* Header: Type and Status */}
+                  <div className="flex justify-between items-start">
+                    <span
+                      className={cn(
+                        "text-[10px] uppercase font-bold tracking-wider",
+                        getTypeColor(post.type),
+                      )}
+                    >
+                      {post.type.replace("-", " ")}
+                    </span>
+                    <div
+                      className={cn(
+                        "flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold rounded-full border",
+                        post.published
+                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                          : "bg-neutral-800 text-neutral-400 border-neutral-700",
+                      )}
+                    >
+                      {post.published ? (
+                        <Globe className="w-3 h-3" />
+                      ) : (
+                        <Lock className="w-3 h-3" />
+                      )}
+                      {post.published ? "Published" : "Draft"}
                     </div>
-                </motion.div>
-              ))}
-            </motion.div>
-        </AnimatePresence>
-      )}
+                  </div>
 
+                  {/* Title and Slug */}
+                  <div className="flex flex-col">
+                    <h3 className="text-base font-semibold text-neutral-100 leading-tight group-hover:text-white transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-2 text-sm text-neutral-500">
+                      <span
+                        className="font-mono text-[11px] truncate max-w-[200px]"
+                        title={post.slug}
+                      >
+                        /{post.slug}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Footer: Date and Actions */}
+                  <div
+                    className={cn(
+                      "flex items-center justify-between text-xs text-neutral-500",
+                      viewMode === "grid"
+                        ? "mt-auto pt-4 border-t border-neutral-800"
+                        : "sm:w-auto shrink-0 justify-end w-full sm:mt-0 mt-4 pt-4 sm:pt-0 border-t border-neutral-800 sm:border-0",
+                    )}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {new Date(post.createdAt).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        className={cn(
+                          buttonVariants({ variant: "ghost", size: "icon" }),
+                          "h-8 w-8 rounded-md text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
+                        )}
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-48 p-1 rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-300 shadow-xl"
+                      >
+                        <DropdownMenuItem
+                          onClick={() =>
+                            router.push(`/admin/content/${post._id}` as any)
+                          }
+                          className="rounded-md cursor-pointer focus:bg-neutral-800 focus:text-neutral-100 p-2"
+                        >
+                          <Edit className="mr-2 h-4 w-4 hover:text-white" /> Edit Content
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-neutral-800 my-1" />
+                        <DropdownMenuItem
+                          onClick={() => setDeletingId(post._id)}
+                          className="rounded-md cursor-pointer focus:bg-red-400/10 focus:text-red-400 p-2"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4 focus:text-red-400" /> Delete Post
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       {/* Delete Confirmation Modal */}
-      <AlertDialog open={!!deletingId} onOpenChange={(o) => !o && setDeletingId(null)}>
+      <AlertDialog
+        open={!!deletingId}
+        onOpenChange={(o) => !o && setDeletingId(null)}
+      >
         <AlertDialogContent className="rounded-3xl border-border/50 shadow-2xl p-0 overflow-hidden sm:max-w-106.25">
           <div className="bg-destructive/10 p-6 flex flex-col items-center justify-center text-center">
-             <div className="w-16 h-16 bg-destructive/20 rounded-full flex items-center justify-center mb-4 ring-8 ring-destructive/5">
-                <Trash2 className="w-8 h-8 text-destructive" />
-             </div>
-             <AlertDialogTitle className="text-xl font-bold">Delete Publication</AlertDialogTitle>
+            <div className="w-16 h-16 bg-destructive/20 rounded-full flex items-center justify-center mb-4 ring-8 ring-destructive/5">
+              <Trash2 className="w-8 h-8 text-destructive" />
+            </div>
+            <AlertDialogTitle className="text-xl font-bold">
+              Delete Publication
+            </AlertDialogTitle>
           </div>
           <div className="p-6 pt-4">
-              <AlertDialogDescription className="text-center text-base">
-                Are you completely sure? This will permanently remove the post from the database, and it cannot be recovered.
-              </AlertDialogDescription>
+            <AlertDialogDescription className="text-center text-base">
+              Are you completely sure? This will permanently remove the post
+              from the database, and it cannot be recovered.
+            </AlertDialogDescription>
           </div>
           <div className="p-4 bg-muted/30 border-t border-border/40 flex items-center justify-end gap-2">
-            <AlertDialogCancel className="rounded-xl border-transparent hover:bg-muted/50">Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-                onClick={handleDelete}
-                className="rounded-xl bg-destructive hover:bg-destructive/90 text-destructive-foreground focus:ring-destructive shadow-md shadow-destructive/20"
+            <AlertDialogCancel className="rounded-xl border-transparent hover:bg-muted/50">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="rounded-xl bg-destructive hover:bg-destructive/90 text-destructive-foreground focus:ring-destructive shadow-md shadow-destructive/20"
             >
-                Permanently Delete
+              Permanently Delete
             </AlertDialogAction>
           </div>
         </AlertDialogContent>

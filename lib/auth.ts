@@ -1,5 +1,6 @@
 // Updated auth.ts with new email templates
 import { betterAuth, APIError } from "better-auth";
+import { dash } from "@better-auth/infra";
 import { admin, emailOTP, magicLink } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
 import { Resend } from "resend";
@@ -65,6 +66,7 @@ export const auth = betterAuth({
     level: process.env.NODE_ENV === "development" ? "warn" : "error",
   },
   plugins: [
+        dash(),
     admin(),
     magicLink({
       storeToken: "hashed",

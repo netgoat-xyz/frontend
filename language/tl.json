@@ -13,9 +13,32 @@
     "source_code": "Source Code",
     "discord": "Discord",
     "public_beta": "✨ Public Beta - Malapit na...",
+    "hero": {
+      "learnMore": "Alamin pa",
+      "countdown": {
+        "months": "Buwan",
+        "days": "Araw",
+        "hours": "Oras",
+        "minutes": "Min",
+        "seconds": "Seg"
+      }
+    },
+    "scrollIndicator": {
+      "label": "Tuklasin"
+    },
     "netgoat": "NetGoat",
     "login": "Mag-login",
+    "header": {
+      "accountLabel": "Account",
+      "dashboard": "Dashboard",
+      "settings": "Mga Setting",
+      "signOut": "Mag-sign out",
+      "userFallback": "User",
+      "userAlt": "Avatar ng user"
+    },
     "features": {
+      "heading": "Ginawa para sa modernong stack",
+      "description": "Lahat ng kailangan mo para bumuo, mag-deploy, at mag-scale ng iyong network infrastructure.",
       "speed": {
         "title": "Sobrang Bilis",
         "description": "Na-optimize para sa mababang latency na koneksyon sa buong mundo."
@@ -52,10 +75,12 @@
       }
     },
     "testimonials": {
-      "title": "Pinagkakatiwalaan ng mga developer sa buong mundo"
+      "title": "Pinagkakatiwalaan ng mga developer sa buong mundo",
+      "comingSoon": "Parating na"
     },
     "how_it_works": {
       "title": "Paano ito gumagana",
+      "stepLabel": "Hakbang {number}",
       "step1": {
         "title": "Kumonekta",
         "desc": "I-install ang aming lightweight agent sa anumang device."
@@ -76,10 +101,24 @@
     },
     "cta": {
       "title": "Handa nang i-secure ang iyong network?",
+      "description": "Mag-deploy sa loob ng ilang minuto. Walang credit card na kailangan.",
       "button": "Magsimula nang libre"
     },
     "footer": {
-      "rights": "© 2026 Ang NetGoat OSS Foundation. Lahat ng karapatan ay nakalaan."
+      "rights": "© 2026 Ang NetGoat OSS Foundation. Lahat ng karapatan ay nakalaan.",
+      "language": "Wika",
+      "changeLanguage": "Palitan ang wika",
+      "close": "Isara",
+      "links": {
+        "status": "Status",
+        "docs": "Dokumentasyon",
+        "github": "GitHub",
+        "discord": "Discord"
+      },
+      "easterEgg": {
+        "label": "Popup ng easter egg na imahe",
+        "alt": "Easter egg"
+      }
     },
     "blog": {
       "title": "Blog",
@@ -198,6 +237,49 @@
       "description": "Wala kang pahintulot na i-access ang sektor na ito.",
       "action": "Bumalik",
       "imageAlt": "Forbidden access animation"
+    },
+    "banned": {
+      "badge": "Restriktadong account",
+      "title": "Na-ban ang iyong account",
+      "description": "Naka-disable ang access sa workspace na ito para sa iyong account sa ngayon. Kung sa tingin mo ay nagkamali, makipag-ugnayan sa support at isama ang email ng iyong account at anumang kaugnay na detalye.",
+      "contactSupport": "Makipag-ugnayan sa Support",
+      "signOut": "Mag-sign out",
+      "emailSubject": "Apela sa pag-ban ng account"
+    }
+  },
+  "Docs": {
+    "hero": {
+      "badge": "Dokumentasyon",
+      "title": "Dokumentasyon ng Netgoat",
+      "description": "Lahat ng kailangan mo para bumuo, mag-deploy, at mag-scale ng iyong network infrastructure."
+    },
+    "mobileNav": "Menu ng nabigasyon",
+    "sidebar": {
+      "sections": {
+        "gettingStarted": "Pagsisimula",
+        "architectureComponents": "Mga Bahagi ng Arkitektura",
+        "advanced": "Advanced",
+        "community": "Komunidad at Kontribusyon"
+      },
+      "items": {
+        "introduction": "Panimula",
+        "installation": "Pag-install",
+        "frontendAdmin": "Frontend at Admin",
+        "controlPlane": "Control Plane",
+        "edgeProxy": "Edge Proxy Engine",
+        "dataStore": "Distributed Data Store",
+        "databaseSchema": "Database Schema",
+        "apiReference": "API Reference",
+        "translations": "Mga Pagsasalin"
+      },
+      "subItems": {
+        "backendDatabaseLayer": "Backend Database Layer",
+        "exampleSync": "Halimbawa ng Sync",
+        "netgoatHeaders": "Netgoat Headers",
+        "apiDomains": "Domains",
+        "apiDnsRecords": "DNS Records",
+        "apiEdgeProxy": "Edge Proxy Configurations"
+      }
     }
   },
   "ChangelogDetail": {

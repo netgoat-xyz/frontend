@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 
-const TARGET_DATE = new Date("2026-08-01T00:00:00Z").getTime();
+const TARGET_DATE = new Date("2026-05-01T00:00:00Z").getTime();
 
 export default function LaunchWrapper({ children }: { children: React.ReactNode }) {
   const [isLaunched, setIsLaunched] = useState(false);

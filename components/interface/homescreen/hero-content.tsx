@@ -12,22 +12,22 @@ const FlipBlock = ({ value, label }: { value: number; label: string }) => {
   const formattedValue = value.toString().padStart(2, "0");
 
   return (
-    <div className="flex flex-col items-center flex-1 min-w-15 md:min-w-20">
-      <div className="relative w-full h-12 md:h-20 flex items-center justify-center overflow-hidden perspective-[1000px]">
+    <div className="flex flex-col items-center flex-1 min-w-[60px] md:min-w-[80px]">
+      <div className="relative w-full h-12 md:h-16 flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="popLayout">
           <motion.div
             key={value}
-            initial={{ rotateX: -90, opacity: 0 }}
-            animate={{ rotateX: 0, opacity: 1 }}
-            exit={{ rotateX: 90, opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-3xl md:text-6xl font-light tabular-nums text-white"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="text-3xl md:text-5xl font-semibold tabular-nums text-foreground tracking-tight"
           >
             {formattedValue}
           </motion.div>
         </AnimatePresence>
       </div>
-      <div className="text-[9px] md:text-[10px] text-white/40 uppercase tracking-[0.2em] mt-1">
+      <div className="text-xs text-muted-foreground font-medium mt-1">
         {label}
       </div>
     </div>
@@ -81,25 +81,23 @@ export default function HeroContent() {
 
   return (
     <main className="absolute inset-0 z-20 flex items-center justify-center overflow-x-hidden">
-      <div className="text-center max-w-3xl mx-auto px-5 py-10">
+      <div className="text-center max-w-3xl mx-auto px-5 py-10 pt-20">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center mb-6 md:mb-8"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="flex justify-center mb-6"
         >
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10">
-            <span className="text-white/80 text-[10px] md:text-[11px] font-light tracking-widest uppercase">
-              {t("public_beta")}
-            </span>
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-semibold">
+            {t("public_beta")}
           </div>
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35 }}
-          className="text-6xl sm:text-6xl md:text-8xl tracking-tight font-light text-white mb-4 md:mb-6 leading-[1.1]"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-foreground mb-6 leading-tight"
         >
           {t("sub_header")}
         </motion.h1>
@@ -107,8 +105,8 @@ export default function HeroContent() {
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-sm md:text-base font-light text-white/50 mb-8 md:mb-12 leading-relaxed max-w-md mx-auto"
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-base md:text-lg text-muted-foreground mb-10 leading-relaxed max-w-xl mx-auto font-medium"
         >
           {t("detailed")}
         </motion.p>
@@ -116,38 +114,35 @@ export default function HeroContent() {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.65 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
         >
           {isLaunched ? (
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => router.push("/auth")}
-                className="w-full sm:w-auto group px-8 py-4 rounded-full bg-white text-black font-medium text-sm transition-all active:scale-95 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto group px-6 py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-all hover:bg-primary/90 flex items-center justify-center gap-2"
               >
                 {t("get_started_button")}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
               <button
                 onClick={() => document.getElementById("content-start")?.scrollIntoView({ behavior: "smooth" })}
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/5 text-white/70 font-medium text-sm border border-white/10 active:bg-white/10 backdrop-blur-sm"
+                className="w-full sm:w-auto px-6 py-3 rounded-lg bg-secondary text-secondary-foreground font-semibold text-sm hover:bg-secondary/80 transition-colors"
               >
-                Learn more
+                {t("hero.learnMore")}
               </button>
             </div>
           ) : (
-            <div className="inline-grid grid-cols-3 sm:flex sm:flex-row gap-4 sm:gap-6 md:gap-8 items-center justify-center bg-white/5 backdrop-blur-2xl border border-white/10 rounded-lg md:rounded-md p-5 md:px-10 md:py-8 text-white shadow-2xl">
-              <FlipBlock value={timeLeft.months} label="Months" />
-              <div className="hidden sm:block w-px h-12 bg-white/10" />
-              <FlipBlock value={timeLeft.days} label="Days" />
-              <div className="hidden sm:block w-px h-12 bg-white/10" />
-              <FlipBlock value={timeLeft.hours} label="Hours" />
-              
-              {/* Divider visible only on larger screens when it's a single row */}
-              <div className="hidden sm:block w-px h-12 bg-white/10" />
-              
-              <FlipBlock value={timeLeft.minutes} label="Mins" />
-              <div className="hidden sm:block w-px h-12 bg-white/10" />
-              <FlipBlock value={timeLeft.seconds} label="Secs" />
+            <div className="inline-flex flex-wrap sm:flex-nowrap gap-4 sm:gap-6 items-center justify-center bg-card border border-border/60 rounded-xl p-5 md:px-8 md:py-6 shadow-sm">
+              <FlipBlock value={timeLeft.months} label={t("hero.countdown.months")} />
+              <div className="hidden sm:block w-px h-10 bg-border/60" />
+              <FlipBlock value={timeLeft.days} label={t("hero.countdown.days")} />
+              <div className="hidden sm:block w-px h-10 bg-border/60" />
+              <FlipBlock value={timeLeft.hours} label={t("hero.countdown.hours")} />
+              <div className="hidden sm:block w-px h-10 bg-border/60" />
+              <FlipBlock value={timeLeft.minutes} label={t("hero.countdown.minutes")} />
+              <div className="hidden sm:block w-px h-10 bg-border/60" />
+              <FlipBlock value={timeLeft.seconds} label={t("hero.countdown.seconds")} />
             </div>
           )}
         </motion.div>

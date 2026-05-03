@@ -13,9 +13,32 @@
     "source_code": "Kod Sumber",
     "discord": "Discord",
     "public_beta": "✨ Beta Awam - Akan Datang...",
+    "hero": {
+      "learnMore": "Ketahui lebih lanjut",
+      "countdown": {
+        "months": "Bulan",
+        "days": "Hari",
+        "hours": "Jam",
+        "minutes": "Min",
+        "seconds": "Saat"
+      }
+    },
+    "scrollIndicator": {
+      "label": "Teroka"
+    },
     "netgoat": "NetGoat",
     "login": "Log Masuk",
+    "header": {
+      "accountLabel": "Akaun",
+      "dashboard": "Papan Pemuka",
+      "settings": "Tetapan",
+      "signOut": "Log keluar",
+      "userFallback": "Pengguna",
+      "userAlt": "Avatar pengguna"
+    },
     "features": {
+      "heading": "Dibina untuk stack moden",
+      "description": "Segala yang anda perlukan untuk membina, mengerahkan, dan menskalakan infrastruktur rangkaian anda.",
       "speed": {
         "title": "Sangat Pantas",
         "description": "Dioptimumkan khusus untuk sambungan kependaman rendah di seluruh dunia."
@@ -52,10 +75,12 @@
       }
     },
     "testimonials": {
-      "title": "Dipercayai oleh pembangun di seluruh dunia"
+      "title": "Dipercayai oleh pembangun di seluruh dunia",
+      "comingSoon": "Akan datang"
     },
     "how_it_works": {
       "title": "Cara ia berfungsi",
+      "stepLabel": "Langkah {number}",
       "step1": {
         "title": "Sambung",
         "desc": "Pasang ejen ringan kami pada sebarang peranti."
@@ -76,10 +101,24 @@
     },
     "cta": {
       "title": "Sedia untuk mengamankan rangkaian anda?",
+      "description": "Deploy dalam beberapa minit. Tiada kad kredit diperlukan.",
       "button": "Mulakan percuma"
     },
     "footer": {
-      "rights": "© 2026 Yayasan NetGoat OSS. Hak cipta terpelihara."
+      "rights": "© 2026 Yayasan NetGoat OSS. Hak cipta terpelihara.",
+      "language": "Bahasa",
+      "changeLanguage": "Tukar bahasa",
+      "close": "Tutup",
+      "links": {
+        "status": "Status",
+        "docs": "Dokumen",
+        "github": "GitHub",
+        "discord": "Discord"
+      },
+      "easterEgg": {
+        "label": "Pop-up imej easter egg",
+        "alt": "Easter egg"
+      }
     },
     "blog": {
       "title": "Blog",
@@ -198,6 +237,49 @@
       "description": "Anda tidak mempunyai kebenaran untuk mengakses sektor ini.",
       "action": "Patah Balik",
       "imageAlt": "Animasi akses dilarang"
+    },
+    "banned": {
+      "badge": "Akaun disekat",
+      "title": "Akaun anda telah disekat",
+      "description": "Akses ke ruang kerja ini dinyahdayakan untuk akaun anda buat masa ini. Jika anda rasa ini satu kesilapan, hubungi sokongan dan sertakan e-mel akaun anda serta sebarang konteks yang berkaitan.",
+      "contactSupport": "Hubungi sokongan",
+      "signOut": "Log keluar",
+      "emailSubject": "Rayuan sekatan akaun"
+    }
+  },
+  "Docs": {
+    "hero": {
+      "badge": "Dokumentasi",
+      "title": "Dokumentasi Netgoat",
+      "description": "Segala yang anda perlukan untuk membina, mengerahkan, dan menskalakan infrastruktur rangkaian anda."
+    },
+    "mobileNav": "Menu navigasi",
+    "sidebar": {
+      "sections": {
+        "gettingStarted": "Bermula",
+        "architectureComponents": "Komponen seni bina",
+        "advanced": "Lanjutan",
+        "community": "Komuniti & Sumbangan"
+      },
+      "items": {
+        "introduction": "Pengenalan",
+        "installation": "Pemasangan",
+        "frontendAdmin": "Frontend & Admin",
+        "controlPlane": "Control Plane",
+        "edgeProxy": "Enjin Edge Proxy",
+        "dataStore": "Stor data teragih",
+        "databaseSchema": "Skema pangkalan data",
+        "apiReference": "Rujukan API",
+        "translations": "Terjemahan"
+      },
+      "subItems": {
+        "backendDatabaseLayer": "Lapisan pangkalan data backend",
+        "exampleSync": "Contoh penyegerakan",
+        "netgoatHeaders": "Header Netgoat",
+        "apiDomains": "Domain",
+        "apiDnsRecords": "Rekod DNS",
+        "apiEdgeProxy": "Konfigurasi Edge Proxy"
+      }
     }
   },
   "ChangelogDetail": {

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { motion } from "motion/react";
@@ -594,16 +595,17 @@ export default function SettingsPage() {
                     <p className="text-xs text-muted-foreground mb-2">
                       How often would you like to receive summary reports?
                     </p>
-                    <select
+                    <CustomSelect
                       id="digest-frequency"
                       value={digestFrequency}
-                      onChange={(e) => setDigestFrequency(e.target.value)}
-                      className="flex h-9 w-full max-w-[200px] items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <option value="instant">Instant delivery</option>
-                      <option value="daily">Daily digest</option>
-                      <option value="weekly">Weekly digest</option>
-                    </select>
+                      onValueChange={setDigestFrequency}
+                      options={[
+                        { value: "instant", label: "Instant delivery" },
+                        { value: "daily", label: "Daily digest" },
+                        { value: "weekly", label: "Weekly digest" },
+                      ]}
+                      triggerClassName="max-w-[200px]"
+                    />
                   </div>
                 </CardContent>
                 <CardFooter className="border-t flex justify-end">

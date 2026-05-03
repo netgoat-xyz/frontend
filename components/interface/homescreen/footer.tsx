@@ -72,47 +72,49 @@ export default function Footer() {
     <>
       {showEasterEgg && (
         <div
-          className="fixed inset-0 z-1000 flex items-center justify-center bg-black/80 p-4"
+          className="fixed inset-0 z-1000 flex items-center justify-center bg-background/80 backdrop-blur-md p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="Easter egg image popup"
+          aria-label={t("easterEgg.label")}
         >
           <div className="relative w-full max-w-2xl">
             <button
               type="button"
               onClick={() => setShowEasterEgg(false)}
-              className="absolute -top-3 -right-3 rounded-full bg-white text-black text-xs font-medium px-3 py-1 shadow-lg hover:bg-neutral-200 transition-colors"
+              className="absolute -top-3 -right-3 rounded-full bg-foreground text-background text-xs font-medium px-3 py-1 shadow-lg hover:bg-foreground/90 transition-colors"
             >
-              Close
+              {t("close")}
             </button>
             <img
               src="/mww.png"
-              alt="Easter egg"
-              className="w-full h-auto rounded-xl border border-white/20 shadow-2xl"
+              alt={t("easterEgg.alt")}
+              className="w-full h-auto rounded-xl border border-border/60 shadow-2xl"
             />
           </div>
         </div>
       )}
 
       <footer className="relative z-20 py-16 px-4 sm:px-6">
-        <div className="w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent mb-12" />
+        <div className="w-full h-px bg-linear-to-r from-transparent via-border/60 to-transparent mb-12" />
 
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <p className="text-xs font-light text-white/25">{t("rights")}</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              {t("rights")}
+            </p>
 
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
               <div className="relative inline-flex">
                 <button
                   ref={langTriggerRef}
                   onClick={() => setIsLangOpen(!isLangOpen)}
-                  className="inline-flex items-center gap-x-1.5 text-xs font-light text-white/25 hover:text-white/50 transition-colors"
-                  aria-label="Change language"
+                  className="inline-flex items-center gap-x-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={t("changeLanguage")}
                 >
-                  <Globe className="size-3.5" />
-                  <span>{languages[locale] || "Language"}</span>
+                  <Globe className="size-4" />
+                  <span>{languages[locale] || t("language")}</span>
                   <ChevronUp
-                    className={`size-3.5 transition-transform ${isLangOpen ? "rotate-180" : ""}`}
+                    className={`size-4 transition-transform ${isLangOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
@@ -142,27 +144,27 @@ export default function Footer() {
 
               <Link
                 href={"/status" as any}
-                className="text-xs font-light text-white/25 hover:text-white/50 transition-colors"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                Status
+                {t("links.status")}
               </Link>
               <Link
                 href="/docs"
-                className="text-xs font-light text-white/25 hover:text-white/50 transition-colors"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                Docs
+                {t("links.docs")}
               </Link>
               <Link
                 href="https://github.com/netgoat-xyz/netgoat"
-                className="text-xs font-light text-white/25 hover:text-white/50 transition-colors"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                GitHub
+                {t("links.github")}
               </Link>
               <Link
                 href="https://discord.gg/3aJ7MdJsZV"
-                className="text-xs font-light text-white/25 hover:text-white/50 transition-colors"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                Discord
+                {t("links.discord")}
               </Link>
             </div>
           </div>

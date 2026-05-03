@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "@/app/globals.css";
 import NavigationTop from "@/components/elements/NavigationTop";
 import { NextIntlClientProvider } from "next-intl";
@@ -18,7 +18,7 @@ import ExperimentsInjector from "@/components/elements/ExperimentsInjector";
 import SelfHostedAnalytics from "@/components/analytics/SelfHostedAnalytics";
 import KeyboardEasterEgg from "@/components/elements/KeyboardEasterEgg";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicSettings();
@@ -70,11 +70,11 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={cn("dark", inter.variable)}
+      className={cn("dark", plusJakartaSans.variable)}
       suppressHydrationWarning
     >
       <body
-        className={`${inter.className} min-h-svh overflow-x-hidden transition-all transform-gpu bg-neutral-950 text-white antialiased`}
+        className={`${plusJakartaSans.className} min-h-svh overflow-x-hidden transition-all transform-gpu bg-neutral-950 text-white antialiased`}
       >
         <Analytics />
         <NextIntlClientProvider messages={messages}>

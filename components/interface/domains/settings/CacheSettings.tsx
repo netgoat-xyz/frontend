@@ -1,8 +1,14 @@
 "use client";
 
 import { Database, RotateCcw } from "lucide-react";
+import { useState } from "react";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 export function CacheSettings() {
+  const [cacheLevel, setCacheLevel] = useState("aggressive");
+  const [browserCacheTtl, setBrowserCacheTtl] = useState("respect");
+  const [edgeCacheTtl, setEdgeCacheTtl] = useState("2h");
+
   return (
     <div className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800/50 rounded-xl p-5">
       <h3 className="font-semibold text-sm flex items-center gap-2 mb-4">
@@ -15,12 +21,17 @@ export function CacheSettings() {
             <div className="text-sm font-medium text-neutral-200">Caching Level</div>
             <div className="text-[10px] text-neutral-500">How much of your site we cache</div>
           </div>
-          <select className="px-3 py-1.5 bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-neutral-600 transition-all">
-            <option value="aggressive">Aggressive</option>
-            <option value="standard">Standard</option>
-            <option value="basic">Basic</option>
-            <option value="bypass">Bypass</option>
-          </select>
+          <CustomSelect
+            value={cacheLevel}
+            onValueChange={setCacheLevel}
+            options={[
+              { value: "aggressive", label: "Aggressive" },
+              { value: "standard", label: "Standard" },
+              { value: "basic", label: "Basic" },
+              { value: "bypass", label: "Bypass" },
+            ]}
+            triggerClassName="w-38 bg-neutral-800/50 border-neutral-700/50 text-xs"
+          />
         </div>
 
         <div className="flex items-center justify-between py-2.5 border-b border-neutral-800/30">
@@ -28,14 +39,19 @@ export function CacheSettings() {
             <div className="text-sm font-medium text-neutral-200">Browser Cache TTL</div>
             <div className="text-[10px] text-neutral-500">Browser cache duration</div>
           </div>
-          <select className="px-3 py-1.5 bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-neutral-600 transition-all">
-            <option value="respect">Respect Headers</option>
-            <option value="1h">1 Hour</option>
-            <option value="4h">4 Hours</option>
-            <option value="1d">1 Day</option>
-            <option value="7d">7 Days</option>
-            <option value="30d">30 Days</option>
-          </select>
+          <CustomSelect
+            value={browserCacheTtl}
+            onValueChange={setBrowserCacheTtl}
+            options={[
+              { value: "respect", label: "Respect Headers" },
+              { value: "1h", label: "1 Hour" },
+              { value: "4h", label: "4 Hours" },
+              { value: "1d", label: "1 Day" },
+              { value: "7d", label: "7 Days" },
+              { value: "30d", label: "30 Days" },
+            ]}
+            triggerClassName="w-38 bg-neutral-800/50 border-neutral-700/50 text-xs"
+          />
         </div>
 
         <div className="flex items-center justify-between py-2.5 border-b border-neutral-800/30">
@@ -43,12 +59,17 @@ export function CacheSettings() {
             <div className="text-sm font-medium text-neutral-200">Edge Cache TTL</div>
             <div className="text-[10px] text-neutral-500">Edge server cache duration</div>
           </div>
-          <select className="px-3 py-1.5 bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-neutral-600 transition-all">
-            <option value="2h">2 Hours</option>
-            <option value="4h">4 Hours</option>
-            <option value="1d">1 Day</option>
-            <option value="7d">7 Days</option>
-          </select>
+          <CustomSelect
+            value={edgeCacheTtl}
+            onValueChange={setEdgeCacheTtl}
+            options={[
+              { value: "2h", label: "2 Hours" },
+              { value: "4h", label: "4 Hours" },
+              { value: "1d", label: "1 Day" },
+              { value: "7d", label: "7 Days" },
+            ]}
+            triggerClassName="w-38 bg-neutral-800/50 border-neutral-700/50 text-xs"
+          />
         </div>
 
         <div className="flex items-center justify-between py-2.5 border-b border-neutral-800/30">

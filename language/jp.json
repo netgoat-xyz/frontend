@@ -13,9 +13,32 @@
     "source_code": "ソースコード",
     "discord": "Discord",
     "public_beta": "✨ パブリックベータ - 近日公開...",
+    "hero": {
+      "learnMore": "詳しく見る",
+      "countdown": {
+        "months": "ヶ月",
+        "days": "日",
+        "hours": "時間",
+        "minutes": "分",
+        "seconds": "秒"
+      }
+    },
+    "scrollIndicator": {
+      "label": "探索"
+    },
     "netgoat": "NetGoat",
     "login": "ログイン",
+    "header": {
+      "accountLabel": "アカウント",
+      "dashboard": "ダッシュボード",
+      "settings": "設定",
+      "signOut": "サインアウト",
+      "userFallback": "ユーザー",
+      "userAlt": "ユーザーアバター"
+    },
     "features": {
+      "heading": "モダンなスタックのために",
+      "description": "ネットワークインフラを構築・展開・スケールするために必要なものがすべて揃っています。",
       "speed": {
         "title": "超高速",
         "description": "グローバルな低遅延接続に特化して最適化されています。"
@@ -52,10 +75,12 @@
       }
     },
     "testimonials": {
-      "title": "世界中の開発者から信頼されています"
+      "title": "世界中の開発者から信頼されています",
+      "comingSoon": "近日公開"
     },
     "how_it_works": {
       "title": "使い方",
+      "stepLabel": "ステップ{number}",
       "step1": {
         "title": "接続",
         "desc": "任意のデバイスに軽量エージェントをインストールします。"
@@ -76,10 +101,24 @@
     },
     "cta": {
       "title": "ネットワークを保護する準備はできましたか？",
+      "description": "数分でデプロイ。クレジットカードは不要です。",
       "button": "無料で始める"
     },
     "footer": {
-      "rights": "© 2026 NetGoat OSS財団. All rights reserved."
+      "rights": "© 2026 NetGoat OSS財団. All rights reserved.",
+      "language": "言語",
+      "changeLanguage": "言語を変更",
+      "close": "閉じる",
+      "links": {
+        "status": "ステータス",
+        "docs": "ドキュメント",
+        "github": "GitHub",
+        "discord": "Discord"
+      },
+      "easterEgg": {
+        "label": "イースターエッグ画像のポップアップ",
+        "alt": "イースターエッグ"
+      }
     },
     "blog": {
       "title": "ブログ",
@@ -198,6 +237,49 @@
       "description": "このセクターにアクセスする権限がありません。",
       "action": "引き返す",
       "imageAlt": "アクセス拒否アニメーション"
+    },
+    "banned": {
+      "badge": "アカウント制限",
+      "title": "アカウントが停止されました",
+      "description": "現在、このワークスペースへのアクセスはあなたのアカウントで無効になっています。心当たりがない場合は、サポートに連絡し、アカウントのメールアドレスと関連情報を添えてください。",
+      "contactSupport": "サポートに連絡",
+      "signOut": "サインアウト",
+      "emailSubject": "アカウント停止の申し立て"
+    }
+  },
+  "Docs": {
+    "hero": {
+      "badge": "ドキュメント",
+      "title": "Netgoat ドキュメント",
+      "description": "ネットワークインフラを構築・展開・スケールするために必要なものがすべて揃っています。"
+    },
+    "mobileNav": "ナビゲーションメニュー",
+    "sidebar": {
+      "sections": {
+        "gettingStarted": "はじめに",
+        "architectureComponents": "アーキテクチャ コンポーネント",
+        "advanced": "高度",
+        "community": "コミュニティと貢献"
+      },
+      "items": {
+        "introduction": "イントロダクション",
+        "installation": "インストール",
+        "frontendAdmin": "フロントエンド & 管理",
+        "controlPlane": "コントロールプレーン",
+        "edgeProxy": "エッジプロキシ エンジン",
+        "dataStore": "分散データストア",
+        "databaseSchema": "データベース スキーマ",
+        "apiReference": "API リファレンス",
+        "translations": "翻訳"
+      },
+      "subItems": {
+        "backendDatabaseLayer": "バックエンド データベース層",
+        "exampleSync": "同期の例",
+        "netgoatHeaders": "Netgoat ヘッダー",
+        "apiDomains": "ドメイン",
+        "apiDnsRecords": "DNS レコード",
+        "apiEdgeProxy": "エッジプロキシ構成"
+      }
     }
   },
   "ChangelogDetail": {

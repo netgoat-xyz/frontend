@@ -5,6 +5,12 @@ import { createDomain, listDomains, addSubdomain, addDomainWAFRule } from '@/act
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  isValidSubdomainLabel,
+  sanitizeDomainInput,
+  sanitizeSubdomainLabel,
+  validateDomainSyntax
+} from '@/lib/domain-validation'
 import { toast } from 'sonner'
 
 interface Domain {
@@ -49,10 +55,18 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
       return
     }
 
+    const domainValidation = validateDomainSyntax(newDomain.domain)
+    if (!domainValidation.valid) {
+      toast.error(domainValidation.message || 'Invalid domain name')
+      return
+    }
+
+    const sanitizedDomain = domainValidation.sanitized
+
     try {
       setLoading(true)
       await createDomain(teamSlug, {
-        domain: newDomain.domain,
+        domain: sanitizedDomain,
         target_url: newDomain.target_url
       })
       toast.success('Domain created! Agents will receive update automatically.')
@@ -72,13 +86,19 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
 
     if (!subdomain || !targetUrl) return
 
+    const sanitizedSubdomain = sanitizeSubdomainLabel(subdomain)
+    if (!isValidSubdomainLabel(sanitizedSubdomain)) {
+      toast.error('Invalid subdomain label')
+      return
+    }
+
     try {
       setLoading(true)
       await addSubdomain(domainId, {
-        subdomain,
+        subdomain: sanitizedSubdomain,
         target_url: targetUrl
       }, teamSlug)
-      toast.success(`Subdomain ${subdomain}.${domain} created!`)
+      toast.success(`Subdomain ${sanitizedSubdomain}.${domain} created!`)
       await loadDomains()
     } catch (error: any) {
       toast.error(error.message)
@@ -125,7 +145,7 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
             <Input
               placeholder="example.com"
               value={newDomain.domain}
-              onChange={(e) => setNewDomain({ ...newDomain, domain: e.target.value })}
+              onChange={(e) => setNewDomain({ ...newDomain, domain: sanitizeDomainInput(e.target.value) })}
             />
             <Input
               placeholder="http://backend:8080"

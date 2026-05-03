@@ -27,7 +27,9 @@ import type { TeamCapability } from "@/models/Team";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { toast } from "sonner";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 type IntegrationStatus = "installed" | "disabled";
 type IntegrationId = "cloudflare" | "sentry" | "grafana";
@@ -286,6 +288,182 @@ function maskSecret(secret: string) {
   return `${secret.slice(0, 4)}${"*".repeat(secret.length - 6)}${secret.slice(-2)}`;
 }
 
+const SEAT_COUNT_MIN = 1;
+const SEAT_COUNT_MAX = 1000;
+const RETENTION_DAYS_MIN = 7;
+const RETENTION_DAYS_MAX = 365;
+const RETENTION_DAYS_DEFAULT = 90;
+
+function asRecord(value: unknown) {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  return value as Record<string, unknown>;
+}
+
+function clampSeatCount(value: unknown) {
+  const parsed = Math.floor(Number(value ?? SEAT_COUNT_MIN) || SEAT_COUNT_MIN);
+  return Math.min(SEAT_COUNT_MAX, Math.max(SEAT_COUNT_MIN, parsed));
+}
+
+function clampRetentionDays(value: unknown) {
+  const parsed = Math.floor(
+    Number(value ?? RETENTION_DAYS_DEFAULT) || RETENTION_DAYS_DEFAULT,
+  );
+  return Math.min(RETENTION_DAYS_MAX, Math.max(RETENTION_DAYS_MIN, parsed));
+}
+
+function resolveInviteRoleFallback(roles: TeamRoleDefinition[]): InviteRole {
+  const fallbackRole =
+    roles.find((role) => role.key === "member") ||
+    roles.find((role) => role.key !== "owner");
+
+  return (fallbackRole?.key ?? "member") as InviteRole;
+}
+
+function buildWebhookEventList(
+  includeIncidentUpdates: boolean,
+  includeDomainStatusChanges: boolean,
+  includeBillingEvents: boolean,
+) {
+  return [
+    includeIncidentUpdates ? "incident.updated" : null,
+    includeDomainStatusChanges ? "domain.status.changed" : null,
+    includeBillingEvents ? "billing.updated" : null,
+  ].filter((event): event is string => Boolean(event));
+}
+
+function normalizeTeamMembers(value: unknown): TeamMemberRecord[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map((member: unknown) => {
+    const raw = member as {
+      userId?: unknown;
+      name?: unknown;
+      email?: unknown;
+      role?: unknown;
+      joinedAt?: unknown;
+    };
+
+    return {
+      userId: typeof raw.userId === "string" ? raw.userId : "",
+      name:
+        typeof raw.name === "string" && raw.name.length > 0
+          ? raw.name
+          : deriveNameFromEmail(String(raw.email || "member@example.com")),
+      email: typeof raw.email === "string" ? raw.email : "",
+      role: normalizeMemberRole(raw.role),
+      lastActive: lastActiveFromTimestamp(raw.joinedAt),
+    };
+  });
+}
+
+function normalizePendingInvites(value: unknown): PendingInviteRecord[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map((invite: unknown) => {
+    const raw = invite as {
+      email?: unknown;
+      role?: unknown;
+      invitedAt?: unknown;
+      expiresAt?: unknown;
+    };
+
+    return {
+      email: String(raw.email || ""),
+      role: String(raw.role || "member"),
+      invitedAt: String(raw.invitedAt || new Date().toISOString()),
+      expiresAt: String(raw.expiresAt || new Date().toISOString()),
+    };
+  });
+}
+
+function normalizeAccessGroups(value: unknown): AccessGroupRecord[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((group: unknown) => {
+      const raw = group as {
+        id?: unknown;
+        name?: unknown;
+        description?: unknown;
+        members?: unknown;
+        permissions?: unknown;
+        default_role?: unknown;
+      };
+
+      const normalizedName = String(raw.name ?? "").trim();
+      if (!normalizedName) return null;
+
+      const normalizedRole =
+        raw.default_role === "admin"
+          ? "admin"
+          : raw.default_role === "member"
+            ? "member"
+            : "viewer";
+
+      return {
+        id:
+          typeof raw.id === "string" && raw.id.trim().length > 0
+            ? raw.id
+            : normalizedName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        name: normalizedName,
+        description: String(raw.description ?? ""),
+        members: Math.max(0, Math.floor(Number(raw.members ?? 0) || 0)),
+        permissions: Math.max(0, Math.floor(Number(raw.permissions ?? 0) || 0)),
+        defaultRole: normalizedRole as AccessDefaultRole,
+      };
+    })
+    .filter((group): group is AccessGroupRecord => Boolean(group));
+}
+
+function normalizeWebhookEvents(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((event) => String(event ?? "").trim())
+    .filter(Boolean);
+}
+
+function normalizeRecentInvoices(value: unknown): InvoiceRecord[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((invoice: unknown) => {
+      const raw = invoice as {
+        id?: unknown;
+        amount?: unknown;
+        status?: unknown;
+        issuedAt?: unknown;
+      };
+
+      return {
+        id: String(raw.id ?? ""),
+        amount: Number(raw.amount ?? 0),
+        status: normalizeInvoiceStatus(raw.status),
+        issuedAt: normalizeInvoiceDate(raw.issuedAt),
+      };
+    })
+    .filter((invoice) => invoice.id.length > 0);
+}
+
+function toDisplayLabel(value: string) {
+  return value
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (segment) => segment.toUpperCase());
+}
+
 export default function SettingsPage() {
   const t = useTranslations("DashboardPages.settings");
   const integrationsT = useTranslations("DashboardPages.integrations");
@@ -417,17 +595,23 @@ export default function SettingsPage() {
     [intlLocale],
   );
 
-  const filteredIntegrations = useMemo(
-    () =>
-      localizedIntegrations.filter((integration) => {
-        const normalized = searchTerm.toLowerCase();
-        return (
-          integration.name.toLowerCase().includes(normalized) ||
-          integration.description.toLowerCase().includes(normalized)
-        );
-      }),
-    [localizedIntegrations, searchTerm],
+  const normalizedSearchTerm = useMemo(
+    () => searchTerm.trim().toLowerCase(),
+    [searchTerm],
   );
+
+  const filteredIntegrations = useMemo(() => {
+    if (!normalizedSearchTerm) {
+      return localizedIntegrations;
+    }
+
+    return localizedIntegrations.filter((integration) => {
+      return (
+        integration.name.toLowerCase().includes(normalizedSearchTerm) ||
+        integration.description.toLowerCase().includes(normalizedSearchTerm)
+      );
+    });
+  }, [localizedIntegrations, normalizedSearchTerm]);
 
   const roleNameMap = useMemo(
     () =>
@@ -461,6 +645,46 @@ export default function SettingsPage() {
     () => roleOptions.filter((role) => role.key !== "owner"),
     [roleOptions],
   );
+
+  const customRoles = useMemo(
+    () => roleOptions.filter((role) => !role.isPreset),
+    [roleOptions],
+  );
+
+  const memberEmailSet = useMemo(
+    () =>
+      new Set(
+        members
+          .map((member) => member.email.trim().toLowerCase())
+          .filter(Boolean),
+      ),
+    [members],
+  );
+
+  const accessGroupNameSet = useMemo(
+    () =>
+      new Set(
+        groups
+          .map((group) => group.name.trim().toLowerCase())
+          .filter(Boolean),
+      ),
+    [groups],
+  );
+
+  const selectedWebhookEvents = useMemo(
+    () => buildWebhookEventList(notifyOnIncidents, notifyOnDomains, notifyOnBilling),
+    [notifyOnIncidents, notifyOnDomains, notifyOnBilling],
+  );
+
+  const currentPlanLabel = useMemo(
+    () => toDisplayLabel(currentPlan),
+    [currentPlan],
+  );
+
+  const domainUsagePercent = useMemo(() => {
+    if (totalDomains <= 0) return 0;
+    return Math.min(100, Math.round((domainsUsed / totalDomains) * 100));
+  }, [domainsUsed, totalDomains]);
 
   const paidPricingPlans = useMemo(
     () =>
@@ -570,159 +794,54 @@ export default function SettingsPage() {
     return event;
   };
 
-  async function hydrateServerSettings(slug: string = "@me") {
+  async function hydrateServerSettings(
+    slug: string = "@me",
+    options?: { includeBilling?: boolean },
+  ) {
+    const { includeBilling = true } = options ?? {};
     const teamData = await getTeam(slug);
+    const teamRecord = asRecord(teamData);
+
     const resolvedTeamSlug =
-      typeof teamData?.slug === "string" && teamData.slug.length > 0
-        ? teamData.slug
+      typeof teamRecord?.slug === "string" && teamRecord.slug.length > 0
+        ? teamRecord.slug
         : slug;
 
     setTeamSlug(resolvedTeamSlug);
 
-    if (typeof teamData?.name === "string" && teamData.name.length > 0) {
-      setName(teamData.name);
+    if (typeof teamRecord?.name === "string" && teamRecord.name.length > 0) {
+      setName(teamRecord.name);
     }
 
-    if (Array.isArray(teamData?.roles)) {
-      const normalizedRoles = teamData.roles as TeamRoleDefinition[];
-      setRoleOptions(normalizedRoles);
-      if (!normalizedRoles.some((role) => role.key === inviteRole)) {
-        const fallbackRole =
-          normalizedRoles.find((role) => role.key === "member") ||
-          normalizedRoles.find((role) => role.key !== "owner");
-        if (fallbackRole) {
-          setInviteRole(fallbackRole.key);
-        }
-      }
-    }
-
-    if (Array.isArray(teamData?.membersDetailed)) {
-      setMembers(
-        teamData.membersDetailed.map((member: unknown) => {
-          const raw = member as {
-            userId?: unknown;
-            name?: unknown;
-            email?: unknown;
-            role?: unknown;
-            joinedAt?: unknown;
-          };
-
-          return {
-            userId: typeof raw.userId === "string" ? raw.userId : "",
-            name:
-              typeof raw.name === "string" && raw.name.length > 0
-                ? raw.name
-                : deriveNameFromEmail(String(raw.email || "member@example.com")),
-            email: typeof raw.email === "string" ? raw.email : "",
-            role: normalizeMemberRole(raw.role),
-            lastActive: lastActiveFromTimestamp(raw.joinedAt),
-          };
-        }),
-      );
-    }
-
-    if (Array.isArray(teamData?.pendingInvites)) {
-      setPendingInvites(
-        teamData.pendingInvites.map((invite: unknown) => {
-          const raw = invite as {
-            email?: unknown;
-            role?: unknown;
-            invitedAt?: unknown;
-            expiresAt?: unknown;
-          };
-
-          return {
-            email: String(raw.email || ""),
-            role: String(raw.role || "member"),
-            invitedAt: String(raw.invitedAt || new Date().toISOString()),
-            expiresAt: String(raw.expiresAt || new Date().toISOString()),
-          };
-        }),
-      );
-    } else {
-      setPendingInvites([]);
-    }
-
-    if (Array.isArray(teamData?.currentUserCapabilities)) {
-      setCurrentUserCapabilities(teamData.currentUserCapabilities as string[]);
-    } else {
-      setCurrentUserCapabilities([]);
-    }
-
-    const teamSettings =
-      teamData && typeof teamData === "object" &&
-      (teamData as { settings?: unknown }).settings &&
-      typeof (teamData as { settings?: unknown }).settings === "object"
-        ? ((teamData as { settings: unknown }).settings as {
-            access_groups?: unknown;
-            webhooks?: unknown;
-            require_2fa?: unknown;
-            auth_methods?: unknown;
-            retention_days?: unknown;
-          })
-        : null;
-
-    if (Array.isArray(teamSettings?.access_groups)) {
-      const normalizedGroups = teamSettings.access_groups
-        .map((group: unknown) => {
-          const raw = group as {
-            id?: unknown;
-            name?: unknown;
-            description?: unknown;
-            members?: unknown;
-            permissions?: unknown;
-            default_role?: unknown;
-          };
-
-          const normalizedName = String(raw.name ?? "").trim();
-          if (!normalizedName) return null;
-
-          const normalizedRole =
-            raw.default_role === "admin"
-              ? "admin"
-              : raw.default_role === "member"
-                ? "member"
-                : "viewer";
-
-          return {
-            id:
-              typeof raw.id === "string" && raw.id.trim().length > 0
-                ? raw.id
-                : normalizedName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-            name: normalizedName,
-            description: String(raw.description ?? ""),
-            members: Math.max(0, Math.floor(Number(raw.members ?? 0) || 0)),
-            permissions: Math.max(
-              0,
-              Math.floor(Number(raw.permissions ?? 0) || 0),
-            ),
-            defaultRole: normalizedRole as AccessDefaultRole,
-          };
-        })
-        .filter((group): group is AccessGroupRecord => Boolean(group));
-
-      setGroups(normalizedGroups);
-      if (normalizedGroups.length > 0) {
-        setDefaultAccess(normalizedGroups[0].defaultRole);
-      }
-    }
-
-    const webhookSettings =
-      teamSettings?.webhooks && typeof teamSettings.webhooks === "object"
-        ? (teamSettings.webhooks as {
-            endpoint_url?: unknown;
-            events?: unknown;
-            updated_at?: unknown;
-            signing_secret_masked?: unknown;
-          })
-        : null;
-
-    const webhookEndpoint = String(webhookSettings?.endpoint_url ?? "").trim();
-    const webhookEvents = Array.isArray(webhookSettings?.events)
-      ? webhookSettings.events
-          .map((event) => String(event ?? "").trim())
-          .filter(Boolean)
+    const normalizedRoles = Array.isArray(teamRecord?.roles)
+      ? (teamRecord.roles as TeamRoleDefinition[])
       : [];
+    setRoleOptions(normalizedRoles);
+
+    if (!normalizedRoles.some((role) => role.key === inviteRole)) {
+      setInviteRole(resolveInviteRoleFallback(normalizedRoles));
+    }
+
+    setMembers(normalizeTeamMembers(teamRecord?.membersDetailed));
+    setPendingInvites(normalizePendingInvites(teamRecord?.pendingInvites));
+    setCurrentUserCapabilities(
+      Array.isArray(teamRecord?.currentUserCapabilities)
+        ? teamRecord.currentUserCapabilities.map((capability) =>
+            String(capability ?? ""),
+          )
+        : [],
+    );
+
+    const teamSettings = asRecord(teamRecord?.settings);
+    const normalizedGroups = normalizeAccessGroups(teamSettings?.access_groups);
+    setGroups(normalizedGroups);
+    setDefaultAccess(
+      normalizedGroups.length > 0 ? normalizedGroups[0].defaultRole : "viewer",
+    );
+
+    const webhookSettings = asRecord(teamSettings?.webhooks);
+    const webhookEndpoint = String(webhookSettings?.endpoint_url ?? "").trim();
+    const webhookEvents = normalizeWebhookEvents(webhookSettings?.events);
 
     setWebhookUrl(webhookEndpoint);
     setWebhookSecret("");
@@ -749,18 +868,9 @@ export default function SettingsPage() {
       setSavedWebhook(null);
     }
 
-    if (typeof teamSettings?.require_2fa === "boolean") {
-      setRequire2FA(teamSettings.require_2fa);
-    }
+    setRequire2FA(teamSettings?.require_2fa === true);
 
-    const authMethods =
-      teamSettings?.auth_methods && typeof teamSettings.auth_methods === "object"
-        ? (teamSettings.auth_methods as {
-            magic_link?: unknown;
-            email_code?: unknown;
-          })
-        : null;
-
+    const authMethods = asRecord(teamSettings?.auth_methods);
     const normalizedMagicLink =
       typeof authMethods?.magic_link === "boolean"
         ? authMethods.magic_link
@@ -778,12 +888,12 @@ export default function SettingsPage() {
       setAllowEmailCode(normalizedEmailCode);
     }
 
-    const retentionCandidate = Math.floor(
-      Number(teamSettings?.retention_days ?? 90) || 90,
-    );
-    const normalizedRetention = Math.min(365, Math.max(7, retentionCandidate));
-    setRetentionDays(String(normalizedRetention));
+    setRetentionDays(String(clampRetentionDays(teamSettings?.retention_days)));
     setSecurityMessage(null);
+
+    if (!includeBilling) {
+      return resolvedTeamSlug;
+    }
 
     const billing = await getBillingOverview(resolvedTeamSlug);
     if (typeof billing?.plan === "string") {
@@ -795,35 +905,14 @@ export default function SettingsPage() {
     setBillingInterval(
       billing?.billingInterval === "annual" ? "annual" : "monthly",
     );
-    setSeatCount(
-      Math.max(1, Math.floor(Number(billing?.seatCount || 1) || 1)),
-    );
+    setSeatCount(clampSeatCount(billing?.seatCount));
     setPricingPlans(
       Array.isArray(billing?.pricing)
         ? (billing.pricing as BillingPlanPricing[])
         : [],
     );
     setPolarConfigured(Boolean(billing?.payments?.configured));
-    setRecentInvoices(
-      Array.isArray(billing?.invoices)
-        ? billing.invoices.map((invoice) => {
-            const raw = invoice as {
-              id?: unknown;
-              amount?: unknown;
-              status?: unknown;
-              issuedAt?: unknown;
-            };
-
-            return {
-              id: String(raw.id ?? ""),
-              amount: Number(raw.amount ?? 0),
-              status: normalizeInvoiceStatus(raw.status),
-              issuedAt: normalizeInvoiceDate(raw.issuedAt),
-            };
-          })
-            .filter((invoice) => invoice.id.length > 0)
-        : [],
-    );
+    setRecentInvoices(normalizeRecentInvoices(billing?.invoices));
 
     if (typeof billing?.billingEmail === "string") {
       setBillingEmail(billing.billingEmail);
@@ -898,7 +987,7 @@ export default function SettingsPage() {
     try {
       setSavingGeneral(true);
       await updateTeam(teamSlug, { name: normalizedName.slice(0, 32) });
-      await hydrateServerSettings(teamSlug);
+      await hydrateServerSettings(teamSlug, { includeBilling: false });
       toast.success(t("toasts.teamNameSaved"));
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, t("toasts.teamNameSaveFailed")));
@@ -911,10 +1000,7 @@ export default function SettingsPage() {
     e.preventDefault();
 
     const normalizedEmail = billingEmail.trim().toLowerCase();
-    const normalizedSeats = Math.min(
-      1000,
-      Math.max(1, Math.floor(Number(seatCount) || 1)),
-    );
+    const normalizedSeats = clampSeatCount(seatCount);
 
     if (!isValidEmail(normalizedEmail)) {
       toast.error(t("toasts.billingEmailInvalid"));
@@ -1015,7 +1101,7 @@ export default function SettingsPage() {
       return;
     }
 
-    if (members.some((member) => member.email.toLowerCase() === normalizedEmail)) {
+    if (memberEmailSet.has(normalizedEmail)) {
       toast.error(t("toasts.memberExists"));
       return;
     }
@@ -1028,9 +1114,9 @@ export default function SettingsPage() {
     try {
       setInvitingMember(true);
       await inviteToTeam(teamSlug, normalizedEmail, inviteRole);
-      await hydrateServerSettings(teamSlug);
+      await hydrateServerSettings(teamSlug, { includeBilling: false });
       setInviteEmail("");
-      setInviteRole("member");
+      setInviteRole(resolveInviteRoleFallback(roleOptions));
       toast.success(t("toasts.invitationSent"));
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, t("toasts.invitationFailed")));
@@ -1048,7 +1134,7 @@ export default function SettingsPage() {
     try {
       setUpdatingMemberId(member.userId);
       await updateMemberRole(teamSlug, member.userId, nextRole);
-      await hydrateServerSettings(teamSlug);
+      await hydrateServerSettings(teamSlug, { includeBilling: false });
       toast.success(t("toasts.memberRoleUpdated"));
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, t("toasts.memberRoleUpdateFailed")));
@@ -1066,7 +1152,7 @@ export default function SettingsPage() {
     try {
       setRemovingMemberId(member.userId);
       await removeMember(teamSlug, member.userId);
-      await hydrateServerSettings(teamSlug);
+      await hydrateServerSettings(teamSlug, { includeBilling: false });
       toast.success(t("toasts.memberRemoved"));
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, t("toasts.memberRemoveFailed")));
@@ -1189,10 +1275,7 @@ export default function SettingsPage() {
     }
 
     try {
-      const normalizedSeats = Math.min(
-        1000,
-        Math.max(1, Math.floor(Number(seatCount) || 1)),
-      );
+      const normalizedSeats = clampSeatCount(seatCount);
 
       setSeatCount(normalizedSeats);
       setStartingCheckoutPlan(planKey);
@@ -1253,11 +1336,7 @@ export default function SettingsPage() {
       return;
     }
 
-    if (
-      groups.some(
-        (group) => group.name.toLowerCase() === normalizedName.toLowerCase(),
-      )
-    ) {
+    if (accessGroupNameSet.has(normalizedName.toLowerCase())) {
       toast.error(t("toasts.accessGroupExists"));
       return;
     }
@@ -1269,7 +1348,7 @@ export default function SettingsPage() {
         description: newGroupDescription.trim(),
         defaultRole: defaultAccess,
       });
-      await hydrateServerSettings(teamSlug);
+      await hydrateServerSettings(teamSlug, { includeBilling: false });
       setNewGroupName("");
       setNewGroupDescription("");
       toast.success(t("toasts.accessGroupCreated"));
@@ -1299,11 +1378,7 @@ export default function SettingsPage() {
       return;
     }
 
-    const selectedEvents = [
-      notifyOnIncidents ? "incident.updated" : null,
-      notifyOnDomains ? "domain.status.changed" : null,
-      notifyOnBilling ? "billing.updated" : null,
-    ].filter((event): event is string => Boolean(event));
+    const selectedEvents = selectedWebhookEvents;
 
     if (selectedEvents.length === 0) {
       toast.error(t("toasts.webhookEventRequired"));
@@ -1408,10 +1483,7 @@ export default function SettingsPage() {
       return;
     }
 
-    const normalizedDays = Math.min(
-      365,
-      Math.max(7, Number.parseInt(retentionDays || "90", 10) || 90),
-    );
+    const normalizedDays = clampRetentionDays(retentionDays);
 
     try {
       setSavingSecurity(true);
@@ -1551,9 +1623,7 @@ export default function SettingsPage() {
                         {t("billing.planAndUsage.currentPlanLabel")}
                       </p>
                       <p className="text-lg font-semibold text-white mt-2">
-                        {currentPlan
-                          .replace(/[_-]+/g, " ")
-                          .replace(/\b\w/g, (segment) => segment.toUpperCase())}
+                        {currentPlanLabel}
                       </p>
                       <p className="text-sm text-neutral-400 mt-1">
                         {`${currencyFormatter.format(currentPlanCost)} / ${
@@ -1575,13 +1645,7 @@ export default function SettingsPage() {
                         <div
                           className="h-full bg-white"
                           style={{
-                            width:
-                              totalDomains > 0
-                                ? `${Math.min(
-                                    100,
-                                    Math.round((domainsUsed / totalDomains) * 100),
-                                  )}%`
-                                : "0%",
+                            width: `${domainUsagePercent}%`,
                           }}
                         />
                       </div>
@@ -1618,19 +1682,20 @@ export default function SettingsPage() {
                         <label className="block text-sm text-neutral-300 mb-2">
                           Billing interval
                         </label>
-                        <select
+                        <CustomSelect
                           value={billingInterval}
-                          onChange={(e) =>
+                          onValueChange={(value) =>
                             setBillingInterval(
-                              e.target.value === "annual" ? "annual" : "monthly",
+                              value === "annual" ? "annual" : "monthly",
                             )
                           }
                           disabled={!canManageBilling || savingBilling || loadingServerData}
-                          className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
-                        >
-                          <option value="monthly">Monthly</option>
-                          <option value="annual">Annual</option>
-                        </select>
+                          options={[
+                            { value: "monthly", label: "Monthly" },
+                            { value: "annual", label: "Annual" },
+                          ]}
+                          triggerClassName="w-full bg-neutral-800 border-neutral-700 text-sm text-white focus-visible:border-neutral-600 focus-visible:ring-neutral-600/40"
+                        />
                       </div>
 
                       <div>
@@ -1639,13 +1704,11 @@ export default function SettingsPage() {
                         </label>
                         <input
                           type="number"
-                          min={1}
-                          max={1000}
+                          min={SEAT_COUNT_MIN}
+                          max={SEAT_COUNT_MAX}
                           step={1}
                           value={seatCount}
-                          onChange={(e) =>
-                            setSeatCount(Math.max(1, Number.parseInt(e.target.value || "1", 10) || 1))
-                          }
+                          onChange={(e) => setSeatCount(clampSeatCount(e.target.value))}
                           disabled={!canManageBilling || savingBilling || loadingServerData}
                           className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
                         />
@@ -1787,6 +1850,13 @@ export default function SettingsPage() {
                           ? t("billing.debug.actions.creating")
                           : t("billing.debug.actions.createTestInvoice")}
                       </button>
+
+                      <Link
+                        href="/account/debug"
+                        className="border border-neutral-700 text-neutral-200 text-sm font-medium px-4 py-2 rounded-md hover:bg-neutral-800 transition-all"
+                      >
+                        Open Debug Route
+                      </Link>
                     </div>
 
                     {billingDebugReport && (
@@ -1969,24 +2039,20 @@ export default function SettingsPage() {
                               {roleLabel(member.role)}
                             </span>
                           ) : (
-                            <select
+                            <CustomSelect
                               value={member.role}
-                              onChange={(e) =>
-                                handleMemberRoleUpdate(member, e.target.value)
-                              }
+                              onValueChange={(value) => handleMemberRoleUpdate(member, value)}
                               disabled={
                                 !member.userId ||
                                 updatingMemberId === member.userId ||
                                 loadingServerData
                               }
-                              className="bg-neutral-800 border border-neutral-700 rounded-md px-3 py-1.5 text-xs text-white outline-none focus:border-neutral-600"
-                            >
-                              {memberAssignableRoles.map((role) => (
-                                <option key={role.key} value={role.key}>
-                                  {roleLabel(role.key)}
-                                </option>
-                              ))}
-                            </select>
+                              options={memberAssignableRoles.map((role) => ({
+                                value: role.key,
+                                label: roleLabel(role.key),
+                              }))}
+                              triggerClassName="h-8 min-w-34 bg-neutral-800 border-neutral-700 text-xs text-white focus-visible:border-neutral-600"
+                            />
                           )}
 
                           {canManageMembers && member.role !== "owner" && member.userId && (
@@ -2076,18 +2142,16 @@ export default function SettingsPage() {
                         <label className="block text-sm text-neutral-300 mb-2">
                           {t("members.roleLabel")}
                         </label>
-                        <select
+                        <CustomSelect
                           value={inviteRole}
-                          onChange={(e) => setInviteRole(e.target.value as InviteRole)}
+                          onValueChange={(value) => setInviteRole(value as InviteRole)}
                           disabled={!canManageMembers || invitingMember || loadingServerData}
-                          className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
-                        >
-                          {memberAssignableRoles.map((role) => (
-                            <option key={role.key} value={role.key}>
-                              {roleLabel(role.key)}
-                            </option>
-                          ))}
-                        </select>
+                          options={memberAssignableRoles.map((role) => ({
+                            value: role.key,
+                            label: roleLabel(role.key),
+                          }))}
+                          triggerClassName="w-full bg-neutral-800 border-neutral-700 text-sm text-white focus-visible:border-neutral-600 focus-visible:ring-neutral-600/40"
+                        />
                       </div>
 
                       <button
@@ -2115,9 +2179,7 @@ export default function SettingsPage() {
 
                   <div className="p-6 space-y-6">
                     <div className="space-y-3">
-                      {roleOptions
-                        .filter((role) => !role.isPreset)
-                        .map((role) => (
+                      {customRoles.map((role) => (
                           <div
                             key={role.key}
                             className="rounded-md border border-neutral-800 bg-neutral-800/30 p-4"
@@ -2162,7 +2224,7 @@ export default function SettingsPage() {
                           </div>
                         ))}
 
-                      {roleOptions.filter((role) => !role.isPreset).length === 0 && (
+                      {customRoles.length === 0 && (
                         <p className="text-sm text-neutral-500">
                           {t("members.customRoles.empty")}
                         </p>
@@ -2189,19 +2251,23 @@ export default function SettingsPage() {
                           <label className="block text-sm text-neutral-300 mb-2">
                             {t("members.customRoles.form.inherits")}
                           </label>
-                          <select
+                          <CustomSelect
                             value={newRoleInherits}
-                            onChange={(e) =>
-                              setNewRoleInherits(e.target.value as RoleInheritance)
+                            onValueChange={(value) =>
+                              setNewRoleInherits(value as RoleInheritance)
                             }
                             disabled={!canManageRoles || creatingRole || loadingServerData}
-                            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
-                          >
-                            <option value="admin">{t("members.roles.admin")}</option>
-                            <option value="billing_manager">{t("members.roles.billingManager")}</option>
-                            <option value="member">{t("members.roles.member")}</option>
-                            <option value="viewer">{t("members.roles.viewer")}</option>
-                          </select>
+                            options={[
+                              { value: "admin", label: t("members.roles.admin") },
+                              {
+                                value: "billing_manager",
+                                label: t("members.roles.billingManager"),
+                              },
+                              { value: "member", label: t("members.roles.member") },
+                              { value: "viewer", label: t("members.roles.viewer") },
+                            ]}
+                            triggerClassName="w-full bg-neutral-800 border-neutral-700 text-sm text-white focus-visible:border-neutral-600 focus-visible:ring-neutral-600/40"
+                          />
                         </div>
                       </div>
 
@@ -2338,20 +2404,21 @@ export default function SettingsPage() {
                       <label className="block text-sm text-neutral-300 mb-2">
                         {t("accessGroups.form.defaultAccessLabel")}
                       </label>
-                      <select
+                      <CustomSelect
                         value={defaultAccess}
-                        onChange={(e) =>
-                          setDefaultAccess(e.target.value as AccessDefaultRole)
+                        onValueChange={(value) =>
+                          setDefaultAccess(value as AccessDefaultRole)
                         }
                         disabled={
                           !canManageAccessGroups || loadingServerData || savingAccessGroup
                         }
-                        className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
-                      >
-                        <option value="viewer">{t("members.roles.viewer")}</option>
-                        <option value="member">{t("members.roles.member")}</option>
-                        <option value="admin">{t("members.roles.admin")}</option>
-                      </select>
+                        options={[
+                          { value: "viewer", label: t("members.roles.viewer") },
+                          { value: "member", label: t("members.roles.member") },
+                          { value: "admin", label: t("members.roles.admin") },
+                        ]}
+                        triggerClassName="w-full bg-neutral-800 border-neutral-700 text-sm text-white focus-visible:border-neutral-600 focus-visible:ring-neutral-600/40"
+                      />
                     </div>
 
                     <button
@@ -2585,8 +2652,8 @@ export default function SettingsPage() {
                     </label>
                     <input
                       type="number"
-                      min={7}
-                      max={365}
+                      min={RETENTION_DAYS_MIN}
+                      max={RETENTION_DAYS_MAX}
                       value={retentionDays}
                       onChange={(e) => setRetentionDays(e.target.value)}
                       disabled={!canManageSecurity || loadingServerData || savingSecurity}

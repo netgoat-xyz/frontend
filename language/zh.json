@@ -13,9 +13,32 @@
     "source_code": "源代码",
     "discord": "Discord",
     "public_beta": "✨ 公开测试版 - 即将推出...",
+    "hero": {
+      "learnMore": "了解更多",
+      "countdown": {
+        "months": "个月",
+        "days": "天",
+        "hours": "小时",
+        "minutes": "分钟",
+        "seconds": "秒"
+      }
+    },
+    "scrollIndicator": {
+      "label": "探索"
+    },
     "netgoat": "NetGoat",
     "login": "登录",
+    "header": {
+      "accountLabel": "账户",
+      "dashboard": "仪表板",
+      "settings": "设置",
+      "signOut": "退出登录",
+      "userFallback": "用户",
+      "userAlt": "用户头像"
+    },
     "features": {
+      "heading": "为现代技术栈打造",
+      "description": "构建、部署并扩展网络基础设施所需的一切。",
       "speed": {
         "title": "闪电般快速",
         "description": "专门针对全球低延迟连接进行优化。"
@@ -52,10 +75,12 @@
       }
     },
     "testimonials": {
-      "title": "深受全球开发者信赖"
+      "title": "深受全球开发者信赖",
+      "comingSoon": "即将推出"
     },
     "how_it_works": {
       "title": "工作原理",
+      "stepLabel": "第{number}步",
       "step1": {
         "title": "连接",
         "desc": "在任何设备上安装我们的轻量级代理。"
@@ -76,10 +101,24 @@
     },
     "cta": {
       "title": "准备好保护您的网络了吗？",
+      "description": "几分钟即可部署。无需信用卡。",
       "button": "免费开始"
     },
     "footer": {
-      "rights": "© 2026 NetGoat OSS基金会。保留所有权利。"
+      "rights": "© 2026 NetGoat OSS基金会。保留所有权利。",
+      "language": "语言",
+      "changeLanguage": "更改语言",
+      "close": "关闭",
+      "links": {
+        "status": "状态",
+        "docs": "文档",
+        "github": "GitHub",
+        "discord": "Discord"
+      },
+      "easterEgg": {
+        "label": "彩蛋图片弹窗",
+        "alt": "彩蛋"
+      }
     },
     "blog": {
       "title": "博客",
@@ -198,6 +237,49 @@
       "description": "您没有权限访问此区域。",
       "action": "返回",
       "imageAlt": "禁止访问动画"
+    },
+    "banned": {
+      "badge": "账户受限",
+      "title": "您的账户已被封禁",
+      "description": "此工作区的访问已为您的账户禁用。如果您认为这是错误，请联系支持并附上您的账户邮箱以及相关说明。",
+      "contactSupport": "联系支持",
+      "signOut": "退出登录",
+      "emailSubject": "账户封禁申诉"
+    }
+  },
+  "Docs": {
+    "hero": {
+      "badge": "文档",
+      "title": "Netgoat 文档",
+      "description": "构建、部署并扩展网络基础设施所需的一切。"
+    },
+    "mobileNav": "导航菜单",
+    "sidebar": {
+      "sections": {
+        "gettingStarted": "快速开始",
+        "architectureComponents": "架构组件",
+        "advanced": "高级",
+        "community": "社区与贡献"
+      },
+      "items": {
+        "introduction": "介绍",
+        "installation": "安装",
+        "frontendAdmin": "前端与管理",
+        "controlPlane": "控制平面",
+        "edgeProxy": "边缘代理引擎",
+        "dataStore": "分布式数据存储",
+        "databaseSchema": "数据库架构",
+        "apiReference": "API 参考",
+        "translations": "翻译"
+      },
+      "subItems": {
+        "backendDatabaseLayer": "后端数据库层",
+        "exampleSync": "同步示例",
+        "netgoatHeaders": "Netgoat 请求头",
+        "apiDomains": "域名",
+        "apiDnsRecords": "DNS 记录",
+        "apiEdgeProxy": "边缘代理配置"
+      }
     }
   },
   "ChangelogDetail": {

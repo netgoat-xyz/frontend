@@ -20,27 +20,27 @@ export default function Stats({ initialStats }: StatsProps) {
     { 
       id: "commits", 
       value: initialStats.commits, 
-      color: "from-violet-400 to-indigo-400",
+      color: "from-chart-1 to-chart-2",
       suffix: "+"
     },
     { 
       id: "stars", 
       value: initialStats.stars, 
-      color: "from-amber-300 to-orange-400",
+      color: "from-chart-2 to-chart-3",
       suffix: "+"
     },
     { 
       id: "contributors", 
       value: initialStats.contributors, 
-      color: "from-emerald-400 to-teal-400",
+      color: "from-chart-3 to-chart-4",
       suffix: "+"
     },
   ], [initialStats]);
 
   return (
-    <section className="relative z-20 py-20 border-y border-white/5">
+    <section className="relative z-20 py-20 border-y border-border/60">
       <div className="max-w-5xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 md:divide-x divide-white/5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 md:divide-x divide-border/60">
           {stats.map((stat, idx) => (
             <motion.div
               key={stat.id}
@@ -51,7 +51,7 @@ export default function Stats({ initialStats }: StatsProps) {
               className="flex flex-col items-center justify-center text-center px-8"
             >
               <div
-                className={`text-5xl md:text-6xl font-extralight tracking-tight text-transparent bg-clip-text bg-linear-to-br ${stat.color} mb-3`}
+                className={`text-5xl md:text-6xl font-semibold tracking-tight text-transparent bg-clip-text bg-linear-to-br ${stat.color} mb-3`}
               >
                 <Counter 
                   to={stat.value} 
@@ -59,7 +59,7 @@ export default function Stats({ initialStats }: StatsProps) {
                   suffix={stat.suffix}
                 />
               </div>
-              <div className="text-[11px] font-light text-white/35 uppercase tracking-[0.2em]">
+              <div className="text-sm font-medium text-muted-foreground">
                 {t(stat.id)}
               </div>
             </motion.div>

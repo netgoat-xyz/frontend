@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 export default function DocsSidebar() {
   const pathname = usePathname();
+  const t = useTranslations("Docs.sidebar");
   const [activeHash, setActiveHash] = useState("");
 
   useEffect(() => {
@@ -32,59 +34,74 @@ export default function DocsSidebar() {
 
   const links = [
     {
-      title: "Getting Started",
+      title: t("sections.gettingStarted"),
       items: [
-        { label: "Introduction", href: "/docs/intro" },
-        { label: "Installation", href: "/docs/installation" },
+        { label: t("items.introduction"), href: "/docs/intro" },
+        { label: t("items.installation"), href: "/docs/installation" },
       ],
     },
     {
-      title: "Architecture Components",
+      title: t("sections.architectureComponents"),
       items: [
-        { 
-          label: "Frontend & Admin", 
+        {
+          label: t("items.frontendAdmin"),
           href: "/docs/frontend",
           subItems: [
-            { label: "Backend Database Layer", href: "/docs/frontend#backend-database-layer" },
-            { label: "Example Sync", href: "/docs/frontend#example-configuration-sync" },
-            { label: "Netgoat Headers", href: "/docs/frontend#netgoat-headers" },
-          ]
+            {
+              label: t("subItems.backendDatabaseLayer"),
+              href: "/docs/frontend#backend-database-layer",
+            },
+            {
+              label: t("subItems.exampleSync"),
+              href: "/docs/frontend#example-configuration-sync",
+            },
+            {
+              label: t("subItems.netgoatHeaders"),
+              href: "/docs/frontend#netgoat-headers",
+            },
+          ],
         },
-        { label: "Control Plane", href: "/docs/control-plane" },
-        { label: "Edge Proxy Engine", href: "/docs/edge-proxy" },
-        { label: "Distributed Data Store", href: "/docs/data-store" },
+        { label: t("items.controlPlane"), href: "/docs/control-plane" },
+        { label: t("items.edgeProxy"), href: "/docs/edge-proxy" },
+        { label: t("items.dataStore"), href: "/docs/data-store" },
       ],
     },
     {
-      title: "Advanced",
+      title: t("sections.advanced"),
       items: [
-        { label: "Database Schema", href: "/docs/database" },
-        { 
-          label: "API Reference", 
+        { label: t("items.databaseSchema"), href: "/docs/database" },
+        {
+          label: t("items.apiReference"),
           href: "/docs/api",
           subItems: [
-            { label: "Domains", href: "/docs/api#1-domains" },
-            { label: "DNS Records", href: "/docs/api#2-dns-records" },
-            { label: "Edge Proxy Configurations", href: "/docs/api#3-edge-proxy-configurations" }
-          ]
+            { label: t("subItems.apiDomains"), href: "/docs/api#1-domains" },
+            {
+              label: t("subItems.apiDnsRecords"),
+              href: "/docs/api#2-dns-records",
+            },
+            {
+              label: t("subItems.apiEdgeProxy"),
+              href: "/docs/api#3-edge-proxy-configurations",
+            },
+          ],
         },
       ],
     },
     {
-      title: "Community & Contribution",
+      title: t("sections.community"),
       items: [
-        { label: "Translations", href: "/docs/translations" },
+        { label: t("items.translations"), href: "/docs/translations" },
       ],
     },
   ];
 
-return (
+  return (
     <aside className="hidden sticky top-24 h-[calc(100vh-6rem)] w-full shrink-0 md:block overflow-y-auto pr-4 scrollbar-hide">
       <LayoutGroup>
         <nav className="flex flex-col gap-8 pb-10">
           {links.map((section) => (
             <div key={section.title}>
-              <h4 className="px-3 mb-3 text-[10px] font-medium uppercase tracking-[0.2em] text-white/30">
+              <h4 className="px-3 mb-3 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/70">
                 {section.title}
               </h4>
               <div className="flex flex-col gap-1">
@@ -98,14 +115,16 @@ return (
                       <Link
                         href={item.href}
                         className={cn(
-                          "relative flex items-center rounded-xl px-3 py-2 text-sm transition-all duration-300 z-10",
-                          active ? "text-white font-medium" : "text-white/50 hover:text-white/80"
+                          "relative flex items-center filter backdrop-blur-sm rounded-xl px-3 py-2 text-sm transition-all duration-300 z-10",
+                          active
+                            ? "text-foreground font-medium"
+                            : "text-muted-foreground hover:text-foreground"
                         )}
                       >
                         {active && (
                           <motion.span
                             layoutId="sidebar-pill"
-                            className="absolute inset-0 rounded-xl bg-white/10 border border-white/5 shadow-sm z-[-1]"
+                            className="absolute inset-0 rounded-xl bg-foreground/10 border border-border/60 shadow-sm z-[-1]"
                             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                           />
                         )}
@@ -118,7 +137,7 @@ return (
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden ml-4 pl-2 border-l border-white/10"
+                            className="overflow-hidden ml-4 pl-2 border-l border-border/60"
                           >
                             <div className="flex flex-col gap-0.5 py-1">
                               {item.subItems.map((subItem) => {
@@ -130,13 +149,15 @@ return (
                                     onClick={(e) => handleSmoothScroll(e, subItem.href)}
                                     className={cn(
                                       "relative flex items-center rounded-lg px-3 py-2 text-xs transition-colors z-10",
-                                      isSubActive ? "text-white font-medium" : "text-white/40 hover:text-white/70"
+                                      isSubActive
+                                        ? "text-foreground font-medium"
+                                        : "text-muted-foreground/80 hover:text-foreground"
                                     )}
                                   >
                                     {isSubActive && (
                                       <motion.span
                                         layoutId="sub-sidebar-pill"
-                                        className="absolute inset-0 rounded-lg bg-white/5 z-[-1]"
+                                        className="absolute inset-0 rounded-lg bg-foreground/5 z-[-1]"
                                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                       />
                                     )}

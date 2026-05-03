@@ -7,8 +7,8 @@ const BOARD_WIDTH = 32;
 const BOARD_HEIGHT = 14;
 const BIRD_X = 7;
 const GAP_SIZE = 4;
-const PIPE_SPACING = 15;
-const TICK_MS = 90;
+const PIPE_SPACING = 18;
+const TICK_MS = 100;
 const GRAVITY = 0.52;
 const JUMP_VELOCITY = -1.9;
 

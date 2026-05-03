@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Route } from "next";
 import { auth } from "@/lib/auth";
+import { isBannedSessionUser } from "@/lib/user-status";
 import { headers } from "next/headers";
 
 export default async function AuthGate() {
@@ -11,5 +12,10 @@ export default async function AuthGate() {
   if (!session) {
     redirect("/auth/login" as Route);
   }
+
+  if (isBannedSessionUser(session)) {
+    redirect("/banned");
+  }
+
   redirect("/dashboard/@me");
 }
