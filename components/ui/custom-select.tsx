@@ -46,7 +46,11 @@ export function CustomSelect({
     <Select
       value={value}
       defaultValue={defaultValue}
-      onValueChange={onValueChange}
+      onValueChange={(nextValue) => {
+        if (nextValue !== null) {
+          onValueChange?.(nextValue);
+        }
+      }}
       disabled={disabled}
     >
       <SelectTrigger id={id} aria-label={ariaLabel} className={cn("w-full", triggerClassName)}>

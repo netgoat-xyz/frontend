@@ -7,6 +7,21 @@ import { Team } from '@/models/Team'
 import ProxyConfig from '@/models/ProxyConfig'
 import Domain from '@/models/Domain'
 
+type HealthCheckConfig = {
+  enabled?: boolean
+  interval?: number
+  timeout?: number
+  path?: string
+  expected_status?: number
+  fall?: number
+  rise?: number
+}
+
+type ProxyUpstreamServer = {
+  url: string
+  down?: boolean
+}
+
 // Create proxy configuration
 export async function createProxyConfig(
   teamSlug: string,
@@ -16,7 +31,7 @@ export async function createProxyConfig(
     subdomain?: string
     upstream_servers: Array<{ url: string; weight?: number }>
     load_balancing?: string
-    health_check?: any
+    health_check?: HealthCheckConfig
     connect_timeout?: number
     send_timeout?: number
     read_timeout?: number
@@ -76,12 +91,12 @@ export async function listProxyConfigs(teamSlug: string, domainId?: string) {
     throw new Error('Team not found')
   }
 
-  const isMember = team.members.some((m: any) => m.user_id.toString() === session.user.id)
+  const isMember = team.members.some((member) => member.user_id.toString() === session.user.id)
   if (!isMember) {
     throw new Error('You are not a member of this team')
   }
 
-  const query: any = { team_id: team._id }
+  const query: { team_id: typeof team._id; domain_id?: string } = { team_id: team._id }
   if (domainId) query.domain_id = domainId
 
   const configs = await ProxyConfig.find(query)
@@ -121,7 +136,7 @@ export async function getProxyConfig(teamSlug: string, configId: string) {
 export async function updateProxyConfig(
   teamSlug: string,
   configId: string,
-  updates: any
+  updates: Record<string, unknown>
 ) {
   const session = await auth.api.getSession({
     headers: await headers()
@@ -145,7 +160,7 @@ export async function updateProxyConfig(
   const config = await ProxyConfig.findOneAndUpdate(
     { _id: configId, team_id: team._id },
     { $set: updates },
-    { new: true }
+    { returnDocument: "after" }
   )
 
   if (!config) {
@@ -432,7 +447,9 @@ export async function toggleServerStatus(
     throw new Error('Proxy configuration not found')
   }
 
-  const server = config.upstream_servers.find((s: any) => s.url === serverUrl)
+  const server = config.upstream_servers.find(
+    (server: ProxyUpstreamServer) => server.url === serverUrl
+  )
   if (!server) {
     throw new Error('Server not found')
   }

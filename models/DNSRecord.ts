@@ -59,7 +59,6 @@ const DNSRecordSchema = new Schema<IDNSRecord>({
 // Compound indexes
 DNSRecordSchema.index({ domain: 1, type: 1, name: 1 })
 DNSRecordSchema.index({ team_id: 1, domain: 1 })
-DNSRecordSchema.index({ domain_id: 1 })
 
 // Virtuals
 DNSRecordSchema.virtual('full_name').get(function() {
@@ -85,7 +84,7 @@ DNSRecordSchema.methods.checkPropagation = async function() {
 
 // Static Methods
 DNSRecordSchema.statics.findByDomain = async function(domain: string, activeOnly = true) {
-  const query: any = { domain }
+  const query: { domain: string; active?: boolean } = { domain }
   if (activeOnly) {
     query.active = true
   }
@@ -93,7 +92,9 @@ DNSRecordSchema.statics.findByDomain = async function(domain: string, activeOnly
 }
 
 DNSRecordSchema.statics.findByTeam = async function(teamId: string, activeOnly = true) {
-  const query: any = { team_id: new mongoose.Types.ObjectId(teamId) }
+  const query: { team_id: mongoose.Types.ObjectId; active?: boolean } = {
+    team_id: new mongoose.Types.ObjectId(teamId),
+  }
   if (activeOnly) {
     query.active = true
   }
@@ -101,7 +102,9 @@ DNSRecordSchema.statics.findByTeam = async function(teamId: string, activeOnly =
 }
 
 DNSRecordSchema.statics.findByDomainId = async function(domainId: string, activeOnly = true) {
-  const query: any = { domain_id: new mongoose.Types.ObjectId(domainId) }
+  const query: { domain_id: mongoose.Types.ObjectId; active?: boolean } = {
+    domain_id: new mongoose.Types.ObjectId(domainId),
+  }
   if (activeOnly) {
     query.active = true
   }

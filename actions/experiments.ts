@@ -13,6 +13,12 @@ type FeatureFlag = {
     percentage?: number;
 };
 
+type FeatureFlagUpdateQuery = Partial<{
+    "featureFlags.$.isActive": boolean;
+    "featureFlags.$.percentage": number;
+    "featureFlags.$.variants": string[];
+}>;
+
 function serialize<T>(value: T): T {
     return JSON.parse(JSON.stringify(value));
 }
@@ -35,7 +41,7 @@ async function getUser() {
             headers: await headers()
         });
         return session?.user;
-    } catch (e) {
+    } catch {
         return null;
     }
 }
@@ -50,15 +56,16 @@ export async function getExperiments() {
     const flagsMap: Record<string, boolean | string> = {};
 
     // 1. Process Global Flags
-    globalFlags.forEach((flag: any) => {
+    globalFlags.forEach((flag) => {
+        const percentage = flag.percentage ?? 0;
         if (flag.isActive) {
             flagsMap[flag.key] = true;
-        } else if (flag.percentage > 0) {
+        } else if (percentage > 0) {
             // Simple deterministic rollout based on user ID or random if no user
             // If user exists, hash id to 0-100.
             if (user) {
                 const hash = user.id.split("").reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-                if ((hash % 100) < flag.percentage) {
+                if ((hash % 100) < percentage) {
                     flagsMap[flag.key] = true;
                 }
             }
@@ -161,7 +168,7 @@ export async function adminAddExperiment(key: string, description: string, varia
     await Settings.findOneAndUpdate({}, {
         $push: { featureFlags: { key, description, isActive: false, percentage: 0, variants } }
     }, { upsert: true });
-    revalidateTag("feature-flags");
+    revalidateTag("feature-flags", "max");
     return { success: true };
 }
 
@@ -169,7 +176,7 @@ export async function adminUpdateExperiment(key: string, update: { isActive?: bo
     await checkAdmin();
     await dbConnect();
     
-    const updateQuery: any = {};
+    const updateQuery: FeatureFlagUpdateQuery = {};
     if (update.isActive !== undefined) updateQuery["featureFlags.$.isActive"] = update.isActive;
     if (update.percentage !== undefined) updateQuery["featureFlags.$.percentage"] = update.percentage;
     if (update.variants !== undefined) updateQuery["featureFlags.$.variants"] = update.variants;
@@ -178,6 +185,6 @@ export async function adminUpdateExperiment(key: string, update: { isActive?: bo
         { "featureFlags.key": key },
         { $set: updateQuery }
     );
-    revalidateTag("feature-flags");
+    revalidateTag("feature-flags", "max");
     return { success: true };
 }

@@ -7,7 +7,9 @@ import Domain from '@/models/Domain'
 import { Team } from '@/models/Team'
 import DNSRecord from '@/models/DNSRecord'
 import ProxyConfig from '@/models/ProxyConfig'
+import type { Types } from 'mongoose'
 import { revalidatePath } from 'next/cache'
+import { randomBytes } from 'crypto'
 import dns from 'dns'
 import { promisify } from 'util'
 import {
@@ -35,8 +37,59 @@ export type RoutePolicy = {
   }
 }
 
+type Stringifiable = {
+  toString(): string
+}
+
+type AssociatedRecord = Record<string, unknown> & {
+  domain_id?: Types.ObjectId
+  name?: string
+  subdomain?: string
+}
+
+type DomainSubdomain = Record<string, unknown> & {
+  subdomain: string
+}
+
+type EnrichedSubdomain = DomainSubdomain & {
+  dns_records: AssociatedRecord[]
+  proxy_configs: AssociatedRecord[]
+}
+
+type DomainRecord = Record<string, unknown> & {
+  _id: Types.ObjectId
+  subdomains?: DomainSubdomain[]
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function isStringifiable(value: unknown): value is Stringifiable {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'toString' in value &&
+    typeof value.toString === 'function'
+  )
+}
+
+function isDuplicateKeyError(error: unknown): boolean {
+  return (
+    isRecord(error) &&
+    (error.code === 11000 ||
+      (typeof error.message === 'string' && error.message.includes('duplicate')))
+  )
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  if (isRecord(error) && typeof error.message === 'string') return error.message
+  return 'An unexpected error occurred'
+}
+
+function hasDocumentId(value: unknown, id: string): boolean {
+  return isRecord(value) && isStringifiable(value._id) && value._id.toString() === id
 }
 
 function optionalPolicyRecord(value: unknown, field: string): Record<string, unknown> | undefined {
@@ -153,10 +206,10 @@ async function resolveTeam(teamSlug: string, userId: string, userName: string) {
           active: true
         })
         console.log(`Created personal team ${personalSlug} for user ${userId}`)
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Team creation failed:", err);
         // If creation fails (e.g., duplicate slug from race condition), try finding it again
-        if (err.code === 11000 || err.message?.includes('duplicate')) {
+        if (isDuplicateKeyError(err)) {
           team = await Team.findOne({
             slug: personalSlug
           })
@@ -188,7 +241,7 @@ export async function getUserTeamDomainHierarchy() {
 
   const teams = await Team.findUserTeams(session.user.id)
   const hierarchyTeams = await Promise.all(
-    teams.map(async (team: any) => {
+    teams.map(async (team) => {
       const domains = await listTeamDomains(team.slug)
       return {
         id: team._id,
@@ -261,8 +314,7 @@ export async function createDomainForTeam(
   }
 
   // Use provided token or generate a new one
-  const crypto = require('crypto')
-  const verificationToken = data.verification_token || `netgoat-verify-${crypto.randomBytes(32).toString('hex')}`
+  const verificationToken = data.verification_token || `netgoat-verify-${randomBytes(32).toString('hex')}`
   const verified = await hasVerificationToken(normalizedDomain, verificationToken)
   
   // Set next verification check for 30 minutes from now
@@ -349,7 +401,7 @@ export async function listTeamDomains(teamSlug: string) {
     .select({ private_key_pem: 0, 'subdomains.private_key_pem': 0 })
     .lean()
 
-  const domainIds = domains.map((d: any) => d._id)
+  const domainIds = (domains as unknown as DomainRecord[]).map((domain) => domain._id)
   if (domainIds.length === 0) {
     return []
   }
@@ -367,29 +419,29 @@ export async function listTeamDomains(teamSlug: string) {
     }).lean()
   ])
 
-  const dnsByDomain = new Map<string, any[]>()
-  for (const record of dnsRecords as any[]) {
+  const dnsByDomain = new Map<string, AssociatedRecord[]>()
+  for (const record of dnsRecords as unknown as AssociatedRecord[]) {
     const domainId = record.domain_id?.toString()
     if (!domainId) continue
     if (!dnsByDomain.has(domainId)) dnsByDomain.set(domainId, [])
     dnsByDomain.get(domainId)!.push(record)
   }
 
-  const proxyByDomain = new Map<string, any[]>()
-  for (const cfg of proxyConfigs as any[]) {
+  const proxyByDomain = new Map<string, AssociatedRecord[]>()
+  for (const cfg of proxyConfigs as unknown as AssociatedRecord[]) {
     const domainId = cfg.domain_id?.toString()
     if (!domainId) continue
     if (!proxyByDomain.has(domainId)) proxyByDomain.set(domainId, [])
     proxyByDomain.get(domainId)!.push(cfg)
   }
 
-  const enrichedDomains = (domains as any[]).map((domain) => {
+  const enrichedDomains = (domains as unknown as DomainRecord[]).map((domain) => {
     const domainId = domain._id.toString()
     const domainDNS = dnsByDomain.get(domainId) || []
     const domainProxy = proxyByDomain.get(domainId) || []
 
     const subdomains = Array.isArray(domain.subdomains) ? domain.subdomains : []
-    const subdomainMap = new Map<string, any>()
+    const subdomainMap = new Map<string, EnrichedSubdomain>()
     for (const sub of subdomains) {
       subdomainMap.set(sub.subdomain, {
         ...sub,
@@ -398,7 +450,7 @@ export async function listTeamDomains(teamSlug: string) {
       })
     }
 
-    const rootDNS: any[] = []
+    const rootDNS: AssociatedRecord[] = []
     for (const record of domainDNS) {
       const name = record.name === '@' ? '' : record.name
       if (!name) {
@@ -414,7 +466,7 @@ export async function listTeamDomains(teamSlug: string) {
       }
     }
 
-    const rootProxy: any[] = []
+    const rootProxy: AssociatedRecord[] = []
     for (const config of domainProxy) {
       const sub = config.subdomain?.trim()
       if (!sub) {
@@ -561,7 +613,9 @@ export async function addSubdomain(
   }
 
   const subdomainExists = Array.isArray(domain.subdomains)
-    ? domain.subdomains.some((entry: any) => entry.subdomain === sanitizedSubdomain)
+    ? domain.subdomains.some(
+        (entry: unknown) => isRecord(entry) && entry.subdomain === sanitizedSubdomain
+      )
     : false
 
   if (subdomainExists) {
@@ -879,7 +933,7 @@ export async function updateDomainSettings(
       $set: updates,
       ...(Object.keys(unsets).length > 0 ? { $unset: unsets } : {})
     },
-    { new: true, runValidators: true }
+    { returnDocument: "after", runValidators: true }
   )
 
   if (!domain) {
@@ -920,7 +974,7 @@ export async function toggleDomainActive(teamSlug: string, domainId: string, act
         updated_at: new Date()
       }
     },
-    { new: true }
+    { returnDocument: "after" }
   )
 
   if (!domain) {
@@ -931,7 +985,11 @@ export async function toggleDomainActive(teamSlug: string, domainId: string, act
   return { success: true }
 }
 
-export async function addReverseProxy(teamSlug: string, domainId: string, proxyData: any) {
+export async function addReverseProxy(
+  teamSlug: string,
+  domainId: string,
+  proxyData: Record<string, unknown>
+) {
   try {
     const session = await auth.api.getSession({ headers: await headers() })
     if (!session?.user?.id) throw new Error('Unauthorized')
@@ -951,8 +1009,8 @@ export async function addReverseProxy(teamSlug: string, domainId: string, proxyD
     
     revalidatePath(`/dashboard/${teamSlug}/${domain.domain}/reverse-proxies`);
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -968,12 +1026,14 @@ export async function removeReverseProxy(teamSlug: string, domainId: string, pro
     const domain = await Domain.findOne({ _id: domainId, team_id: team._id })
     if (!domain) throw new Error('Domain not found')
       
-    domain.reverse_proxies = domain.reverse_proxies.filter((p: any) => p._id.toString() !== proxyId);
+    domain.reverse_proxies = domain.reverse_proxies.filter(
+      (proxy: unknown) => !hasDocumentId(proxy, proxyId)
+    );
     await domain.save();
     
     revalidatePath(`/dashboard/${teamSlug}/${domain.domain}/reverse-proxies`);
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }

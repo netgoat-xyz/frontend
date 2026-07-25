@@ -517,7 +517,7 @@ async function persistReleaseDescription(input: {
       },
       {
         upsert: true,
-        new: true,
+        returnDocument: "after",
         setDefaultsOnInsert: true,
       }
     )

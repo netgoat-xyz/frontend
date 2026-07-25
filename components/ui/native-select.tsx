@@ -46,7 +46,9 @@ function parseChildrenToOptions(children: React.ReactNode): CustomSelectOption[]
     }
 
     if (child.type === NativeSelectOptGroup || child.type === "optgroup") {
-      React.Children.forEach(child.props.children, (groupChild) => {
+      const group = child as React.ReactElement<NativeOptGroupLikeProps>;
+
+      React.Children.forEach(group.props.children, (groupChild) => {
         if (!React.isValidElement(groupChild)) {
           return;
         }
@@ -123,11 +125,11 @@ function NativeSelect({
   );
 }
 
-function NativeSelectOption(_: React.ComponentProps<"option">) {
+function NativeSelectOption({}: React.ComponentProps<"option">) {
   return null;
 }
 
-function NativeSelectOptGroup(_: NativeOptGroupLikeProps) {
+function NativeSelectOptGroup({}: NativeOptGroupLikeProps) {
   return null;
 }
 

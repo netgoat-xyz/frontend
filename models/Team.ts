@@ -331,7 +331,7 @@ const TeamWebhookSettingsSchema = new Schema<ITeamWebhookSettings>(
   { _id: false }
 )
 
-const TeamSchema = new Schema<ITeam>({
+const TeamSchema = new Schema<ITeam, ITeamModel, ITeam>({
   name: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
   description: { type: String },

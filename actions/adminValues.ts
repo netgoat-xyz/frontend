@@ -16,6 +16,18 @@ import {
   type DynamicRulesConfig,
 } from "@/lib/agent-config";
 
+type UserSearchQuery = {
+  $or?: Array<
+    | { name: { $regex: string; $options: string } }
+    | { email: { $regex: string; $options: string } }
+    | { _id: { $regex: string; $options: string } }
+  >;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
 function serialize<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
 }
@@ -33,7 +45,7 @@ const getPublicSettingsCached = unstable_cache(
         },
       },
       {
-        new: true,
+        returnDocument: "after",
         upsert: true,
         setDefaultsOnInsert: true,
       },
@@ -83,7 +95,7 @@ export async function getPublicSettings() {
   return getPublicSettingsCached();
 }
 
-export async function updateGlobalSettings(newSettings: any) {
+export async function updateGlobalSettings(newSettings: unknown) {
   await checkAdmin();
   await dbConnect();
 
@@ -96,10 +108,10 @@ export async function updateGlobalSettings(newSettings: any) {
   const settings = await Settings.findOneAndUpdate(
     {}, // find the first one
     { $set: updateData },
-    { new: true, upsert: true }
+    { returnDocument: "after", upsert: true }
   ).lean();
 
-  revalidateTag("public-settings");
+  revalidateTag("public-settings", "max");
 
   return serialize(settings);
 }
@@ -122,10 +134,10 @@ export async function updateAgentDynamicRules(dynamicRules: unknown): Promise<Dy
   await Settings.findOneAndUpdate(
     { key: { $exists: false } },
     { $set: { "agentConfig.dynamic_rules": normalized } },
-    { new: true, upsert: true, setDefaultsOnInsert: true },
+    { returnDocument: "after", upsert: true, setDefaultsOnInsert: true },
   ).lean();
 
-  revalidateTag("public-settings");
+  revalidateTag("public-settings", "max");
   return normalized;
 }
 
@@ -133,7 +145,7 @@ export async function getUsers(page = 1, limit = 10, search = "") {
   await checkAdmin();
   await dbConnect();
 
-  const query: any = {};
+  const query: UserSearchQuery = {};
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: "i" } },
@@ -155,20 +167,26 @@ export async function getUsers(page = 1, limit = 10, search = "") {
   };
 }
 
-export async function updateUser(userId: string, data: any) {
+export async function updateUser(userId: string, data: unknown) {
   await checkAdmin();
   await dbConnect();
+
+  if (!isRecord(data)) {
+    throw new Error("User update must be an object");
+  }
+
+  const updateData = data;
 
   const existingUser = await User.findById(userId);
   if (!existingUser) throw new Error("User not found");
 
-  if (data.password) {
-     delete data.password;
+  if (updateData.password) {
+     delete updateData.password;
      console.warn("Password change requested but not fully implemented in direct DB mode via this action");
   }
 
   return serialize(
-    await User.findByIdAndUpdate(userId, { $set: data }, { new: true }).lean(),
+    await User.findByIdAndUpdate(userId, { $set: updateData }, { returnDocument: "after" }).lean(),
   );
 }
 

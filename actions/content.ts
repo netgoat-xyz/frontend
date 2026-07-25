@@ -5,6 +5,23 @@ import Post from "@/models/Post";
 import { checkAdmin } from "./adminValues";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
+type PostType = "blog" | "changelog" | "whats-new";
+
+type PostInput = {
+  title: string;
+  content: string;
+  slug?: string;
+  type?: PostType;
+  published?: boolean;
+  excerpt?: string;
+  coverImage?: string;
+  version?: string;
+  author?: string;
+  updatedAt?: Date;
+};
+
+type PostUpdate = Partial<PostInput>;
+
 // --- Public Actions ---
 
 function serialize<T>(value: T): T {
@@ -73,7 +90,7 @@ export async function getAdminPosts(type?: string, page = 1, limit = 20) {
   await checkAdmin();
   await dbConnect();
 
-  const query: any = {};
+  const query: { type?: string } = {};
   if (type && type !== "all") query.type = type;
 
   const skip = (page - 1) * limit;
@@ -95,7 +112,7 @@ export async function getPostById(id: string) {
   return serialize(await Post.findById(id).lean());
 }
 
-export async function createPost(data: any) {
+export async function createPost(data: PostInput) {
   await checkAdmin();
   await dbConnect();
   
@@ -121,25 +138,25 @@ export async function createPost(data: any) {
   revalidatePath("/blog");
   revalidatePath("/changelog");
   revalidatePath("/admin/content");
-  revalidateTag("content-posts");
-  revalidateTag("content-post-by-slug");
-  revalidateTag("content-whats-new");
+  revalidateTag("content-posts", "max");
+  revalidateTag("content-post-by-slug", "max");
+  revalidateTag("content-whats-new", "max");
   return serialize(post.toObject());
 }
 
-export async function updatePost(id: string, data: any) {
+export async function updatePost(id: string, data: PostUpdate) {
   await checkAdmin();
   await dbConnect();
 
   data.updatedAt = new Date();
 
-  const post = await Post.findByIdAndUpdate(id, { $set: data }, { new: true }).lean();
+  const post = await Post.findByIdAndUpdate(id, { $set: data }, { returnDocument: "after" }).lean();
   revalidatePath("/blog");
   revalidatePath("/changelog");
   revalidatePath("/admin/content");
-  revalidateTag("content-posts");
-  revalidateTag("content-post-by-slug");
-  revalidateTag("content-whats-new");
+  revalidateTag("content-posts", "max");
+  revalidateTag("content-post-by-slug", "max");
+  revalidateTag("content-whats-new", "max");
   
   if (post?.slug && post.type === "blog") {
      revalidatePath(`/blog/${post.slug}`);
@@ -155,7 +172,7 @@ export async function deletePost(id: string) {
   revalidatePath("/admin/content");
   revalidatePath("/blog");
   revalidatePath("/changelog");
-  revalidateTag("content-posts");
-  revalidateTag("content-post-by-slug");
-  revalidateTag("content-whats-new");
+  revalidateTag("content-posts", "max");
+  revalidateTag("content-post-by-slug", "max");
+  revalidateTag("content-whats-new", "max");
 }

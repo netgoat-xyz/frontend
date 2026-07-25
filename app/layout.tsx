@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "@/app/globals.css";
-import NavigationTop from "@/components/elements/NavigationTop";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "cal-sans";
@@ -13,7 +12,6 @@ import { getPublicSettings as _getPublicSettings } from "@/actions/adminValues";
 // Deduplicate getPublicSettings calls within a single request
 const getPublicSettings = cache(_getPublicSettings);
 import GlobalBanner from "@/components/elements/GlobalBanner";
-import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
 import ExperimentsInjector from "@/components/elements/ExperimentsInjector";
 import SelfHostedAnalytics from "@/components/analytics/SelfHostedAnalytics";
 import KeyboardEasterEgg from "@/components/elements/KeyboardEasterEgg";
@@ -25,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteName = settings.siteName || "NetGoat";
 
   return {
+    metadataBase: new URL("https://netgoat.xyz"),
     title: siteName,
     description: "A secure, scalable, and easy-to-use networking solution.",
     keywords: ["network", "security", "learning", siteName],
