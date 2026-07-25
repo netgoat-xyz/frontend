@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -38,8 +38,8 @@ export default function ForgotPasswordForm({
         type: "forget-password",
       });
       setStep("otp");
-    } catch (err: any) {
-      setError(err?.message || "Failed to send reset code");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to send reset code"));
     } finally {
       setLoading(false);
     }
@@ -57,8 +57,8 @@ export default function ForgotPasswordForm({
         password,
       });
       setSuccess(true);
-    } catch (err: any) {
-      setError(err?.message || "Failed to reset password");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to reset password"));
     } finally {
       setLoading(false);
     }

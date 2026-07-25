@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import type { Route } from "next";
 import { useRouter, usePathname } from "next/navigation";
 
 import { authClient, useSession } from "@/lib/auth-client";
@@ -64,7 +65,7 @@ export default function Header() {
             return (
               <Link
                 key={link.href}
-                href={link.href as any}
+                href={link.href as Route}
                 target={isExternal ? "_blank" : undefined}
                 className={cn(
                   "relative text-xs font-medium px-4 py-1.5 rounded-full transition-colors duration-300 z-10",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -20,13 +21,38 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 
-export default function ContentEditor({ post }: { post?: any }) {
+type ContentType = "blog" | "changelog" | "whats-new";
+
+type ContentFormValues = {
+  title: string;
+  slug: string;
+  content: string;
+  type: ContentType;
+  version: string;
+  published: boolean;
+  coverImage: string;
+};
+
+type EditablePost = Partial<ContentFormValues> & {
+  _id?: string;
+  updatedAt: string | Date;
+};
+
+function isContentType(value: string | null): value is ContentType {
+  return value === "blog" || value === "changelog" || value === "whats-new";
+}
+
+function isUploadResponse(value: unknown): value is { url: string } {
+  return typeof value === "object" && value !== null && "url" in value && typeof value.url === "string";
+}
+
+export default function ContentEditor({ post }: { post?: EditablePost }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [contentType, setContentType] = useState(post?.type || "blog");
 
-  const { register, handleSubmit, setValue, watch, formState: { errors }, getValues } = useForm({
+  const { register, handleSubmit, setValue, watch, formState: { errors }, getValues } = useForm<ContentFormValues>({
     defaultValues: {
       title: post?.title || "",
       slug: post?.slug || "",
@@ -44,7 +70,8 @@ export default function ContentEditor({ post }: { post?: any }) {
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) throw new Error("Upload failed");
-      const data = await res.json();
+      const data: unknown = await res.json();
+      if (!isUploadResponse(data)) throw new Error("Upload response did not include an image URL");
       return data.url;
     } catch (e) {
       console.error(e);
@@ -101,7 +128,7 @@ export default function ContentEditor({ post }: { post?: any }) {
       }
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: ContentFormValues) => {
     setLoading(true);
     try {
       if (post?._id) {
@@ -110,7 +137,7 @@ export default function ContentEditor({ post }: { post?: any }) {
       } else {
         await createPost(data);
         toast.success("Post created successfully");
-        router.push("/admin/content" as any);
+        router.push("/admin/content");
       }
     } catch (error) {
         console.error(error);
@@ -158,8 +185,10 @@ export default function ContentEditor({ post }: { post?: any }) {
                     <Select 
                         value={contentType} 
                         onValueChange={(val) => {
-                            setContentType(val);
-                            setValue("type", val);
+                            if (isContentType(val)) {
+                              setContentType(val);
+                              setValue("type", val);
+                            }
                         }}
                     >
                         <SelectTrigger>
@@ -168,7 +197,7 @@ export default function ContentEditor({ post }: { post?: any }) {
                         <SelectContent>
                             <SelectItem value="blog">Blog Post</SelectItem>
                             <SelectItem value="changelog">Changelog</SelectItem>
-                            <SelectItem value="whats-new">What's New</SelectItem>
+                            <SelectItem value="whats-new">What&apos;s New</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -214,10 +243,12 @@ export default function ContentEditor({ post }: { post?: any }) {
                 </div>
                 {watch("coverImage") && (
                     <div className="mt-2 relative w-full h-48 bg-muted rounded-md overflow-hidden border">
-                         <img 
-                            src={watch("coverImage")} 
-                            alt="Banner preview" 
-                            className="w-full h-full object-cover" 
+                         <Image
+                            src={watch("coverImage")}
+                            alt="Banner preview"
+                            fill
+                            unoptimized
+                            className="object-cover"
                             onError={(e) => (e.currentTarget.style.display = 'none')}
                         />
                     </div>

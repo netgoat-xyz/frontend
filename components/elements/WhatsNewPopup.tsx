@@ -7,14 +7,26 @@ import Markdown from "react-markdown";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
 
-export default function WhatsNewPopup({ post }: { post: any }) {
+interface WhatsNewPost {
+  _id: string | { toString(): string };
+  title: string;
+  content: string;
+  coverImage?: string | null;
+  version?: string | null;
+}
+
+interface WhatsNewPopupProps {
+  post: WhatsNewPost | null;
+}
+
+export default function WhatsNewPopup({ post }: WhatsNewPopupProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!post) return;
 
     const lastSeenId = localStorage.getItem("netgoat_whats_new_last_id");
-    if (lastSeenId !== post._id) {
+    if (lastSeenId !== String(post._id)) {
         // Delay slightly for dramatic effect
         const t = setTimeout(() => setOpen(true), 1000);
         return () => clearTimeout(t);
@@ -23,7 +35,7 @@ export default function WhatsNewPopup({ post }: { post: any }) {
 
   const handleClose = (openState: boolean) => {
     if (!openState && post) {
-        localStorage.setItem("netgoat_whats_new_last_id", post._id);
+        localStorage.setItem("netgoat_whats_new_last_id", String(post._id));
         setOpen(false);
     }
   };
@@ -42,12 +54,14 @@ export default function WhatsNewPopup({ post }: { post: any }) {
           </div>
           <DialogTitle className="text-2xl">{post.title}</DialogTitle>
           <DialogDescription>
-            Check out what's new in NetGoat.
+            Check out what&apos;s new in NetGoat.
           </DialogDescription>
         </DialogHeader>
         
         {post.coverImage && (
             <div className="w-full relative rounded-lg overflow-hidden border border-neutral-800 my-4">
+                 {/* External CMS URLs cannot be safely allowlisted for Next image optimization. */}
+                 {/* eslint-disable-next-line @next/next/no-img-element */}
                  <img src={post.coverImage} alt={post.title} className="w-full h-auto max-h-64 object-cover" />
             </div>
         )}

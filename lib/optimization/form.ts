@@ -10,12 +10,16 @@ export interface UseFormOptions<T> {
   onSubmit?: (values: T) => Promise<void>;
 }
 
-export function useOptimizedForm<T extends Record<string, any>>(
+export function useOptimizedForm<T extends Record<string, unknown>>(
   options: UseFormOptions<T>
 ) {
   const [values, setValues] = useState<T>(options.initialValues);
-  const [errors, setErrors] = useState<Record<keyof T, string | undefined>>({} as any);
-  const [touched, setTouched] = useState<Record<keyof T, boolean>>({} as any);
+  const [errors, setErrors] = useState<Record<keyof T, string | undefined>>(
+    {} as Record<keyof T, string | undefined>
+  );
+  const [touched, setTouched] = useState<Record<keyof T, boolean>>(
+    {} as Record<keyof T, boolean>
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
@@ -29,7 +33,7 @@ export function useOptimizedForm<T extends Record<string, any>>(
       setValues((prev) => ({
         ...prev,
         [fieldName]: fieldValue,
-      }));
+      }) as T);
 
       setIsDirty(true);
 
@@ -75,7 +79,8 @@ export function useOptimizedForm<T extends Record<string, any>>(
       e.preventDefault();
 
       // Validate all fields
-      const allErrors: Record<keyof T, string | undefined> = {} as any;
+      const allErrors: Record<keyof T, string | undefined> =
+        {} as Record<keyof T, string | undefined>;
       if (options.validate) {
         Object.assign(allErrors, options.validate(values));
       }
@@ -115,13 +120,13 @@ export function useOptimizedForm<T extends Record<string, any>>(
   // Reset form to initial values
   const reset = useCallback(() => {
     setValues(options.initialValues);
-    setErrors({} as any);
-    setTouched({} as any);
+    setErrors({} as Record<keyof T, string | undefined>);
+    setTouched({} as Record<keyof T, boolean>);
     setIsDirty(false);
   }, [options.initialValues]);
 
   // Set specific field value
-  const setFieldValue = useCallback((name: keyof T, value: any) => {
+  const setFieldValue = useCallback((name: keyof T, value: T[keyof T]) => {
     setValues((prev) => ({
       ...prev,
       [name]: value,

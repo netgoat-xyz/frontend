@@ -4,7 +4,7 @@ import { useCallback, useRef, useEffect } from "react";
  * Debounce hook for optimizing form input handling
  * Prevents unnecessary re-renders and API calls
  */
-export function useDebounce<T extends (...args: any[]) => any>(
+export function useDebounce<T extends (...args: never[]) => unknown>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -38,11 +38,11 @@ export function useDebounce<T extends (...args: any[]) => any>(
 /**
  * Throttle hook for optimizing scroll or resize handlers
  */
-export function useThrottle<T extends (...args: any[]) => any>(
+export function useThrottle<T extends (...args: never[]) => unknown>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
-  const lastRunRef = useRef<number>(Date.now());
+  const lastRunRef = useRef<number | null>(null);
   
   // FIX: Added | null and initialized with null
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -50,7 +50,7 @@ export function useThrottle<T extends (...args: any[]) => any>(
   const throttled = useCallback(
     (...args: Parameters<T>) => {
       const now = Date.now();
-      const timeSinceLastRun = now - lastRunRef.current;
+      const timeSinceLastRun = now - (lastRunRef.current ?? now);
 
       if (timeSinceLastRun >= delay) {
         callback(...args);

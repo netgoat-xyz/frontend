@@ -1,5 +1,4 @@
 "use client";
-import React, { useState } from "react";
 
 type Latest = {
   service_id: number;
@@ -11,7 +10,21 @@ type Latest = {
   updated_at: number;
 };
 
-export function ServiceCard({ s, onAction }: { s: any; onAction: (id:number, action:'start'|'stop'|'restart')=>Promise<void> }) {
+type ServiceAction = "start" | "stop" | "restart";
+
+interface Service {
+  id: number;
+  name: string;
+  base_url: string;
+  latest?: Latest | null;
+}
+
+interface ServiceCardProps {
+  s: Service;
+  onAction: (id: number, action: ServiceAction) => Promise<void>;
+}
+
+export function ServiceCard({ s, onAction }: ServiceCardProps) {
   const latest: Latest | null = s.latest || null;
   const statusColor = latest?.status === 'up' ? 'bg-green-500' : latest?.status === 'degraded' ? 'bg-yellow-500' : 'bg-red-500'
   return (

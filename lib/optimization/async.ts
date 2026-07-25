@@ -45,11 +45,16 @@ export function useAsync<T>(
   }, [asyncFunction]);
 
   useEffect(() => {
-    if (immediate) {
-      execute();
-    }
+    const executionTimer = immediate
+      ? window.setTimeout(() => {
+          void execute();
+        }, 0)
+      : undefined;
 
     return () => {
+      if (executionTimer !== undefined) {
+        window.clearTimeout(executionTimer);
+      }
       mountedRef.current = false;
     };
   }, [execute, immediate]);

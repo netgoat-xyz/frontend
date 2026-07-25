@@ -5,7 +5,11 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 
 interface GlobalBannerProps {
-  settings: any;
+  settings: {
+    globalBannerEnabled?: boolean;
+    globalBannerText?: string;
+    globalBannerVariant?: BannerVariant;
+  } | null | undefined;
   doNotShowBanner?: string[];
 }
 

@@ -43,6 +43,10 @@ interface Domain {
   team_id: string;
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
 export default function NavSelectDrapdown() {
   const pathname = usePathname();
   const router = useRouter();
@@ -65,8 +69,8 @@ export default function NavSelectDrapdown() {
         setLoadingTeams(true);
         const userTeams = await getUserTeams();
         setTeams(userTeams);
-      } catch (error: any) {
-        toast.error(error.message || "Failed to load teams");
+      } catch (error: unknown) {
+        toast.error(getErrorMessage(error, "Failed to load teams"));
       } finally {
         setLoadingTeams(false);
       }
@@ -97,7 +101,7 @@ export default function NavSelectDrapdown() {
         setLoadingCurrentTeam(true);
         const team = await getTeam(currentTeamSlug);
         setCurrentTeam(team);
-      } catch (error: any) {
+      } catch {
         setCurrentTeam(null);
       } finally {
         setLoadingCurrentTeam(false);
@@ -123,7 +127,7 @@ export default function NavSelectDrapdown() {
         setLoadingDomains(true);
         const teamDomains = await listTeamDomains(actualTeamSlug);
         setDomains(teamDomains);
-      } catch (error: any) {
+      } catch {
         // Silently fail for domains - might not have permission
         setDomains([]);
       } finally {

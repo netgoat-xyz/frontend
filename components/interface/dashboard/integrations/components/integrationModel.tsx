@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -22,15 +22,21 @@ interface IntegrationModalProps {
   integration: Integration | null;
 }
 
+const subscribeToClientMount = () => () => {};
+const getClientMountSnapshot = () => true;
+const getServerMountSnapshot = () => false;
+
 export default function IntegrationModal({
   isOpen,
   onClose,
   integration,
 }: IntegrationModalProps) {
   const t = useTranslations("DashboardPages.integrations.shared");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    subscribeToClientMount,
+    getClientMountSnapshot,
+    getServerMountSnapshot,
+  );
 
   // Lock scroll
   useEffect(() => {

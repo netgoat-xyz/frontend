@@ -40,7 +40,7 @@ export function createLazyLoadObserver(
  * Cache key generator for memoization
  * Creates stable cache keys from props
  */
-export function generateCacheKey(props: Record<string, any>): string {
+export function generateCacheKey(props: Record<string, unknown>): string {
   return JSON.stringify(props);
 }
 
@@ -72,9 +72,9 @@ export function measureRender(componentName: string): () => void {
  * Estimate memory usage of objects
  * Useful for detecting memory leaks
  */
-export function estimateObjectSize(obj: any): number {
-  const objectList: any[] = [];
-  const stack = [obj];
+export function estimateObjectSize(obj: unknown): number {
+  const objectList: object[] = [];
+  const stack: unknown[] = [obj];
   let bytes = 0;
 
   while (stack.length) {
@@ -90,9 +90,10 @@ export function estimateObjectSize(obj: any): number {
       if (objectList.indexOf(value) === -1) {
         objectList.push(value);
 
-        for (const key in value) {
-          if (value.hasOwnProperty(key)) {
-            stack.push(value[key]);
+        const record = value as Record<string, unknown>;
+        for (const key in record) {
+          if (Object.prototype.hasOwnProperty.call(record, key)) {
+            stack.push(record[key]);
           }
         }
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -34,8 +34,8 @@ export default function LoginForm({
     try {
       await authClient.signIn.email({ email, password });
       router.replace("/dashboard");
-    } catch (err: any) {
-      setError(err?.message || "Login failed");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Login failed"));
     } finally {
       setLoading(false);
     }

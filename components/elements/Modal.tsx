@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -13,6 +13,10 @@ interface ModalProps {
   onConfirm?: () => void;
 }
 
+const subscribeToClientMount = () => () => {};
+const getClientMountSnapshot = () => true;
+const getServerMountSnapshot = () => false;
+
 const Modal = ({
   isOpen,
   onClose,
@@ -21,9 +25,11 @@ const Modal = ({
   actionButtons,
   onConfirm,
 }: ModalProps) => {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    subscribeToClientMount,
+    getClientMountSnapshot,
+    getServerMountSnapshot,
+  );
 
   // ESC close
   useEffect(() => {

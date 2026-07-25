@@ -19,16 +19,13 @@ import { deletePost } from "@/actions/content";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
@@ -36,21 +33,28 @@ import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { motion, AnimatePresence } from "motion/react";
+
+type ContentPost = {
+  _id: string;
+  title?: string;
+  slug?: string;
+  type: string;
+  published: boolean;
+  createdAt: string | Date;
+};
+
+type ContentManagerProps = {
+  initialData: { posts: ContentPost[] };
+  type: string;
+  page: number;
+};
 
 export default function ContentManager({
   initialData,
   type,
-  page,
-}: {
-  initialData: any;
-  type: string;
-  page: number;
-}) {
+}: ContentManagerProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -63,38 +67,20 @@ export default function ContentManager({
       toast.success("Post deleted permanently");
       setDeletingId(null);
       router.refresh();
-    } catch (e) {
+    } catch {
       toast.error("Failed to delete post");
     }
   };
 
   const handleTabChange = (val: string) => {
-    router.push(`/admin/content?type=${val}` as any);
+    router.push(`/admin/content?type=${val}`);
   };
 
   const filteredPosts = initialData.posts.filter(
-    (post: any) =>
+    (post) =>
       post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.slug?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 },
-    },
-  };
-
-  const item = {
-    hidden: { opacity: 0, scale: 0.98, y: 10 },
-    show: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: { type: "spring" as const, stiffness: 350, damping: 25 },
-    },
-  };
 
   const getTypeColor = (postType: string) => {
     switch (postType) {
@@ -123,7 +109,7 @@ export default function ContentManager({
         </div>
         <button
           className="cursor-pointer text-sm font-medium bg-neutral-100 text-neutral-900 px-7 py-2.5 rounded-md hover:bg-neutral-300 transition-colors"
-          onClick={() => router.push("/admin/content/new" as any)}
+          onClick={() => router.push("/admin/content/new")}
         >
           New Article
         </button>
@@ -160,7 +146,7 @@ export default function ContentManager({
               value="whats-new"
               className="px-3 py-1.5 text-sm text-neutral-400 rounded-md transition-all data-[state=active]:bg-neutral-800 data-[state=active]:text-white data-[state=active]:shadow-sm hover:text-neutral-300"
             >
-              What's New
+              What&apos;s New
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -229,7 +215,7 @@ export default function ContentManager({
                   No matching posts
                 </h3>
                 <p className="text-sm text-neutral-400">
-                  We couldn't find any documents matching "{searchQuery}". Try a
+                  We couldn&apos;t find any documents matching &quot;{searchQuery}&quot;. Try a
                   different term.
                 </p>
               </div>
@@ -246,12 +232,12 @@ export default function ContentManager({
                     No publications found
                   </h3>
                   <p className="text-sm text-neutral-400 mb-6 max-w-sm mx-auto">
-                    You haven't published anything here yet. Get started by
+                    You haven&apos;t published anything here yet. Get started by
                     writing your first article.
                   </p>
                 </div>
                 <Button
-                  onClick={() => router.push("/admin/content/new" as any)}
+                  onClick={() => router.push("/admin/content/new")}
                   className="bg-neutral-100 text-neutral-900 hover:bg-white transition-colors"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -269,7 +255,7 @@ export default function ContentManager({
                 : "grid grid-cols-1 gap-4",
             )}
           >
-            {filteredPosts.map((post: any) => (
+            {filteredPosts.map((post) => (
               <div
                 key={post._id}
                 className={cn(
@@ -362,7 +348,7 @@ export default function ContentManager({
                       >
                         <DropdownMenuItem
                           onClick={() =>
-                            router.push(`/admin/content/${post._id}` as any)
+                            router.push(`/admin/content/${post._id}`)
                           }
                           className="rounded-md cursor-pointer focus:bg-neutral-800 focus:text-neutral-100 p-2"
                         >

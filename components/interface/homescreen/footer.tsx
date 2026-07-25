@@ -19,6 +19,10 @@ const languages: Record<string, string> = {
 
 const LOCALE_SWITCH_TRACKER_KEY = "TOTALLY_VERY_IMPORTANT_AND_NOT_AT_ALL_SUSPICIOUS_LOCALE_SWITCH_TRACKER";
 
+function persistLocale(locale: string) {
+  document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000`;
+}
+
 function trackLocaleSwitchesForToday(): number {
   const today = new Date().toISOString().slice(0, 10);
 
@@ -57,14 +61,14 @@ export default function Footer() {
 
     if (switchesToday >= 10) {
       setShowEasterEgg(true);
-      document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
+      persistLocale(newLocale);
       return setTimeout(() => {
         setShowEasterEgg(false);
         window.location.reload();
       }, 5000);
     }
 
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
+    persistLocale(newLocale);
     window.location.reload();
   };
 
@@ -143,7 +147,7 @@ export default function Footer() {
               </div>
 
               <Link
-                href={"/status" as any}
+                href="/status"
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {t("links.status")}

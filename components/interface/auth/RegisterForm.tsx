@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -39,8 +39,8 @@ export default function RegisterForm({
         name: username,
       });
       router.replace(`/auth/verify-email?email=${encodeURIComponent(email)}`);
-    } catch (err: any) {
-      setError(err?.message || "Registration failed");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Registration failed"));
     } finally {
       setLoading(false);
     }
@@ -161,7 +161,7 @@ export default function RegisterForm({
               </Field>
               <FieldDescription className="text-center">
                 Already have an account?{" "}
-                <Link href={"/auth/login" as any}>Login</Link>
+                <Link href="/auth/login">Login</Link>
               </FieldDescription>
             </FieldGroup>
           </form>
@@ -179,8 +179,8 @@ export default function RegisterForm({
       </Card>
       <FieldDescription className="px-6 text-center">
         By clicking continue, you agree to our{" "}
-        <Link href={"/terms" as any}>Terms of Service</Link> and{" "}
-        <Link href={"/privacy" as any}>Privacy Policy</Link>.
+        <Link href="/terms">Terms of Service</Link> and{" "}
+        <Link href="/privacy">Privacy Policy</Link>.
       </FieldDescription>
     </div>
   );

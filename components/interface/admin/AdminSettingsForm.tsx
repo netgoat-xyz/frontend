@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   Globe,
   Zap,
-  Lock,
   AlertTriangle,
   Code2,
   Loader2,
@@ -18,26 +17,56 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BANNER_VARIANTS } from "@/lib/banner-variants";
 import { cn } from "@/lib/utils";
 import { DynamicRulesSettings } from "@/components/interface/admin/DynamicRulesSettings";
 
+type BannerVariant = keyof typeof BANNER_VARIANTS;
+
+type FeatureFlag = {
+  key: string;
+  description: string;
+  isActive: boolean;
+  percentage: number;
+  variants: string[];
+};
+
+type AdminSettings = {
+  siteName?: string;
+  registrationEnabled?: boolean;
+  maintenanceMode?: boolean;
+  sentryEnabled?: boolean;
+  sentryDsn?: string;
+  proEnabled?: boolean;
+  dnsEnabled?: boolean;
+  reverseProxyEnabled?: boolean;
+  userDomainLimit?: number;
+  dnsRecordLimit?: number;
+  organizationLimit?: number;
+  auditLogRetentionDays?: number;
+  globalBannerEnabled?: boolean;
+  globalBannerText?: string;
+  globalBannerVariant?: BannerVariant;
+  agentConfig?: { dynamic_rules?: unknown };
+  featureFlags?: FeatureFlag[];
+};
+
 interface AdminSettingsFormProps {
-  initialSettings: any;
+  initialSettings?: AdminSettings | null;
 }
 
 export default function AdminSettingsForm({ initialSettings }: AdminSettingsFormProps) {
-  const [settings, setSettings] = useState<any>(initialSettings || {});
+  const [settings, setSettings] = useState<AdminSettings>(initialSettings ?? {});
   const [saving, setSaving] = useState(false);
 
   const handleSaveSettings = async () => {
     setSaving(true);
     try {
       const updated = await updateGlobalSettings(settings);
-      setSettings(updated);
+      setSettings(updated as AdminSettings);
       toast.success("Settings saved successfully");
     } catch (error) {
       console.error(error);
@@ -290,7 +319,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                             <Label>Banner Theme</Label>
                             <Select 
                               value={settings.globalBannerVariant || "info"} 
-                              onValueChange={(v) => setSettings({...settings, globalBannerVariant: v})}
+                              onValueChange={(v) => setSettings({...settings, globalBannerVariant: v as BannerVariant})}
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Select type" />
@@ -332,14 +361,14 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                   </Button>
                </CardHeader>
                <CardContent className="space-y-4">
-                   {settings.featureFlags?.map((flag: any, index: number) => (
+                   {settings.featureFlags?.map((flag, index) => (
                      <div key={index} className="grid gap-4 items-start p-4 border rounded-lg bg-input/30 text-card-foreground shadow-sm relative">
                         <Button 
                           variant="ghost" 
                           size="icon" 
                           className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-destructive"
                           onClick={() => {
-                             const newFlags = [...settings.featureFlags];
+                             const newFlags = [...(settings.featureFlags ?? [])];
                              newFlags.splice(index, 1);
                              setSettings({...settings, featureFlags: newFlags});
                           }}
@@ -355,7 +384,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                                 className="font-mono text-sm"
                                 placeholder="e.g. new-dashboard"
                                 onChange={(e) => {
-                                   const newFlags = [...settings.featureFlags];
+                                   const newFlags = [...(settings.featureFlags ?? [])];
                                    newFlags[index].key = e.target.value;
                                    setSettings({...settings, featureFlags: newFlags});
                                 }}
@@ -367,7 +396,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                                 value={flag.description} 
                                 placeholder="Internal description"
                                 onChange={(e) => {
-                                   const newFlags = [...settings.featureFlags];
+                                   const newFlags = [...(settings.featureFlags ?? [])];
                                    newFlags[index].description = e.target.value;
                                    setSettings({...settings, featureFlags: newFlags});
                                 }}
@@ -380,7 +409,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                               <Switch 
                                 checked={flag.isActive}
                                 onCheckedChange={(c) => {
-                                   const newFlags = [...settings.featureFlags];
+                                   const newFlags = [...(settings.featureFlags ?? [])];
                                    newFlags[index].isActive = c;
                                    setSettings({...settings, featureFlags: newFlags});
                                 }}
@@ -397,7 +426,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                                    className="flex-1"
                                    value={flag.percentage}
                                    onChange={(e) => {
-                                      const newFlags = [...settings.featureFlags];
+                                      const newFlags = [...(settings.featureFlags ?? [])];
                                       newFlags[index].percentage = parseInt(e.target.value);
                                       setSettings({...settings, featureFlags: newFlags});
                                    }}
@@ -414,7 +443,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                                 placeholder="blue, red, green"
                                 value={flag.variants ? flag.variants.join(", ") : ""}
                                 onChange={(e) => {
-                                    const newFlags = [...settings.featureFlags];
+                                    const newFlags = [...(settings.featureFlags ?? [])];
                                     newFlags[index].variants = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
                                     setSettings({...settings, featureFlags: newFlags});
                                 }}
@@ -425,7 +454,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                    ))}
                    {(!settings.featureFlags || settings.featureFlags.length === 0) && (
                      <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-                       No feature flags defined. Click "+ Add Flag" to start.
+                       No feature flags defined. Click &quot;+ Add Flag&quot; to start.
                      </div>
                    )}
                </CardContent>

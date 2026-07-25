@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -46,8 +46,8 @@ export default function MagicLinkForm({
         errorCallbackURL,
       });
       setSent(true);
-    } catch (err: any) {
-      setError(err?.message || "Unable to send magic link");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Unable to send magic link"));
     } finally {
       setLoading(false);
     }

@@ -12,10 +12,7 @@ import {
   Button,
   Heading,
   Hr,
-  Img,
 } from "@react-email/components";
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
 // Theme Configuration
 const theme = {
@@ -183,12 +180,12 @@ export const MagicLinkEmail: React.FC<MagicLinkEmailProps> = ({
             <Hr style={styles.hr} />
             
             <Text style={{ ...styles.paragraph, fontSize: "13px", color: "#666" }}>
-              If you didn't request this email, you can safely ignore it. This link
+              If you didn&apos;t request this email, you can safely ignore it. This link
               will expire in 15 minutes.
             </Text>
             
             <Text style={{ ...styles.paragraph, fontSize: "13px", color: "#666", marginBottom: 0 }}>
-              Use the link below if the button doesn't work:
+              Use the link below if the button doesn&apos;t work:
               <br />
               <Link href={url} style={{ color: "#888", textDecoration: "underline" }}>
                 {url}
@@ -288,7 +285,7 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({
           <Section style={styles.section}>
             <Heading style={styles.heading}>Welcome aboard, {name}!</Heading>
             <Text style={styles.paragraph}>
-              We're thrilled to have you with us. {appName} is designed to help you
+              We&apos;re thrilled to have you with us. {appName} is designed to help you
               build better, faster, and more securely.
             </Text>
             
@@ -351,7 +348,7 @@ export const TeamInviteEmail: React.FC<TeamInviteEmailProps> = ({
           <EmailHeader appName={appName} />
 
           <Section style={styles.section}>
-            <Heading style={styles.heading}>You're invited to join {teamName}</Heading>
+            <Heading style={styles.heading}>You&apos;re invited to join {teamName}</Heading>
             <Text style={styles.paragraph}>
               <strong>{invitedByName}</strong> invited you to collaborate in <strong>{teamName}</strong> on {appName}.
             </Text>

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -44,8 +44,8 @@ export default function EmailVerificationForm({
       await authClient.emailOtp.verifyEmail({ email, otp });
       setSuccess(true);
       router.replace("/dashboard");
-    } catch (err: any) {
-      setError(err?.message || "Invalid code");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Invalid code"));
     } finally {
       setLoading(false);
     }
@@ -59,8 +59,8 @@ export default function EmailVerificationForm({
         email,
         type: "email-verification",
       });
-    } catch (err: any) {
-      setError(err?.message || "Failed to resend code");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to resend code"));
     } finally {
       setSending(false);
     }

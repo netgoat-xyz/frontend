@@ -1,12 +1,17 @@
 'use client'
 
-import { StarIcon, CheckCircle2, AlertCircle, RefreshCw, Copy, Check } from "lucide-react";
+import { StarIcon, AlertCircle, RefreshCw, Copy, Check } from "lucide-react";
 import Link from "next/link";
+import type { Route } from "next";
 import { useState, useEffect, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import { verifyDomain } from "@/actions/domainVerification";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
+}
 
 const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsCard & { onVerified?: () => void }) {
   const router = useRouter();
@@ -60,14 +65,14 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
         // Clear error message after 5 seconds
         setTimeout(() => setVerificationMessage(""), 5000);
       }
-    } catch (error: any) {
-      setVerificationMessage(error.message || t("messages.verifyRequestFailed"));
+    } catch (error: unknown) {
+      setVerificationMessage(getErrorMessage(error, t("messages.verifyRequestFailed")));
       // Clear error message after 5 seconds
       setTimeout(() => setVerificationMessage(""), 5000);
     } finally {
       setVerifying(false);
     }
-  }, [domain.teamSlug, domain.name, router, onVerified]);
+  }, [domain.teamSlug, domain.name, onVerified, router, t]);
 
   const copyToken = useCallback(() => {
     if (domain.verificationToken) {
@@ -177,7 +182,7 @@ const DomainCard = memo(function DomainCard({ domain, onVerified }: DomainPropsC
               {verifying ? t("actions.checking") : t("actions.verify")}
             </Button>
           )}
-          <Link href={domain.pathName as any} className="text-neutral-400 hover:text-neutral-100 text-xs font-medium border border-neutral-800 px-3 py-1.5 rounded-md hover:bg-neutral-900 transition-all">
+          <Link href={domain.pathName as Route} className="text-neutral-400 hover:text-neutral-100 text-xs font-medium border border-neutral-800 px-3 py-1.5 rounded-md hover:bg-neutral-900 transition-all">
             {t("actions.edit")}
           </Link>
         </div>

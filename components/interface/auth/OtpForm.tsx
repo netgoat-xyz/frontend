@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -44,8 +44,8 @@ export default function OtpForm({
         type: "sign-in",
       });
       setStep("verify");
-    } catch (err: any) {
-      setError(err?.message || "Failed to send OTP");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to send OTP"));
     } finally {
       setLoading(false);
     }
@@ -61,8 +61,8 @@ export default function OtpForm({
         await authClient.updateUser({ name });
       }
       router.replace("/dashboard");
-    } catch (err: any) {
-      setError(err?.message || "Invalid OTP");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Invalid OTP"));
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,18 @@ import UsageItem from "./components/usageItem";
 import { useParams } from "next/navigation";
 import { listTeamDomains } from "@/actions/teamDomains";
 
+type UsageDomain = {
+  stats?: {
+    total_requests?: number;
+    bandwidth_used?: number;
+  };
+};
+
+type UsageTotals = {
+  requests: number;
+  bandwidth: number;
+};
+
 export default function UsageCard() {
   const params = useParams();
   const teamSlug = params.teamName as string;
@@ -45,11 +57,12 @@ export default function UsageCard() {
     if (!teamSlug) return;
     
     // Fetch actual data
-    listTeamDomains(teamSlug).then((domains) => {
-       const stats = domains.reduce((acc: any, d: any) => {
-         if (d.stats) {
-           acc.requests += (d.stats.total_requests || 0);
-           acc.bandwidth += (d.stats.bandwidth_used || 0);
+    listTeamDomains(teamSlug).then((result) => {
+       const domains = result as unknown as UsageDomain[];
+       const stats = domains.reduce<UsageTotals>((acc, domain) => {
+         if (domain.stats) {
+           acc.requests += domain.stats.total_requests || 0;
+           acc.bandwidth += domain.stats.bandwidth_used || 0;
          }
          return acc;
        }, { requests: 0, bandwidth: 0 });

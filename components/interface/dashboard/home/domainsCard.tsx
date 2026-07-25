@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import DomainCard from "./components/domainCard";
@@ -17,6 +17,17 @@ type DomainsSectionProps = {
   statusFilter?: DomainStatusFilter;
 };
 
+type TeamDomainSummary = {
+  domain: string;
+  verified?: boolean;
+  active?: boolean;
+  updated_at?: Date | string;
+  created_at?: Date | string;
+  verification_token?: string;
+  last_verification_check?: Date | string;
+  verification_attempts?: number;
+};
+
 export default function DomainsSection({
   searchQuery = "",
   viewMode = "grid",
@@ -25,10 +36,12 @@ export default function DomainsSection({
   const t = useTranslations("DashboardPages.homeDomains");
   const params = useParams();
   const teamSlug = params.teamName as string;
-  const [domains, setDomains] = useState<any[]>([]);
+  const [domains, setDomains] = useState<TeamDomainSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const formatTimeAgo = useCallback((date: Date | string) => {
+  const formatTimeAgo = useCallback((date?: Date | string) => {
+    if (!date) return t("time.today");
+
     const now = new Date();
     const past = new Date(date);
     const diffInMs = now.getTime() - past.getTime();
@@ -40,17 +53,11 @@ export default function DomainsSection({
     return t("time.monthsAgo", { count: Math.floor(diffInDays / 30) });
   }, [t]);
 
-  useEffect(() => {
-    if (teamSlug) {
-      loadDomains();
-    }
-  }, [teamSlug]);
-
   const loadDomains = useCallback(async () => {
     try {
       setLoading(true);
       const result = await listTeamDomains(teamSlug);
-      setDomains(result as any[]);
+      setDomains(result as unknown as TeamDomainSummary[]);
     } catch (error) {
       console.error("Failed to load domains:", error);
     } finally {
@@ -58,13 +65,19 @@ export default function DomainsSection({
     }
   }, [teamSlug]);
 
+  useEffect(() => {
+    if (teamSlug) {
+      void loadDomains();
+    }
+  }, [loadDomains, teamSlug]);
+
   // Transform domains to match DomainCard expected format
   const transformedDomains = useMemo(() => domains.map((domain) => ({
     name: domain.domain,
     status: domain.verified && domain.active ? "Valid" : domain.verified ? "Inactive" : "Invalid Configuration",
     group: domain.active ? "Production" : "Preview",
     isStarred: false,
-    updatedAt: formatTimeAgo(domain.updated_at || domain.created_at),
+    updatedAt: formatTimeAgo(domain.updated_at ?? domain.created_at),
     pathName: `/dashboard/${teamSlug}/${domain.domain}`,
     verified: domain.verified,
     verificationToken: domain.verification_token,
