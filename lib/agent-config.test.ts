@@ -3,6 +3,7 @@ import {
   DYNAMIC_RULE_LIMITS,
   defaultDynamicRulesConfig,
   normalizeDynamicRulesConfig,
+  omitManagedAgentConfig,
   validateDynamicRulesConfig,
 } from "./agent-config";
 
@@ -46,5 +47,17 @@ describe("dynamic agent-rule settings", () => {
 
     expect(normalized.enabled).toBe(true);
     expect(normalized.rules).toEqual([{ name: "valid", language: "javascript", source }]);
+  });
+
+  test("omits agent configuration from generic settings updates", () => {
+    const agentConfig = { dynamic_rules: { enabled: true, rules: [] } };
+    const update = omitManagedAgentConfig({
+      _id: "settings-id",
+      siteName: "NetGoat",
+      agentConfig,
+    });
+
+    expect(update).toEqual({ _id: "settings-id", siteName: "NetGoat" });
+    expect(agentConfig.dynamic_rules.enabled).toBe(true);
   });
 });

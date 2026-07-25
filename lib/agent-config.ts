@@ -34,6 +34,19 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
+/**
+ * Agent configuration is updated by dedicated, bounded admin actions. Generic
+ * settings saves must leave it alone so an older dashboard render cannot
+ * overwrite a newer agent snapshot.
+ */
+export function omitManagedAgentConfig(value: unknown): Record<string, unknown> {
+  if (!isRecord(value)) return {};
+
+  return Object.fromEntries(
+    Object.entries(value).filter(([key]) => key !== "agentConfig"),
+  );
+}
+
 function boundedInteger(value: unknown, fallback: number, min: number, max: number): number {
   const number = typeof value === "number" ? value : Number(value);
   if (!Number.isInteger(number)) return fallback;

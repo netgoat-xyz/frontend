@@ -11,6 +11,7 @@ import { revalidateTag, unstable_cache } from "next/cache";
 import { getRuntimeLogs } from "@/lib/runtime-logs";
 import {
   normalizeDynamicRulesConfig,
+  omitManagedAgentConfig,
   validateDynamicRulesConfig,
   type DynamicRulesConfig,
 } from "@/lib/agent-config";
@@ -86,8 +87,11 @@ export async function updateGlobalSettings(newSettings: any) {
   await checkAdmin();
   await dbConnect();
 
-  // Strip system fields
-  const { _id, __v, ...updateData } = newSettings;
+  // Agent configuration has its own bounded update action. Omitting it here
+  // prevents a stale generic settings form from undoing a freshly saved rule.
+  const updateData = omitManagedAgentConfig(newSettings);
+  delete updateData._id;
+  delete updateData.__v;
 
   const settings = await Settings.findOneAndUpdate(
     {}, // find the first one
