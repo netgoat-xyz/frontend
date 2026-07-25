@@ -17,6 +17,9 @@ const SubdomainSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
   certificate_pem: String,
   private_key_pem: String,
+  // Optional route-scoped cache and bandwidth policy. Omitted values inherit
+  // the agent defaults and are normalized before being published.
+  route_policy: { type: mongoose.Schema.Types.Mixed },
   
   // Subdomain-specific WAF rules
   waf_rules: [SubdomainWAFRuleSchema],
@@ -55,6 +58,9 @@ const DomainSchema = new mongoose.Schema({
   private_key_pem: String,
   ssl_enabled: { type: Boolean, default: false },
   auto_ssl: { type: Boolean, default: false },
+
+  // Optional route-scoped cache and bandwidth policy published to agents.
+  route_policy: { type: mongoose.Schema.Types.Mixed },
   
   // Status
   active: { type: Boolean, default: true },
@@ -113,13 +119,24 @@ DomainSchema.index({ domain: 1 });
 DomainSchema.index({ 'subdomains.full_domain': 1 });
 
 // Methods
-DomainSchema.methods.addSubdomain = function(subdomain: string, targetUrl: string) {
+DomainSchema.methods.addSubdomain = function(
+  subdomain: string,
+  targetUrl: string,
+  certificate?: {
+    certificate_pem?: string
+    private_key_pem?: string
+  }
+) {
   const fullDomain = `${subdomain}.${this.domain}`;
   this.subdomains.push({
     subdomain,
     full_domain: fullDomain,
     target_url: targetUrl,
-    active: true
+    active: true,
+    // Keep certificate material supplied by the server action. Previously the
+    // action passed this third argument but this method discarded it.
+    certificate_pem: certificate?.certificate_pem,
+    private_key_pem: certificate?.private_key_pem
   });
   return this.save();
 };

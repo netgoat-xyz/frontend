@@ -110,24 +110,21 @@ export default function NewDomainPage() {
     }
 
     setVerifying(true);
-    // Simulate verification delay for better UX
-    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     try {
       const result = await verifyDomainOwnership(teamSlug, sanitizedDomain, verificationToken);
       
-      if (result.success) {
-        setVerified(true);
-        toast.success(t("toasts.verified"));
-        
-        // Auto-create domain and navigate to its dashboard upon success
+      if (result.success && result.verified) {
+        // The server action independently checks the token before persisting
+        // this state. Do not pre-mark the client as verified or enable SSL.
         await createDomainForTeam(teamSlug, {
           domain: sanitizedDomain,
           target_url: "", // Set later by user
-          auto_ssl: true,
           verification_token: verificationToken,
         });
 
+        setVerified(true);
+        toast.success(t("toasts.verified"));
         toast.success(t("toasts.added"));
         router.push(`/dashboard/${teamSlug}/${sanitizedDomain}`);
       } else {
@@ -135,39 +132,6 @@ export default function NewDomainPage() {
       }
     } catch (error) {
       toast.error(t("errors.propagation"));
-    } finally {
-      setVerifying(false);
-    }
-  };
-
-  // Mock successful complete (for hackathon)
-  const bypassVerification = async () => {
-    const domainValidation = validateDomainSyntax(domain);
-    if (!domainValidation.valid) {
-      toast.error(t("errors.invalidDomain"));
-      return;
-    }
-
-    const sanitizedDomain = domainValidation.sanitized;
-    if (sanitizedDomain !== domain) {
-      setDomain(sanitizedDomain);
-    }
-
-    setVerifying(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setVerified(true);
-    
-    try {
-      await createDomainForTeam(teamSlug, {
-        domain: sanitizedDomain,
-        target_url: "", // Target set dynamically
-        auto_ssl: true,
-        verification_token: verificationToken,
-      });
-      toast.success(t("toasts.bypassAdded"));
-      router.push(`/dashboard/${teamSlug}/${sanitizedDomain}`);
-    } catch (error: any) {
-      toast.error(error.message || t("errors.createFailed"));
     } finally {
       setVerifying(false);
     }
@@ -467,15 +431,6 @@ export default function NewDomainPage() {
                     ) : (
                       t("actions.verify")
                     )}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={bypassVerification}
-                    disabled={verifying || verified}
-                    className="h-11 px-4 border shadow-sm border-amber-200/30 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:text-amber-400"
-                    title={t("actions.bypassTitle")}
-                  >
-                    {t("actions.bypass")}
                   </Button>
                 </div>
               </CardFooter>

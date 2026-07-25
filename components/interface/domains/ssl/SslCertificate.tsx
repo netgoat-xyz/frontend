@@ -1,183 +1,143 @@
 "use client";
 
-import { Lock, ShieldCheck, RefreshCw, Copy, Check, Calendar, Server, Key } from "lucide-react";
-import { useState } from "react";
+import { AlertTriangle, Check, Clock3, KeyRound, Lock, Server } from "lucide-react";
 
-export function SslCertificate({ domain }: { domain?: any }) {
-  const [copiedSerial, setCopiedSerial] = useState(false);
-  
-  // Try to use domain properties or fallback to mockup if not available
-  const isAuto = domain?.auto_ssl;
-  const isManual = domain?.ssl_enabled && !isAuto;
-  
-  const cert = {
-    status: (isAuto || isManual) ? "active" : "inactive",
-    issuer: isAuto ? "Let's Encrypt Authority X3" : (isManual ? "Custom SSL Certificate" : "None"),
-    type: isAuto ? "DV (Domain Validated)" : (isManual ? "Provided" : "N/A"),
-    domains: [domain?.domain || "example.com", `*.${domain?.domain || "example.com"}`],
-    issued: "2025-11-11", // Placeholder
-    expires: "2026-05-08", // Placeholder
-    daysLeft: 89,
-    serial: "04:8A:3F:B2:C7:E1:9D:45:A8:2B:6C:F3:D0:E4:71:89",
-    fingerprint: "A3:2F:8C:D1:E5:6B:94:07:F2:3A:C8:1D:B6:E9:04:5F:7A:2C:8B:D3",
-    keyType: "EC P-256",
-    signatureAlg: "SHA-256 with ECDSA",
-    autoRenew: isAuto || false,
+type SslDomain = {
+  domain?: string;
+  verified?: boolean;
+  auto_ssl?: boolean;
+  ssl_enabled?: boolean;
+  certificate_pem?: string | null;
+};
+
+type CertificateState = {
+  label: string;
+  description: string;
+  icon: typeof Check;
+  accent: string;
+  badge: string;
+};
+
+function getCertificateState(domain?: SslDomain): CertificateState {
+  const certificateConfigured = Boolean(domain?.ssl_enabled && domain?.certificate_pem);
+
+  if (certificateConfigured) {
+    return {
+      label: "Certificate configured",
+      description: "Certificate material is stored for this domain. Validity, issuer, and renewal dates are not recorded by the current model.",
+      icon: Check,
+      accent: "text-emerald-400",
+      badge: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
+    };
+  }
+
+  if (domain?.auto_ssl) {
+    return {
+      label: "Certificate provisioning pending",
+      description: domain.verified
+        ? "Automatic SSL is requested, but no certificate material has been provisioned yet."
+        : "Verify domain ownership before automatic certificate provisioning can begin.",
+      icon: Clock3,
+      accent: "text-amber-400",
+      badge: "bg-amber-500/10 border-amber-500/20 text-amber-400",
+    };
+  }
+
+  return {
+    label: "No certificate configured",
+    description: domain?.verified
+      ? "Upload or configure a certificate before serving TLS for this domain."
+      : "Domain ownership is still pending; no certificate has been configured.",
+    icon: AlertTriangle,
+    accent: "text-neutral-400",
+    badge: "bg-neutral-500/10 border-neutral-500/20 text-neutral-400",
   };
+}
 
-  const copySerial = () => {
-    navigator.clipboard.writeText(cert.serial);
-    setCopiedSerial(true);
-    setTimeout(() => setCopiedSerial(false), 2000);
-  };
-
-  // Calculate progress for the visual bar
-  const totalDuration = 180; // approximate days for 6 months
-  const progressPercentage = ((totalDuration - cert.daysLeft) / totalDuration) * 100;
+export function SslCertificate({ domain }: { domain?: SslDomain }) {
+  const state = getCertificateState(domain);
+  const StateIcon = state.icon;
+  const certificateConfigured = Boolean(domain?.ssl_enabled && domain?.certificate_pem);
 
   return (
-    <div className="grid grid-cols-2 xl:grid-cols-3 gap-6">
-      {/* LEFT COLUMN: Main Certificate Status */}
-      <div className="space-y-6 ">
-        <div className="relative overflow-hidden bg-neutral-900/40 backdrop-blur-md border border-neutral-800/60 rounded-xl p-6 shadow-2xl">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 p-16 bg-emerald-500/5 blur-3xl rounded-full pointer-events-none" />
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <section className="xl:col-span-2 relative overflow-hidden bg-neutral-900/40 backdrop-blur-md border border-neutral-800/60 rounded-xl p-6 shadow-2xl">
+        <div className="absolute top-0 right-0 p-16 bg-emerald-500/5 blur-3xl rounded-full pointer-events-none" />
 
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <div className="flex items-center gap-4">
-              <div className="p-3.5 bg-gradient-to-br from-neutral-800 to-neutral-900 border border-neutral-700 rounded-xl shadow-inner">
-                <Lock size={28} className="text-emerald-500" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-neutral-100 flex items-center gap-2">
-                  {cert.domains[0]}
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                    <ShieldCheck size={10} /> Valid
-                  </span>
-                </h3>
-                <p className="text-sm text-neutral-400 font-medium">{cert.issuer}</p>
-              </div>
-            </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700/50 rounded-lg text-xs font-semibold transition-all group">
-              <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
-              Renew Certificate
-            </button>
+        <div className="relative flex items-start gap-4">
+          <div className="p-3.5 bg-gradient-to-br from-neutral-800 to-neutral-900 border border-neutral-700 rounded-xl shadow-inner">
+            <Lock size={28} className={state.accent} />
           </div>
-
-          {/* Timeline Visualization */}
-          <div className="space-y-3 mb-8">
-            <div className="flex justify-between items-end">
-                <div className="text-left">
-                    <div className="text-[10px] uppercase text-neutral-500 font-bold tracking-wider mb-1">Issued</div>
-                    <div className="text-xs text-neutral-300 font-mono">{cert.issued}</div>
-                </div>
-                <div className="text-center pb-1">
-                    <span className="text-sm font-bold text-emerald-400">{cert.daysLeft} Days</span>
-                    <span className="text-xs text-neutral-500 ml-1">remaining</span>
-                </div>
-                <div className="text-right">
-                    <div className="text-[10px] uppercase text-neutral-500 font-bold tracking-wider mb-1">Expires</div>
-                    <div className="text-xs text-neutral-300 font-mono">{cert.expires}</div>
-                </div>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-lg font-bold text-neutral-100">{domain?.domain ?? "Domain"}</h3>
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider ${state.badge}`}>
+                <StateIcon size={10} /> {state.label}
+              </span>
             </div>
-            
-            <div className="h-3 bg-neutral-800/50 rounded-full overflow-hidden border border-neutral-800 relative">
-              {/* Progress Bar */}
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-600 to-teal-400 rounded-full relative"
-                style={{ width: `${progressPercentage}%` }}
-              >
-                  <div className="absolute right-0 top-0 bottom-0 w-0.5 bg-white/50 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Technical Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {/* Serial Number Block */}
-             <div className="bg-neutral-950/30 border border-neutral-800/50 rounded-lg p-3 group hover:border-neutral-700 transition-colors">
-                <div className="flex justify-between items-center mb-2">
-                    <span className="text-[10px] uppercase text-neutral-500 font-bold tracking-wider">Serial Number</span>
-                    <button onClick={copySerial} className="text-neutral-500 hover:text-emerald-400 transition-colors">
-                        {copiedSerial ? <Check size={12} /> : <Copy size={12} />}
-                    </button>
-                </div>
-                <code className="text-[10px] text-neutral-400 font-mono break-all leading-relaxed">
-                    {cert.serial}
-                </code>
-             </div>
-             
-             {/* Fingerprint Block */}
-             <div className="bg-neutral-950/30 border border-neutral-800/50 rounded-lg p-3 group hover:border-neutral-700 transition-colors">
-                <div className="flex justify-between items-center mb-2">
-                    <span className="text-[10px] uppercase text-neutral-500 font-bold tracking-wider">SHA-256 Fingerprint</span>
-                </div>
-                <code className="text-[10px] text-neutral-400 font-mono break-all leading-relaxed">
-                    {cert.fingerprint}
-                </code>
-             </div>
+            <p className="mt-1 text-sm text-neutral-400 leading-relaxed">{state.description}</p>
           </div>
         </div>
-      </div>
 
-      {/* RIGHT COLUMN: Configuration Toggles & Meta */}
-      <div className="space-y-4">
-         {/* Configuration Card */}
-        <div className="bg-neutral-900/40 backdrop-blur-md border border-neutral-800/60 rounded-xl p-5 h-full">
-            <h4 className="font-bold text-sm text-neutral-200 mb-5 flex items-center gap-2">
-                <Server size={14} className="text-neutral-500" /> Configuration
-            </h4>
-            
-            <div className="space-y-4">
-                {/* Auto Renew Toggle */}
-                <div className="flex items-center justify-between p-3 bg-neutral-800/20 rounded-lg border border-neutral-800/50">
-                    <div>
-                        <div className="text-xs font-semibold text-neutral-200">Auto-Renewal</div>
-                        <div className="text-[10px] text-neutral-500">Renews at 30 days</div>
-                    </div>
-                     <button className="relative w-9 h-5 bg-emerald-600 rounded-full transition-colors focus:ring-2 focus:ring-emerald-500/20 focus:outline-none">
-                        <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform" />
-                    </button>
-                </div>
-
-                {/* Force HTTPS Toggle */}
-                <div className="flex items-center justify-between p-3 bg-neutral-800/20 rounded-lg border border-neutral-800/50">
-                    <div>
-                        <div className="text-xs font-semibold text-neutral-200">Always Use HTTPS</div>
-                        <div className="text-[10px] text-neutral-500">Redirects HTTP traffic</div>
-                    </div>
-                     <button className="relative w-9 h-5 bg-emerald-600 rounded-full transition-colors focus:ring-2 focus:ring-emerald-500/20 focus:outline-none">
-                        <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform" />
-                    </button>
-                </div>
-
-                {/* HSTS Status */}
-                 <div className="flex items-center justify-between p-3 bg-neutral-800/20 rounded-lg border border-neutral-800/50">
-                    <div>
-                        <div className="text-xs font-semibold text-neutral-200">HSTS Header</div>
-                        <div className="text-[10px] text-neutral-500">Strict Transport Security</div>
-                    </div>
-                     <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Active</span>
-                </div>
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-neutral-800/50">
-                <h4 className="font-bold text-sm text-neutral-200 mb-3 flex items-center gap-2">
-                    <Key size={14} className="text-neutral-500" /> Key Details
-                </h4>
-                <div className="space-y-2">
-                     <div className="flex justify-between text-xs">
-                        <span className="text-neutral-500">Type</span>
-                        <span className="text-neutral-300 font-mono">{cert.keyType}</span>
-                     </div>
-                     <div className="flex justify-between text-xs">
-                        <span className="text-neutral-500">Signature</span>
-                        <span className="text-neutral-300 font-mono">SHA-256 / ECDSA</span>
-                     </div>
-                </div>
-            </div>
+        <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <StatusItem
+            label="Domain verification"
+            value={domain?.verified ? "Verified" : "Pending"}
+            tone={domain?.verified ? "success" : "pending"}
+          />
+          <StatusItem
+            label="Certificate material"
+            value={certificateConfigured ? "Configured" : "Not configured"}
+            tone={certificateConfigured ? "success" : "neutral"}
+          />
+          <StatusItem
+            label="Automatic SSL"
+            value={domain?.auto_ssl ? "Requested" : "Not requested"}
+            tone={domain?.auto_ssl ? "pending" : "neutral"}
+          />
         </div>
-      </div>
+
+        <div className="relative mt-6 rounded-lg border border-neutral-800/50 bg-neutral-950/30 p-4">
+          <div className="flex items-center gap-2 text-sm font-semibold text-neutral-200">
+            <KeyRound size={15} className="text-neutral-500" /> Certificate metadata
+          </div>
+          <p className="mt-1 text-xs leading-relaxed text-neutral-500">
+            Serial number, fingerprint, issuer, issue date, and expiry date are unavailable until the control plane stores verified certificate metadata.
+          </p>
+        </div>
+      </section>
+
+      <aside className="bg-neutral-900/40 backdrop-blur-md border border-neutral-800/60 rounded-xl p-5">
+        <h4 className="font-bold text-sm text-neutral-200 mb-4 flex items-center gap-2">
+          <Server size={14} className="text-neutral-500" /> TLS configuration
+        </h4>
+        <p className="text-xs leading-relaxed text-neutral-500">
+          This page reports the configuration stored by NetGoat. It does not make a live TLS connection or claim certificate health.
+        </p>
+      </aside>
+    </div>
+  );
+}
+
+function StatusItem({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: "success" | "pending" | "neutral";
+}) {
+  const valueClass = {
+    success: "text-emerald-400",
+    pending: "text-amber-400",
+    neutral: "text-neutral-300",
+  }[tone];
+
+  return (
+    <div className="rounded-lg border border-neutral-800/50 bg-neutral-950/30 p-3">
+      <div className="text-[10px] uppercase font-bold tracking-wider text-neutral-500">{label}</div>
+      <div className={`mt-1 text-sm font-medium ${valueClass}`}>{value}</div>
     </div>
   );
 }

@@ -14,6 +14,7 @@ import {
   updateDomainSettings as updateTeamDomainSettings,
   toggleDomainActive as toggleTeamDomainActive
 } from './teamDomains'
+import type { RoutePolicy } from './teamDomains'
 
 export async function createDomain(teamSlug: string, data: {
   domain: string
@@ -104,6 +105,7 @@ export async function updateDomainSettings(
     cache_ttl?: number
     compression_enabled?: boolean
     log_level?: 'none' | 'errors' | 'all'
+    route_policy?: RoutePolicy | null
   },
   teamSlug: string = '@me'
 ) {

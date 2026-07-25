@@ -8,11 +8,120 @@ import { Team } from '@/models/Team'
 import DNSRecord from '@/models/DNSRecord'
 import ProxyConfig from '@/models/ProxyConfig'
 import { revalidatePath } from 'next/cache'
+import dns from 'dns'
+import { promisify } from 'util'
 import {
   isValidSubdomainLabel,
   sanitizeSubdomainLabel,
   validateDomainWithOnlineTld
 } from '@/lib/domain-validation'
+
+const resolveTxt = promisify(dns.resolveTxt)
+
+export type RouteKeyMode = 'ip' | 'host' | 'route' | 'global'
+
+export type RoutePolicy = {
+  cache?: {
+    enabled?: boolean
+    ttl_seconds?: number
+    max_entries?: number
+    max_body_bytes?: number
+  }
+  bandwidth?: {
+    enabled?: boolean
+    bytes_per_second?: number
+    burst_bytes?: number
+    key?: RouteKeyMode
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function optionalPolicyRecord(value: unknown, field: string): Record<string, unknown> | undefined {
+  if (value === undefined) return undefined
+  if (!isRecord(value)) {
+    throw new Error(`${field} must be an object`)
+  }
+  return value
+}
+
+function optionalBoolean(value: unknown, field: string): boolean | undefined {
+  if (value === undefined) return undefined
+  if (typeof value !== 'boolean') {
+    throw new Error(`${field} must be a boolean`)
+  }
+  return value
+}
+
+function optionalBoundedInteger(
+  value: unknown,
+  field: string,
+  min: number,
+  max: number
+): number | undefined {
+  if (value === undefined) return undefined
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < min || value > max) {
+    throw new Error(`${field} must be an integer between ${min} and ${max}`)
+  }
+  return value
+}
+
+function optionalRouteKey(value: unknown): RouteKeyMode | undefined {
+  if (value === undefined) return undefined
+  if (value === 'ip' || value === 'host' || value === 'route' || value === 'global') {
+    return value
+  }
+  throw new Error('route_policy.bandwidth.key must be ip, host, route, or global')
+}
+
+function normalizeRoutePolicy(value: unknown): RoutePolicy | undefined {
+  if (value === null) return undefined
+  if (!isRecord(value)) {
+    throw new Error('route_policy must be an object or null')
+  }
+
+  const cacheRaw = optionalPolicyRecord(value.cache, 'route_policy.cache')
+  const bandwidthRaw = optionalPolicyRecord(value.bandwidth, 'route_policy.bandwidth')
+  const policy: RoutePolicy = {}
+
+  if (cacheRaw) {
+    const cache = {
+      enabled: optionalBoolean(cacheRaw.enabled, 'route_policy.cache.enabled'),
+      ttl_seconds: optionalBoundedInteger(cacheRaw.ttl_seconds, 'route_policy.cache.ttl_seconds', 1, 86400),
+      max_entries: optionalBoundedInteger(cacheRaw.max_entries, 'route_policy.cache.max_entries', 1, 100000),
+      max_body_bytes: optionalBoundedInteger(cacheRaw.max_body_bytes, 'route_policy.cache.max_body_bytes', 1024, 104857600)
+    }
+    if (Object.values(cache).some((entry) => entry !== undefined)) {
+      policy.cache = cache
+    }
+  }
+
+  if (bandwidthRaw) {
+    const bandwidth = {
+      enabled: optionalBoolean(bandwidthRaw.enabled, 'route_policy.bandwidth.enabled'),
+      bytes_per_second: optionalBoundedInteger(bandwidthRaw.bytes_per_second, 'route_policy.bandwidth.bytes_per_second', 1024, 10737418240),
+      burst_bytes: optionalBoundedInteger(bandwidthRaw.burst_bytes, 'route_policy.bandwidth.burst_bytes', 1024, 10737418240),
+      key: optionalRouteKey(bandwidthRaw.key)
+    }
+    if (Object.values(bandwidth).some((entry) => entry !== undefined)) {
+      policy.bandwidth = bandwidth
+    }
+  }
+
+  return policy.cache || policy.bandwidth ? policy : undefined
+}
+
+async function hasVerificationToken(domain: string, token: string): Promise<boolean> {
+  try {
+    const records = await resolveTxt(`_netgoat-verify.${domain}`)
+    return records.flat().some((record) => record === token)
+  } catch {
+    // A missing or not-yet-propagated record keeps the new domain unverified.
+    return false
+  }
+}
 
 async function resolveTeam(teamSlug: string, userId: string, userName: string) {
   // Decode URL-encoded parameters (e.g., %40me -> @me)
@@ -154,6 +263,7 @@ export async function createDomainForTeam(
   // Use provided token or generate a new one
   const crypto = require('crypto')
   const verificationToken = data.verification_token || `netgoat-verify-${crypto.randomBytes(32).toString('hex')}`
+  const verified = await hasVerificationToken(normalizedDomain, verificationToken)
   
   // Set next verification check for 30 minutes from now
   const nextCheck = new Date()
@@ -166,9 +276,9 @@ export async function createDomainForTeam(
     certificate_pem: data.certificate_pem || null,
     private_key_pem: data.private_key_pem || null,
     ssl_enabled: !!(data.certificate_pem && data.private_key_pem),
-    auto_ssl: data.auto_ssl || false,
+    auto_ssl: Boolean(data.auto_ssl),
     active: true,
-    verified: false,
+    verified,
     verification_token: verificationToken,
     verification_attempts: 0,
     next_verification_check: nextCheck,
@@ -235,6 +345,8 @@ export async function listTeamDomains(teamSlug: string) {
     active: true
   })
     .sort({ created_at: -1 })
+    // Never serialize private keys into a viewer-accessible server action.
+    .select({ private_key_pem: 0, 'subdomains.private_key_pem': 0 })
     .lean()
 
   const domainIds = domains.map((d: any) => d._id)
@@ -352,7 +464,11 @@ export async function getDomain(teamSlug: string, domainId: string) {
   const domain = await Domain.findOne({
     _id: domainId,
     team_id: team._id
-  }).lean()
+  })
+    // Certificate public data can inform the UI, but private keys must remain
+    // server-only even for authorized viewers.
+    .select({ private_key_pem: 0, 'subdomains.private_key_pem': 0 })
+    .lean()
 
   if (!domain) {
     throw new Error('Domain not found')
@@ -701,6 +817,7 @@ export async function updateDomainSettings(
     cache_ttl?: number
     compression_enabled?: boolean
     log_level?: 'none' | 'errors' | 'all'
+    route_policy?: RoutePolicy | null
   }
 ) {
   const session = await auth.api.getSession({
@@ -722,15 +839,47 @@ export async function updateDomainSettings(
     throw new Error('Insufficient permissions')
   }
 
+  const updates: Record<string, unknown> = {
+    updated_at: new Date()
+  }
+  const unsets: Record<string, 1> = {}
+
+  if (settings.rate_limit !== undefined) {
+    updates['settings.rate_limit'] = settings.rate_limit
+  }
+  if (settings.cache_enabled !== undefined) {
+    updates['settings.cache_enabled'] = settings.cache_enabled
+  }
+  if (settings.cache_ttl !== undefined) {
+    updates['settings.cache_ttl'] = settings.cache_ttl
+  }
+  if (settings.compression_enabled !== undefined) {
+    updates['settings.compression_enabled'] = settings.compression_enabled
+  }
+  if (settings.log_level !== undefined) {
+    updates['settings.log_level'] = settings.log_level
+  }
+  if (settings.route_policy !== undefined) {
+    const routePolicy = normalizeRoutePolicy(settings.route_policy)
+    if (routePolicy) {
+      updates.route_policy = routePolicy
+    } else {
+      // An empty policy intentionally restores inheritance from the global
+      // agent configuration instead of persisting an ambiguous empty object.
+      unsets.route_policy = 1
+    }
+  }
+
   const domain = await Domain.findOneAndUpdate(
     { _id: domainId, team_id: team._id },
     {
-      $set: {
-        settings: settings,
-        updated_at: new Date()
-      }
+      // Dot notation updates only fields supplied by the caller. Replacing the
+      // settings object caused unrelated defaults and existing policy values to
+      // disappear on every partial update.
+      $set: updates,
+      ...(Object.keys(unsets).length > 0 ? { $unset: unsets } : {})
     },
-    { new: true }
+    { new: true, runValidators: true }
   )
 
   if (!domain) {
@@ -738,6 +887,8 @@ export async function updateDomainSettings(
   }
 
   revalidatePath(`/dashboard/${teamSlug}`)
+  revalidatePath(`/dashboard/${teamSlug}/${domain.domain}`)
+  revalidatePath(`/dashboard/${teamSlug}/${domain.domain}/settings`)
   return { success: true }
 }
 

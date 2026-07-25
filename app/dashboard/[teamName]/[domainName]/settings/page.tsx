@@ -31,7 +31,11 @@ const SettingsPage = async ({ params }: Props) => {
       <HeaderSection domainData={domainData} />
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <OriginSettings />
-        <CacheSettings />
+        <CacheSettings
+          teamSlug={teamName}
+          domainId={domain._id.toString()}
+          initialRoutePolicy={domain.route_policy}
+        />
       </div>
       <PerformanceSettings />
       <DangerZone />

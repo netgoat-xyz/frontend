@@ -46,7 +46,12 @@ const DomainDashboard = async ({ params }: Props) => {
     )
   }
 
-  const sslStatus = domain.auto_ssl ? 'AUTO' : (domain.ssl_enabled ? 'MANUAL' : 'NONE');
+  const hasConfiguredCertificate = Boolean(domain.ssl_enabled && domain.certificate_pem);
+  const sslStatus = hasConfiguredCertificate
+    ? 'CONFIGURED'
+    : domain.auto_ssl
+      ? 'PENDING'
+      : 'NONE';
   const wafStatus = (domain.waf_rules && domain.waf_rules.length > 0) ? 'ENABLED' : 'DISABLED';
 
   const stats = domain.stats || {

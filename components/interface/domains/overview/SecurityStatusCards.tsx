@@ -2,7 +2,7 @@ import { Shield, Lock } from "lucide-react";
 
 interface SecurityStatusCardsProps {
   wafStatus: 'ENABLED' | 'DISABLED';
-  sslStatus: 'AUTO' | 'MANUAL' | 'NONE';
+  sslStatus: 'CONFIGURED' | 'PENDING' | 'NONE';
 }
 
 export function SecurityStatusCards({ wafStatus, sslStatus }: SecurityStatusCardsProps) {
@@ -28,17 +28,17 @@ export function SecurityStatusCards({ wafStatus, sslStatus }: SecurityStatusCard
           <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-neutral-600 dark:text-neutral-400 group-hover:text-indigo-400 transition-colors">
             <Lock size={20} />
           </div>
-          <div className={`text-xs font-bold px-2 py-0.5 rounded ${sslStatus !== 'NONE' ? 'text-indigo-400 bg-indigo-400/10' : 'text-neutral-400 bg-neutral-400/10'}`}>
+          <div className={`text-xs font-bold px-2 py-0.5 rounded ${sslStatus === 'CONFIGURED' ? 'text-emerald-400 bg-emerald-400/10' : sslStatus === 'PENDING' ? 'text-amber-400 bg-amber-400/10' : 'text-neutral-400 bg-neutral-400/10'}`}>
             {sslStatus}
           </div>
         </div>
         <h4 className="font-semibold text-sm">SSL/TLS</h4>
         <p className="text-xs text-neutral-500 mt-1">
-          {sslStatus === 'AUTO' 
-            ? "Let's Encrypt certificate active. Auto-renews in 89 days." 
-            : sslStatus === 'MANUAL' 
-              ? "Custom certificate provided by user." 
-              : "No SSL configured. Traffic is unencrypted."}
+          {sslStatus === 'CONFIGURED'
+            ? 'Certificate material is configured. Expiry and issuer details are not stored by this control plane.'
+            : sslStatus === 'PENDING'
+              ? 'Automatic SSL is requested, but no certificate has been configured yet.'
+              : 'No certificate is configured for this domain.'}
         </p>
       </div>
     </div>
