@@ -55,6 +55,8 @@ describe("dynamic agent-rule settings", () => {
       _id: "settings-id",
       siteName: "NetGoat",
       agentConfig,
+      pluginsConfigured: true,
+      plugins: { installations: [] },
     });
 
     expect(update).toEqual({ _id: "settings-id", siteName: "NetGoat" });

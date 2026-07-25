@@ -43,7 +43,9 @@ export function omitManagedAgentConfig(value: unknown): Record<string, unknown> 
   if (!isRecord(value)) return {};
 
   return Object.fromEntries(
-    Object.entries(value).filter(([key]) => key !== "agentConfig"),
+    Object.entries(value).filter(
+      ([key]) => key !== "agentConfig" && key !== "plugins" && key !== "pluginsConfigured",
+    ),
   );
 }
 

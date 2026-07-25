@@ -1,5 +1,28 @@
 import mongoose from "mongoose";
 
+const AgentPluginInstallationSchema = new mongoose.Schema(
+  {
+    plugin_id: { type: String, required: true, maxlength: 128 },
+    factory_id: { type: String, required: true, maxlength: 80 },
+    version: { type: String, required: true, maxlength: 128 },
+    sha256: { type: String, required: true, lowercase: true, match: /^[a-f0-9]{64}$/ },
+    api_version: { type: String, required: true, enum: ["netgoat.dev/middleware/v1"] },
+    granted_capabilities: {
+      type: [{ type: String, enum: ["request.read", "route.read", "response.write"] }],
+      default: [],
+    },
+    config: { type: mongoose.Schema.Types.Mixed, required: true },
+  },
+  { _id: false, strict: "throw" },
+);
+
+const AgentPluginsSnapshotSchema = new mongoose.Schema(
+  {
+    installations: { type: [AgentPluginInstallationSchema], default: [] },
+  },
+  { _id: false, strict: "throw" },
+);
+
 const SettingsSchema = new mongoose.Schema({
   // Kept for compatibility with legacy key/value settings documents. Agent
   // configuration belongs only on the unkeyed global settings document.
@@ -34,6 +57,15 @@ const SettingsSchema = new mongoose.Schema({
   // document so newly added, non-secret agent settings survive dashboard
   // updates while targeted editor actions can update nested fields safely.
   agentConfig: { type: mongoose.Schema.Types.Mixed, default: () => ({}) },
+
+  // This is intentionally separate from agentConfig: it is a reviewed global
+  // deployment snapshot, not a side effect of team marketplace installs. The
+  // stream server reads the top-level flag and the nested installations list.
+  pluginsConfigured: { type: Boolean, default: false },
+  plugins: {
+    type: AgentPluginsSnapshotSchema,
+    default: () => ({ installations: [] }),
+  },
 
   featureFlags: [{
     key: String,
