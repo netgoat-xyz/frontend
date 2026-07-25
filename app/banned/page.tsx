@@ -1,16 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 
 export default function Error({
   error,
-  reset,
 }: {
   error: Error & { digest?: string }
-  reset?: () => void
 }) {
   const t = useTranslations('ErrorPages.banned')
 

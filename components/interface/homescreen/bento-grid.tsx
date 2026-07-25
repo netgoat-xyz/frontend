@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
-import { Globe, Shield, Activity, Code, Users } from "lucide-react";
+import { Globe, Shield, Activity, Code } from "lucide-react";
 
 const BentoCard = ({
   children,

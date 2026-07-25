@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export interface AlertData {
   _id: string;
@@ -12,13 +12,7 @@ export interface AlertData {
 }
 
 export default function AlertsCard({ initialAlerts = [] }: { initialAlerts?: AlertData[] }) {
-  const [animate, setAnimate] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setAnimate(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
 
   if (initialAlerts.length === 0) {
     return (

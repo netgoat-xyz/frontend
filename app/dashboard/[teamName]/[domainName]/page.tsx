@@ -14,7 +14,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { IconFolderCode } from "@tabler/icons-react"
-import { ArrowUpRightIcon } from "lucide-react"
 
 type Props = {
   params: {

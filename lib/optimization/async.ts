@@ -135,6 +135,8 @@ export function useAsyncMemo<T>(
     return () => {
       mountedRef.current = false;
     };
+    // Callers supply the dependency tuple that defines this memoized request.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `deps` is intentionally dynamic.
   }, deps);
 
   return state;

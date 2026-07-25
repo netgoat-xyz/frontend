@@ -148,6 +148,8 @@ export default function Header() {
                 className="flex items-center gap-2.5 pl-1 pr-2.5 py-1 bg-foreground/5 hover:bg-foreground/10 border border-border/60 backdrop-blur-md rounded-full transition-all group cursor-pointer"
               >
                 <div className="h-6 w-6 rounded-full overflow-hidden shrink-0 ring-1 ring-border/60">
+                  {/* Identity providers can supply arbitrary avatar hosts, so this stays a native image. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Do not reject valid avatars that are outside the Next image allowlist. */}
                   <img
                     src={
                       user.image ||

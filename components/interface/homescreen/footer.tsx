@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, ChevronUp, Globe } from "lucide-react";
 import { useRef, useState } from "react";
@@ -89,8 +90,11 @@ export default function Footer() {
             >
               {t("close")}
             </button>
-            <img
+            <Image
               src="/mww.png"
+              width={640}
+              height={426}
+              sizes="(max-width: 672px) 100vw, 672px"
               alt={t("easterEgg.alt")}
               className="w-full h-auto rounded-xl border border-border/60 shadow-2xl"
             />

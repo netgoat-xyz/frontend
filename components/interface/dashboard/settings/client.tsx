@@ -25,7 +25,7 @@ import {
 import { getExperiments } from "@/actions/experiments";
 import type { TeamCapability } from "@/models/Team";
 import { motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -572,7 +572,7 @@ export default function SettingsPage() {
     return event;
   };
 
-  async function hydrateServerSettings(slug: string = "@me") {
+  const hydrateServerSettings = useCallback(async (slug: string = "@me") => {
     const teamData = await getTeam(slug);
     const resolvedTeamSlug =
       typeof teamData?.slug === "string" && teamData.slug.length > 0
@@ -844,7 +844,7 @@ export default function SettingsPage() {
     setCanManageInvoices(Boolean(billing?.permissions?.canManageInvoices));
 
     return resolvedTeamSlug;
-  }
+  }, [dateTimeFormatter, inviteRole]);
 
   useEffect(() => {
     let cancelled = false;
@@ -881,7 +881,7 @@ export default function SettingsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [hydrateServerSettings, t]);
 
   async function handleSaveGeneral(e: React.FormEvent) {
     e.preventDefault();

@@ -13,16 +13,6 @@ const hostnames = [
   { hostname: "Others", requests: "387K", pct: 13.6 },
 ];
 
-// Helper to convert ISO code to Flag Emoji
-const getFlagEmoji = (countryCode: string) => {
-  if (countryCode === "UN") return "🌐"; // Fallback for "Others"
-  const codePoints = countryCode
-    .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt(0));
-  return String.fromCodePoint(...codePoints);
-};
-
 export function HostnamesBreakdown() {
   return (
     <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">

@@ -146,6 +146,8 @@ async function BlogPostsList() {
           <div className="grid md:grid-cols-2 gap-0">
             {/* Image */}
             <div className="h-64 md:h-96 overflow-hidden relative">
+              {/* The generated OG URL follows the deployment's public origin. */}
+              {/* eslint-disable-next-line @next/next/no-img-element -- The URL is dynamic and may use an arbitrary configured origin. */}
               <img
                 src={ogUrl}
                 alt={featured.title}
@@ -210,6 +212,8 @@ async function BlogPostsList() {
               <article className="h-full flex flex-col rounded-2xl border border-border/60 bg-card/50 hover:bg-card/70 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-border hover:shadow-2xl hover:shadow-primary/10">
                 {/* Image */}
                 <div className="w-full h-48 overflow-hidden relative">
+                  {/* Post covers are CMS-provided URLs, not a fixed Next image allowlist. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Keep arbitrary author-provided cover URLs working. */}
                   <img
                     src={post.coverImage}
                     alt={post.title}

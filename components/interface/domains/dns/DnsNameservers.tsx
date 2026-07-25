@@ -1,6 +1,6 @@
 "use client";
 
-import { Server, CheckCircle, XCircle, Clock, Loader2 } from "lucide-react";
+import { Server, CheckCircle, Clock, Loader2 } from "lucide-react";
 
 const nameservers = [
   { ns: "ns1.netgoat.net", ip: "172.64.32.1", status: "active", responseTime: "12ms" },

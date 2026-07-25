@@ -121,8 +121,12 @@ export default function RegisterForm({
                     await authClient.signIn.social({ provider: "discord",  callbackURL: "/dashboard" })
                   }
                 >
-                  <img
+                  <Image
                     src="/brands/Discord/Discord_idk1kDTKQj_0.svg"
+                    width={20}
+                    height={20}
+                    unoptimized
+                    loading="eager"
                     alt="Discord"
                     className="cursor-pointer h-5 w-5 mx-auto"
                   />
@@ -136,8 +140,12 @@ export default function RegisterForm({
                     await authClient.signIn.social({ provider: "github", callbackURL: "/dashboard" })
                   }
                 >
-                  <img
+                  <Image
                     src="/brands/GitHub/GitHub_Symbol_0.svg"
+                    width={20}
+                    height={20}
+                    unoptimized
+                    loading="eager"
                     alt="Github"
                     className="cursor-pointer h-5 w-5 mx-auto"
                   />
@@ -151,8 +159,12 @@ export default function RegisterForm({
                     await authClient.signIn.social({ provider: "gitlab", callbackURL: "/dashboard" })
                   }
                 >
-                  <img
+                  <Image
                     src="/brands/GitLab/GitLab_Symbol_0.svg"
+                    width={20}
+                    height={20}
+                    unoptimized
+                    loading="eager"
                     alt="Gitlab"
                     className="cursor-pointer h-5 w-5 mx-auto"
                   />

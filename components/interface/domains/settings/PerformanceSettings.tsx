@@ -1,6 +1,6 @@
 "use client";
 
-import { Sliders, ChevronDown } from "lucide-react";
+import { Sliders } from "lucide-react";
 
 export function PerformanceSettings() {
   return (

@@ -14,7 +14,7 @@ import {
 
 export function LogFilters() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState(0);
+  const activeFilters = 0;
 
   return (
     <div className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800/50 rounded-xl p-4">

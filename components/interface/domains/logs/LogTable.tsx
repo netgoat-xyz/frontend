@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 const logEntries = [
