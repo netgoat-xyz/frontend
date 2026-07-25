@@ -8,21 +8,21 @@ export default function useLastTeamName() {
   const [lastTeam, setLastTeam] = useState<string | null>(null);
 
   useEffect(() => {
-    const segments = pathname.split("/").filter(Boolean);
+    const timer = window.setTimeout(() => {
+      const segments = pathname.split("/").filter(Boolean);
 
-    if (segments[0] === "dashboard" && segments[1] && segments[1] !== "teams") {
-      const currentTeam = segments[1];
-      setLastTeam(currentTeam);
-      sessionStorage.setItem("lastTeamName", currentTeam);
-    }
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!lastTeam) {
+      if (segments[0] === "dashboard" && segments[1] && segments[1] !== "teams") {
+        const currentTeam = segments[1];
+        sessionStorage.setItem("lastTeamName", currentTeam);
+        setLastTeam(currentTeam);
+      } else {
       const saved = sessionStorage.getItem("lastTeamName");
-      if (saved) setLastTeam(saved);
-    }
-  }, [lastTeam]);
+        setLastTeam(saved);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
 
   return lastTeam;
 }

@@ -16,7 +16,7 @@ export default async function AdminLayout({
   });
 
   if (!session) {
-    redirect('/auth/login' as any);
+    redirect('/auth/login');
   }
 
   if (isBannedSessionUser(session)) {

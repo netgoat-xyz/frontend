@@ -67,6 +67,17 @@ const serviceIcons: Record<ServiceStatus["key"], typeof Server> = {
   authentication: Shield,
 };
 
+type StatusIncident = {
+  _id: string
+  title: string
+  description: string
+  active: boolean
+  status: string
+  severity: string
+  createdAt: string | Date
+  resolvedAt?: string | Date | null
+}
+
 export default function StatusPage() {
   const t = useTranslations("HomePage.statusPage");
 
@@ -136,6 +147,7 @@ async function StatusContent() {
   ]);
   const t = await getTranslations("HomePage.statusPage");
   const locale = resolveIntlLocale(await getLocale());
+  const incidents = incidentsArray as StatusIncident[];
 
   const translateIncidentStatus = (value: string) => {
     const normalized = value.toLowerCase();
@@ -157,10 +169,10 @@ async function StatusContent() {
 
   // Adjust overall status if there are active severe incidents
   let effectiveOverall = status.overall;
-  const activeIncidents = incidentsArray.filter((inc: any) => inc.active);
-  if (activeIncidents.some((inc: any) => inc.severity === "critical")) {
+  const activeIncidents = incidents.filter((incident) => incident.active);
+  if (activeIncidents.some((incident) => incident.severity === "critical")) {
     effectiveOverall = "outage";
-  } else if (activeIncidents.some((inc: any) => inc.severity === "major")) {
+  } else if (activeIncidents.some((incident) => incident.severity === "major")) {
     effectiveOverall = "degraded";
   }
 
@@ -255,9 +267,9 @@ async function StatusContent() {
         <h3 className="text-[11px] font-light text-muted-foreground/70 uppercase tracking-[0.2em] mb-6">
           {t("labels.recentIncidents")}
         </h3>
-        {incidentsArray.length > 0 ? (
+        {incidents.length > 0 ? (
           <div className="space-y-6">
-            {incidentsArray.map((inc: any) => (
+            {incidents.map((inc) => (
               <div
                 key={inc._id}
                 className="border-b border-border/60 pb-6 last:border-0 last:pb-0"

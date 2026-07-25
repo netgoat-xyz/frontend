@@ -8,5 +8,5 @@ const stripLength = (res: Response) => {
   return res;
 };
 
-export const POST = async (req: Request, ctx: any) => stripLength(await handler.POST(req));
-export const GET  = async (req: Request, ctx: any) => stripLength(await handler.GET(req));
+export const POST = async (req: Request) => stripLength(await handler.POST(req));
+export const GET = async (req: Request) => stripLength(await handler.GET(req));

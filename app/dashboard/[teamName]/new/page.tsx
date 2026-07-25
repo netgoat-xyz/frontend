@@ -12,8 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -37,13 +36,17 @@ import { sanitizeDomainInput, validateDomainSyntax } from "@/lib/domain-validati
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
+type TeamSummary = {
+  name?: string
+}
+
 export default function NewDomainPage() {
   const t = useTranslations("DashboardPages.newDomain");
   const params = useParams();
   const router = useRouter();
   const teamSlug = params.teamName as string;
   
-  const [teamData, setTeamData] = useState<any>(null);
+  const [teamData, setTeamData] = useState<TeamSummary | null>(null);
   const [loadingTeam, setLoadingTeam] = useState(true);
 
   const [step, setStep] = useState<"input" | "verify">("input");
@@ -56,7 +59,14 @@ export default function NewDomainPage() {
   useEffect(() => {
     if (teamSlug) {
       getTeam(teamSlug)
-        .then((data) => setTeamData(data))
+        .then((data) => {
+          if (typeof data === "object" && data !== null && "name" in data && typeof data.name === "string") {
+            setTeamData({ name: data.name });
+            return;
+          }
+
+          setTeamData(null);
+        })
         .catch((err) => console.error(err))
         .finally(() => setLoadingTeam(false));
     }
@@ -90,8 +100,8 @@ export default function NewDomainPage() {
       } else {
         throw new Error(t("errors.tokenFailed"));
       }
-    } catch (error: any) {
-      toast.error(error.message || t("errors.generic"));
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : t("errors.generic"));
     } finally {
       setVerifying(false);
     }
@@ -130,7 +140,7 @@ export default function NewDomainPage() {
       } else {
         toast.error(t("errors.verifyFailed"));
       }
-    } catch (error) {
+    } catch {
       toast.error(t("errors.propagation"));
     } finally {
       setVerifying(false);
@@ -168,7 +178,7 @@ export default function NewDomainPage() {
             </>
           ) : (
             <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-              {t("title", { teamName: teamData?.name })}
+               {t("title", { teamName: teamData?.name || t("projectFallback") })}
             </h1>
           )}
         </div>

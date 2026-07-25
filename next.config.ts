@@ -1,6 +1,7 @@
 import withBundleAnalyzer from "@next/bundle-analyzer";
 import createNextIntlPlugin from "next-intl/plugin";
 import createMDX from "@next/mdx";
+import { execSync } from "node:child_process";
 import type { NextConfig } from "next";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
@@ -15,8 +16,7 @@ const withAnalyzer = withBundleAnalyzer({
 
 let commitHash = "unknown";
 try {
-  commitHash = require("child_process")
-    .execSync("git rev-parse --short HEAD")
+  commitHash = execSync("git rev-parse --short HEAD")
     .toString()
     .trim();
 } catch {}

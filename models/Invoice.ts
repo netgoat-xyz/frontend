@@ -74,7 +74,7 @@ InvoiceSchema.pre('save', function() {
   this.updated_at = new Date()
 })
 
-interface IInvoiceModel extends Model<IInvoice> {}
+type IInvoiceModel = Model<IInvoice>
 
 export const Invoice = (models.Invoice ||
   model<IInvoice, IInvoiceModel>('Invoice', InvoiceSchema)) as IInvoiceModel

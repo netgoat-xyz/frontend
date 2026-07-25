@@ -16,6 +16,27 @@ import { promisify } from 'util'
 
 const resolveTxt = promisify(dns.resolveTxt)
 
+type VerificationError = {
+  domain: string
+  error: string
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'object' && error !== null && 'message' in error && typeof error.message === 'string') {
+    return error.message
+  }
+  return 'Unknown error'
+}
+
+function isMissingDnsRecordError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null || !('code' in error)) {
+    return false
+  }
+
+  return error.code === 'ENOTFOUND' || error.code === 'ENODATA'
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Verify cron secret for security
@@ -52,7 +73,7 @@ export async function POST(request: NextRequest) {
       checked: 0,
       verified: 0,
       failed: 0,
-      errors: [] as any[]
+      errors: [] as VerificationError[]
     }
 
     for (const domain of domainsToCheck) {
@@ -97,9 +118,9 @@ export async function POST(request: NextRequest) {
           domain.next_verification_check = nextCheck
 
           await domain.save()
-        } catch (dnsError: any) {
+        } catch (dnsError: unknown) {
           // DNS lookup failed
-          if (dnsError.code === 'ENOTFOUND' || dnsError.code === 'ENODATA') {
+          if (isMissingDnsRecordError(dnsError)) {
             results.failed++
             console.log(`[Cron] ✗ Domain ${domain.domain} - TXT record not found`)
 
@@ -117,11 +138,11 @@ export async function POST(request: NextRequest) {
             throw dnsError
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(`[Cron] Error checking domain ${domain.domain}:`, error)
         results.errors.push({
           domain: domain.domain,
-          error: error.message
+          error: getErrorMessage(error)
         })
       }
     }
@@ -133,12 +154,12 @@ export async function POST(request: NextRequest) {
       message: 'Domain verification check completed',
       results
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[Cron] Domain verification cron error:', error)
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        message: error.message
+        message: getErrorMessage(error)
       },
       { status: 500 }
     )

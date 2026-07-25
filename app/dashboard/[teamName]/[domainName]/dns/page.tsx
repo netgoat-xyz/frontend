@@ -1,6 +1,5 @@
 import { HeaderSection } from "@/components/interface/domains/overview/HeaderSection";
 import { DnsRecords } from "@/components/interface/domains/dns/DnsRecords";
-import { DnsNameservers } from "@/components/interface/domains/dns/DnsNameservers";
 import { loadDomainByRoute } from "../_lib/domain-data";
 import { getTranslations } from "next-intl/server";
 
@@ -24,7 +23,16 @@ const DnsPage = async ({ params }: Props) => {
     )
   }
 
-  const dnsRecords = (domain.dns_records || []).map((record: any) => ({
+  type DnsRecord = {
+    _id?: string
+    type: string
+    name: string
+    value: string
+    ttl?: string | number
+    proxied?: boolean
+  }
+
+  const dnsRecords: DnsRecord[] = (domain.dns_records || []).map((record: DnsRecord) => ({
     _id: record._id,
     type: record.type,
     name: record.name,

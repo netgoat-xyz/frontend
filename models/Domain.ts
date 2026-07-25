@@ -1,5 +1,21 @@
 import mongoose from "mongoose";
 
+type WAFRule = {
+  name: string;
+  expression: string;
+  action?: 'BLOCK' | 'ALLOW' | 'LOG';
+  priority?: number;
+  enabled?: boolean;
+  description?: string;
+  created_at?: Date;
+  updated_at?: Date;
+};
+
+type DomainSubdomain = {
+  subdomain: string;
+  waf_rules: WAFRule[];
+};
+
 const SubdomainWAFRuleSchema = new mongoose.Schema({
   name: { type: String, required: true },
   expression: { type: String, required: true },
@@ -142,17 +158,17 @@ DomainSchema.methods.addSubdomain = function(
 };
 
 DomainSchema.methods.removeSubdomain = function(subdomain: string) {
-  this.subdomains = this.subdomains.filter((s: any) => s.subdomain !== subdomain);
+  this.subdomains = this.subdomains.filter((s: DomainSubdomain) => s.subdomain !== subdomain);
   return this.save();
 };
 
-DomainSchema.methods.addWAFRule = function(rule: any) {
+DomainSchema.methods.addWAFRule = function(rule: WAFRule) {
   this.waf_rules.push(rule);
   return this.save();
 };
 
-DomainSchema.methods.addSubdomainWAFRule = function(subdomain: string, rule: any) {
-  const sub = this.subdomains.find((s: any) => s.subdomain === subdomain);
+DomainSchema.methods.addSubdomainWAFRule = function(subdomain: string, rule: WAFRule) {
+  const sub = this.subdomains.find((s: DomainSubdomain) => s.subdomain === subdomain);
   if (sub) {
     sub.waf_rules.push(rule);
     return this.save();

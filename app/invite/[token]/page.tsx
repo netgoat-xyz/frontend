@@ -32,11 +32,11 @@ export default function InviteAcceptPage() {
         setTeamSlug(result.teamSlug);
         setState("success");
         setMessage("Invite accepted. You can now access this team.");
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (!mounted) return;
 
         setState("error");
-        setMessage(error?.message || "Unable to accept invite. It may be expired.");
+        setMessage(error instanceof Error ? error.message : "Unable to accept invite. It may be expired.");
       }
     };
 

@@ -142,8 +142,8 @@ export async function GET(request: NextRequest) {
         height: 630,
       }
     );
-  } catch (e: any) {
-    console.error('Failed to generate OG image', e);
+  } catch (error: unknown) {
+    console.error('Failed to generate OG image', error);
     return new Response('Failed to generate image', { status: 500 });
   }
 }

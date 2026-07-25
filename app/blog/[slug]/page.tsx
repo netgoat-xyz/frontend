@@ -33,7 +33,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
           {/* Back link */}
           <div className="container mx-auto px-4 max-w-3xl pt-8">
             <Link
-              href={"/blog" as any}
+              href="/blog"
               className="inline-flex items-center gap-2 text-xs text-white/30 hover:text-white/60 transition-colors group"
             >
               <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
@@ -45,6 +45,8 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
           {post.coverImage && (
             <div className="container mx-auto px-4 max-w-4xl mt-8">
               <div className="w-full h-64 md:h-105 relative rounded-2xl overflow-hidden border border-white/6">
+                {/* The CMS accepts arbitrary external cover-image URLs, which are not all known at build time. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={post.coverImage}
                   alt={post.title}

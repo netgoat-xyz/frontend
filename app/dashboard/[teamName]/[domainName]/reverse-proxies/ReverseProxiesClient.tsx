@@ -6,7 +6,15 @@ import { Trash2, Plus, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
-export function ReverseProxiesClient({ teamSlug, domainId, reverseProxies }: { teamSlug: string; domainId: string; reverseProxies: any[] }) {
+type ReverseProxy = {
+  _id: string
+  name: string
+  path?: string
+  target_url: string
+  enabled: boolean
+}
+
+export function ReverseProxiesClient({ teamSlug, domainId, reverseProxies }: { teamSlug: string; domainId: string; reverseProxies: ReverseProxy[] }) {
   const t = useTranslations("DashboardPages.reverseProxy");
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
@@ -74,7 +82,7 @@ export function ReverseProxiesClient({ teamSlug, domainId, reverseProxies }: { t
       
       {reverseProxies && reverseProxies.length > 0 ? (
         <div className="space-y-4">
-          {reverseProxies.map((proxy: any) => (
+          {reverseProxies.map((proxy) => (
              <div key={proxy._id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-neutral-100 dark:border-neutral-800 rounded-lg group hover:border-neutral-200 dark:hover:border-neutral-700 transition-colors">
               <div>
                 <div className="font-medium text-sm text-neutral-900 dark:text-neutral-100 flex items-center gap-2">

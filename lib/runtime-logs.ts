@@ -5,13 +5,19 @@ export type LogEntry = {
   message: string;
 };
 
+type RuntimeLogGlobal = typeof globalThis & {
+  __RUNTIME_LOGS__?: LogEntry[];
+  __LOG_HOOK_INSTALLED__?: boolean;
+};
+
 const MAX_LOGS = 1000;
-const globalLogStore = (globalThis as any).__RUNTIME_LOGS__ || [] as LogEntry[];
-if (!(globalThis as any).__RUNTIME_LOGS__) {
-  (globalThis as any).__RUNTIME_LOGS__ = globalLogStore;
+const runtimeGlobal = globalThis as RuntimeLogGlobal;
+const globalLogStore = runtimeGlobal.__RUNTIME_LOGS__ || ([] as LogEntry[]);
+if (!runtimeGlobal.__RUNTIME_LOGS__) {
+  runtimeGlobal.__RUNTIME_LOGS__ = globalLogStore;
 }
 
-export function addLog(level: LogEntry["level"], ...args: any[]) {
+export function addLog(level: LogEntry["level"], ...args: unknown[]) {
   const message = args.map(arg => 
     typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
   ).join(' ');
@@ -33,9 +39,9 @@ let hooked = false;
 
 export function installLogHook() {
   if (hooked) return;
-  if ((globalThis as any).__LOG_HOOK_INSTALLED__) return;
-  
-  (globalThis as any).__LOG_HOOK_INSTALLED__ = true;
+  if (runtimeGlobal.__LOG_HOOK_INSTALLED__) return;
+
+  runtimeGlobal.__LOG_HOOK_INSTALLED__ = true;
   hooked = true;
 
   const originalLog = console.log;

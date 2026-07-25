@@ -13,10 +13,13 @@ export default function DocsSidebar() {
   const [activeHash, setActiveHash] = useState("");
 
   useEffect(() => {
-    setActiveHash(window.location.hash);
+    const initialHashTimer = window.setTimeout(() => setActiveHash(window.location.hash), 0);
     const handleHashChange = () => setActiveHash(window.location.hash);
     window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
+    return () => {
+      window.clearTimeout(initialHashTimer);
+      window.removeEventListener("hashchange", handleHashChange);
+    };
   }, []);
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {

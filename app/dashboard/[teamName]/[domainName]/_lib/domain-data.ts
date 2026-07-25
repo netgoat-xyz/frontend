@@ -5,13 +5,17 @@ export type DomainRouteParams = {
   domainName: string
 }
 
+type DomainLookup = {
+  domain: string
+}
+
 export async function loadDomainByRoute(paramsPromise: Promise<DomainRouteParams> | DomainRouteParams) {
   const params = await paramsPromise;
   const teamName = decodeURIComponent(params.teamName)
   const domainName = decodeURIComponent(params.domainName)
 
   const domains = await listTeamDomains(teamName)
-  const domain = (domains as any[]).find((d) => d.domain === domainName)
+  const domain = domains.find((domain: DomainLookup) => domain.domain === domainName)
 
   if (!domain) {
     return { teamName, domainName, domain: null }

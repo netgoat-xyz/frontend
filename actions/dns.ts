@@ -4,9 +4,33 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import connectDB from '@/lib/mongoose'
 import DNSRecord from '@/models/DNSRecord'
+import type { IDNSRecord } from '@/models/DNSRecord'
 import { Team } from '@/models/Team'
 import Domain from '@/models/Domain'
 import { revalidatePath } from 'next/cache'
+
+type DNSRecordDocument = IDNSRecord & {
+  toObject(): IDNSRecord
+}
+
+function toPlainDNSRecord(record: IDNSRecord) {
+  return (record as DNSRecordDocument).toObject()
+}
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  if (typeof error === 'object' && error !== null) {
+    const message = (error as { message?: unknown }).message
+    if (typeof message === 'string') {
+      return message
+    }
+  }
+
+  return String(error)
+}
 
 /**
  * Create a DNS record for a domain
@@ -109,7 +133,7 @@ export async function listDNSRecords(teamSlug: string, domainId: string) {
   }
 
   const records = await DNSRecord.findByDomainId(domainId)
-  return records.map((r: any) => r.toObject())
+  return records.map(toPlainDNSRecord)
 }
 
 /**
@@ -135,7 +159,7 @@ export async function listAllTeamDNS(teamSlug: string) {
   }
 
   const records = await DNSRecord.findByTeam(team._id.toString())
-  return records.map((r: any) => r.toObject())
+  return records.map(toPlainDNSRecord)
 }
 
 /**
@@ -344,9 +368,9 @@ export async function bulkImportDNS(
       })
 
       results.success++
-    } catch (error: any) {
+    } catch (error) {
       results.failed++
-      results.errors.push(`${record.name}.${domain.domain}: ${error.message}`)
+      results.errors.push(`${record.name}.${domain.domain}: ${getErrorMessage(error)}`)
     }
   }
 

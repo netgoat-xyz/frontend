@@ -8,10 +8,41 @@ import User from '@/models/User'
 import { revalidatePath } from 'next/cache'
 import mongoose from 'mongoose'
 import { sendTeamInviteEmail } from '@/lib/email'
-import type { TeamCapability, TeamRoleInheritance } from '@/models/Team'
+import type {
+  ITeam,
+  ITeamAccessGroup,
+  ITeamMember,
+  TeamCapability,
+  TeamRoleInheritance
+} from '@/models/Team'
 
 export type TeamAssignableRole = 'admin' | 'billing_manager' | 'member' | 'viewer' | string
 type AccessGroupDefaultRole = 'viewer' | 'member' | 'admin'
+type TeamSettingsDraft = {
+  access_groups?: ITeamAccessGroup[]
+  webhooks?: {
+    endpoint_url?: string
+    signing_secret?: string
+    events?: string[]
+    updated_at?: Date
+    updated_by?: mongoose.Types.ObjectId
+  }
+  auth_methods?: {
+    magic_link?: boolean
+    email_code?: boolean
+  }
+  retention_days?: number
+  require_2fa?: boolean
+  billing?: Partial<ITeam['settings']['billing']>
+}
+type TeamWithLegacySettings = Omit<ITeam, 'settings'> & {
+  settings?: TeamSettingsDraft
+}
+type TeamMemberUser = {
+  _id: mongoose.Types.ObjectId
+  name?: string
+  email?: string
+}
 const WEBHOOK_EVENTS = ['incident.updated', 'domain.status.changed', 'billing.updated'] as const
 type TeamWebhookEvent = (typeof WEBHOOK_EVENTS)[number]
 const WEBHOOK_EVENT_SET = new Set<string>(WEBHOOK_EVENTS)
@@ -22,7 +53,7 @@ const APP_URL =
   'http://localhost:3000'
 
 function hasCapabilityOrRole(
-  team: any,
+  team: ITeam,
   userId: string,
   capability: TeamCapability,
   fallbackRole: 'owner' | 'admin' | 'member' | 'viewer'
@@ -73,10 +104,10 @@ function normalizeWebhookEvents(value: unknown): TeamWebhookEvent[] {
   return normalized
 }
 
-function getDefaultGroupMemberCount(team: any, defaultRole: AccessGroupDefaultRole) {
+function getDefaultGroupMemberCount(team: ITeam, defaultRole: AccessGroupDefaultRole) {
   if (!Array.isArray(team?.members)) return 0
 
-  return team.members.reduce((count: number, member: any) => {
+  return team.members.reduce((count: number, member: ITeamMember) => {
     const memberRole = String(member?.role || '').trim().toLowerCase()
 
     if (defaultRole === 'admin') {
@@ -91,7 +122,7 @@ function getDefaultGroupMemberCount(team: any, defaultRole: AccessGroupDefaultRo
   }, 0)
 }
 
-function buildDefaultAccessGroups(team: any) {
+function buildDefaultAccessGroups(team: ITeam): ITeamAccessGroup[] {
   const now = new Date()
 
   return [
@@ -128,78 +159,82 @@ function buildDefaultAccessGroups(team: any) {
   ]
 }
 
-function ensureTeamSettingsDefaults(team: any) {
+function ensureTeamSettingsDefaults(team: ITeam) {
+  const legacyTeam = team as unknown as TeamWithLegacySettings
   let changed = false
 
-  if (!team.settings || typeof team.settings !== 'object') {
-    team.settings = {}
+  if (!legacyTeam.settings || typeof legacyTeam.settings !== 'object') {
+    legacyTeam.settings = {}
+    changed = true
+  }
+  const settings = legacyTeam.settings
+
+  if (!Array.isArray(settings.access_groups) || settings.access_groups.length === 0) {
+    settings.access_groups = buildDefaultAccessGroups(team)
     changed = true
   }
 
-  if (!Array.isArray(team.settings.access_groups) || team.settings.access_groups.length === 0) {
-    team.settings.access_groups = buildDefaultAccessGroups(team)
+  if (!settings.webhooks || typeof settings.webhooks !== 'object') {
+    settings.webhooks = { events: [] }
     changed = true
   }
+  const webhooks = settings.webhooks
 
-  if (!team.settings.webhooks || typeof team.settings.webhooks !== 'object') {
-    team.settings.webhooks = { events: [] }
-    changed = true
-  }
-
-  if (!Array.isArray(team.settings.webhooks.events)) {
-    team.settings.webhooks.events = []
+  if (!Array.isArray(webhooks.events)) {
+    webhooks.events = []
     changed = true
   } else {
-    const normalizedEvents = normalizeWebhookEvents(team.settings.webhooks.events)
+    const normalizedEvents = normalizeWebhookEvents(webhooks.events)
     if (
-      normalizedEvents.length !== team.settings.webhooks.events.length ||
-      normalizedEvents.some((event, index) => event !== team.settings.webhooks.events[index])
+      normalizedEvents.length !== webhooks.events.length ||
+      normalizedEvents.some((event, index) => event !== webhooks.events?.[index])
     ) {
-      team.settings.webhooks.events = normalizedEvents
+      webhooks.events = normalizedEvents
       changed = true
     }
   }
 
-  if (!team.settings.auth_methods || typeof team.settings.auth_methods !== 'object') {
-    team.settings.auth_methods = {
+  if (!settings.auth_methods || typeof settings.auth_methods !== 'object') {
+    settings.auth_methods = {
       magic_link: true,
       email_code: true
     }
     changed = true
   }
+  const authMethods = settings.auth_methods
 
-  if (typeof team.settings.auth_methods.magic_link !== 'boolean') {
-    team.settings.auth_methods.magic_link = true
+  if (typeof authMethods.magic_link !== 'boolean') {
+    authMethods.magic_link = true
     changed = true
   }
 
-  if (typeof team.settings.auth_methods.email_code !== 'boolean') {
-    team.settings.auth_methods.email_code = true
+  if (typeof authMethods.email_code !== 'boolean') {
+    authMethods.email_code = true
     changed = true
   }
 
-  if (!team.settings.auth_methods.magic_link && !team.settings.auth_methods.email_code) {
-    team.settings.auth_methods.email_code = true
+  if (!authMethods.magic_link && !authMethods.email_code) {
+    authMethods.email_code = true
     changed = true
   }
 
-  const retentionCandidate = Number.parseInt(String(team.settings.retention_days ?? ''), 10)
+  const retentionCandidate = Number.parseInt(String(settings.retention_days ?? ''), 10)
   const normalizedRetention = Number.isFinite(retentionCandidate)
     ? Math.min(365, Math.max(7, retentionCandidate))
     : 90
 
-  if (team.settings.retention_days !== normalizedRetention) {
-    team.settings.retention_days = normalizedRetention
+  if (settings.retention_days !== normalizedRetention) {
+    settings.retention_days = normalizedRetention
     changed = true
   }
 
-  if (typeof team.settings.require_2fa !== 'boolean') {
-    team.settings.require_2fa = false
+  if (typeof settings.require_2fa !== 'boolean') {
+    settings.require_2fa = false
     changed = true
   }
 
-  if (!team.settings.billing || typeof team.settings.billing !== 'object') {
-    team.settings.billing = {
+  if (!settings.billing || typeof settings.billing !== 'object') {
+    settings.billing = {
       auto_recharge: true,
       billing_interval: 'monthly',
       seat_count: 1
@@ -267,13 +302,12 @@ export async function getUserTeams() {
   if (!mongoose.isValidObjectId(session.user.id)) {
     throw new Error('Invalid user id')
   }
-  const userObjectId = new mongoose.Types.ObjectId(session.user.id)
 
   await connectDB()
 
   const teams = await Team.findUserTeams(session.user.id)
   // Properly serialize to plain objects for client components
-  const teamsObj = teams.map((t: any) => t.toObject())
+  const teamsObj = teams.map((team) => team.toObject())
   return JSON.parse(JSON.stringify(teamsObj))
 }
 
@@ -329,7 +363,7 @@ export async function getTeam(slug: string) {
   }
 
   // Check if user is a member
-  const isMember = team.members.some((m: any) => m.user_id.toString() === session.user.id)
+  const isMember = team.members.some((member) => member.user_id.toString() === session.user.id)
   if (!isMember) {
     throw new Error('Access denied')
   }
@@ -339,19 +373,19 @@ export async function getTeam(slug: string) {
     await team.save()
   }
 
-  const memberIds = team.members.map((member: any) => member.user_id)
-  const memberUsers = await User.find({
-    _id: { $in: memberIds }
-  })
-    .select('_id name email')
-    .lean()
+  const memberIds = team.members.map((member) => member.user_id)
+  const memberUsers = (await User.find({
+      _id: { $in: memberIds }
+    })
+      .select('_id name email')
+      .lean()) as TeamMemberUser[]
 
   const userMap = new Map(
-    memberUsers.map((memberUser: any) => [memberUser._id.toString(), memberUser])
+    memberUsers.map((memberUser) => [memberUser._id.toString(), memberUser])
   )
 
   const now = new Date()
-  const membersDetailed = team.members.map((member: any) => {
+  const membersDetailed = team.members.map((member) => {
     const memberUser = userMap.get(member.user_id.toString())
     return {
       userId: member.user_id.toString(),
@@ -363,8 +397,8 @@ export async function getTeam(slug: string) {
   })
 
   const pendingInvites = (team.invites || [])
-    .filter((invite: any) => !invite.accepted && invite.expires_at > now)
-    .map((invite: any) => ({
+    .filter((invite) => !invite.accepted && invite.expires_at > now)
+    .map((invite) => ({
       email: invite.email,
       role: invite.role,
       invitedAt: invite.invited_at,
@@ -473,7 +507,7 @@ export async function createAccessGroup(
     : []
 
   const duplicate = existingGroups.some(
-    (group: any) => String(group?.name || '').trim().toLowerCase() === normalizedName.toLowerCase()
+    (group) => String(group.name || '').trim().toLowerCase() === normalizedName.toLowerCase()
   )
   if (duplicate) {
     throw new Error('Access group already exists')
@@ -716,7 +750,7 @@ export async function acceptInvite(token: string) {
     throw new Error('Invalid or expired invite')
   }
 
-  const invite = team.invites.find((i: any) => i.token === token)
+  const invite = team.invites.find((invite) => invite.token === token)
   if (
     !invite ||
     invite.email.toLowerCase() !== String(session.user.email).toLowerCase()
@@ -916,7 +950,7 @@ export async function leaveTeam(slug: string) {
     throw new Error('Team not found')
   }
 
-  const member = team.members.find((m: any) => m.user_id.toString() === session.user.id)
+  const member = team.members.find((member) => member.user_id.toString() === session.user.id)
   if (!member) {
     throw new Error('Not a member of this team')
   }

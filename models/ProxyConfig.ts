@@ -1,5 +1,25 @@
 import mongoose from 'mongoose'
 
+type HealthStatus = 'healthy' | 'unhealthy' | 'unknown'
+
+type UpstreamServer = {
+  url: string
+  health_status?: HealthStatus
+  down?: boolean
+  last_health_check?: Date | null
+}
+
+type ProxyHeader = {
+  name: string
+  value: string
+}
+
+type PathRewrite = {
+  from: string
+  to: string
+  regex?: boolean
+}
+
 const UpstreamServerSchema = new mongoose.Schema({
   url: { type: String, required: true },
   weight: { type: Number, default: 1 },
@@ -117,7 +137,7 @@ ProxyConfigSchema.virtual('full_path').get(function() {
 })
 
 ProxyConfigSchema.virtual('healthy_servers_count').get(function() {
-  return this.upstream_servers.filter((s: any) => s.health_status === 'healthy' && !s.down).length
+  return this.upstream_servers.filter((s: UpstreamServer) => s.health_status === 'healthy' && !s.down).length
 })
 
 ProxyConfigSchema.virtual('total_servers_count').get(function() {
@@ -125,18 +145,18 @@ ProxyConfigSchema.virtual('total_servers_count').get(function() {
 })
 
 // Methods
-ProxyConfigSchema.methods.addUpstreamServer = function(server: any) {
+ProxyConfigSchema.methods.addUpstreamServer = function(server: UpstreamServer) {
   this.upstream_servers.push(server)
   return this.save()
 }
 
 ProxyConfigSchema.methods.removeUpstreamServer = function(url: string) {
-  this.upstream_servers = this.upstream_servers.filter((s: any) => s.url !== url)
+  this.upstream_servers = this.upstream_servers.filter((s: UpstreamServer) => s.url !== url)
   return this.save()
 }
 
 ProxyConfigSchema.methods.updateServerHealth = function(url: string, status: 'healthy' | 'unhealthy' | 'unknown') {
-  const server = this.upstream_servers.find((s: any) => s.url === url)
+  const server = this.upstream_servers.find((s: UpstreamServer) => s.url === url)
   if (server) {
     server.health_status = status
     server.last_health_check = new Date()
@@ -150,7 +170,7 @@ ProxyConfigSchema.methods.addHeader = function(name: string, value: string) {
 }
 
 ProxyConfigSchema.methods.removeHeader = function(name: string) {
-  this.custom_headers = this.custom_headers.filter((h: any) => h.name !== name)
+  this.custom_headers = this.custom_headers.filter((h: ProxyHeader) => h.name !== name)
   return this.save()
 }
 
@@ -160,7 +180,7 @@ ProxyConfigSchema.methods.addPathRewrite = function(from: string, to: string, re
 }
 
 ProxyConfigSchema.methods.removePathRewrite = function(from: string) {
-  this.path_rewrites = this.path_rewrites.filter((r: any) => r.from !== from)
+  this.path_rewrites = this.path_rewrites.filter((r: PathRewrite) => r.from !== from)
   return this.save()
 }
 

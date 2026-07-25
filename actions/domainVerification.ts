@@ -17,6 +17,24 @@ import { validateDomainWithOnlineTld } from '@/lib/domain-validation'
 
 const resolveTxt = promisify(dns.resolveTxt)
 
+function getErrorString(error: unknown, property: 'code' | 'message') {
+  if (typeof error !== 'object' || error === null) {
+    return undefined
+  }
+
+  const value = (error as { code?: unknown; message?: unknown })[property]
+  return typeof value === 'string' ? value : undefined
+}
+
+function isMissingDnsRecordError(error: unknown) {
+  const code = getErrorString(error, 'code')
+  return code === 'ENOTFOUND' || code === 'ENODATA'
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return getErrorString(error, 'message') || fallback
+}
+
 /**
  * Generate a unique verification token for domain ownership verification
  */
@@ -104,9 +122,9 @@ export async function generateDomainVerification(
       recordName: '_netgoat-verify',
       recordType: 'TXT'
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Domain verification generation error:', error)
-    throw new Error(error.message || 'Failed to generate domain verification')
+    throw new Error(getErrorMessage(error, 'Failed to generate domain verification'))
   }
 }
 
@@ -203,9 +221,9 @@ export async function verifyDomainOwnership(
       domain: normalizedDomain,
       message: 'Domain ownership verified successfully'
     }
-  } catch (error: any) {
+  } catch (error) {
     // DNS lookup failed - record doesn't exist yet
-    if (error.code === 'ENOTFOUND' || error.code === 'ENODATA') {
+    if (isMissingDnsRecordError(error)) {
       return {
         success: false,
         verified: false,
@@ -216,7 +234,7 @@ export async function verifyDomainOwnership(
 
     // Other errors
     console.error('Domain verification error:', error)
-    throw new Error(error.message || 'Failed to verify domain ownership')
+    throw new Error(getErrorMessage(error, 'Failed to verify domain ownership'))
   }
 }
 
@@ -240,11 +258,11 @@ export async function checkDNSPropagation(domain: string) {
       propagated: true,
       records: records.flat()
     }
-  } catch (error: any) {
+  } catch (error) {
     return {
       success: true,
       propagated: false,
-      error: error.code || 'UNKNOWN'
+      error: getErrorString(error, 'code') || 'UNKNOWN'
     }
   }
 }
@@ -368,9 +386,9 @@ export async function verifyDomain(teamSlug: string, domainName: string) {
           domain: JSON.parse(JSON.stringify(domain.toObject()))
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       // DNS lookup failed
-      if (error.code === 'ENOTFOUND' || error.code === 'ENODATA') {
+      if (isMissingDnsRecordError(error)) {
         // Set next check for 30 minutes from now
         const nextCheck = new Date()
         nextCheck.setMinutes(nextCheck.getMinutes() + 30)
@@ -389,8 +407,8 @@ export async function verifyDomain(teamSlug: string, domainName: string) {
 
       throw error
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Domain verification error:', error)
-    throw new Error(error.message || 'Failed to verify domain')
+    throw new Error(getErrorMessage(error, 'Failed to verify domain'))
   }
 }

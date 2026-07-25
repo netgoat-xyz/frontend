@@ -15,6 +15,18 @@ type AnalyticsPayload = {
   metricRating?: string;
 };
 
+type PagePerformanceMetric = {
+  name: string;
+  value: number;
+};
+
+type PagePerformanceMetrics = {
+  LCP: number;
+  FID: number;
+  CLS: number;
+  [metricName: string]: number;
+};
+
 export async function trackAnalytics(data: AnalyticsPayload) {
   try {
     await dbConnect();
@@ -58,7 +70,7 @@ export async function getDashboardStats(
   await checkAdmin();
 
   const now = new Date();
-  let startDate = new Date();
+  const startDate = new Date();
 
   if (timeRange === "24h") startDate.setHours(now.getHours() - 24);
   if (timeRange === "7d") startDate.setDate(now.getDate() - 7);
@@ -173,10 +185,10 @@ export async function getDashboardStats(
     bounceRate: Math.round(bounceRate),
     pagesPerformance: pagesPerformance.map((p) => ({
       path: p._id,
-      metrics: p.metrics.reduce((acc: any, m: any) => {
+      metrics: (p.metrics as PagePerformanceMetric[]).reduce((acc: PagePerformanceMetrics, m) => {
         acc[m.name] = Math.round(m.value * 100) / 100; // Round to 2 decimals
         return acc;
-      }, {}),
+      }, {} as PagePerformanceMetrics),
     })),
   };
 }

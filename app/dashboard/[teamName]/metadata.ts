@@ -1,12 +1,29 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-type Params = Promise<{
+export type TeamMetadataParams = Promise<{
   teamName: string;
   section?: string[];
 }>;
 
-export async function generateTeamMetadata(params: Params, pageOverride?: string): Promise<Metadata> {
+const dashboardPageKeys = [
+  "overview",
+  "integrations",
+  "settings",
+  "activity",
+  "domains",
+  "dns",
+  "waf",
+  "new",
+] as const;
+
+type DashboardPageKey = (typeof dashboardPageKeys)[number];
+
+function isDashboardPageKey(value: string): value is DashboardPageKey {
+  return (dashboardPageKeys as readonly string[]).includes(value);
+}
+
+export async function generateTeamMetadata(params: TeamMetadataParams, pageOverride?: string): Promise<Metadata> {
   const resolvedParams = await params;
   const { teamName, section } = resolvedParams;
   const t = await getTranslations("DashboardMeta");
@@ -26,12 +43,17 @@ export async function generateTeamMetadata(params: Params, pageOverride?: string
       .replace(/-/g, " ")
       .replace(/\b\w/g, (c) => c.toUpperCase());
 
-  let pageTitle = toTitleCase(rawPage);
-  try {
-    pageTitle = t(`pages.${rawPage}` as any);
-  } catch {
-    pageTitle = toTitleCase(rawPage);
-  }
+  const pageTitles: Record<DashboardPageKey, string> = {
+    overview: t("pages.overview"),
+    integrations: t("pages.integrations"),
+    settings: t("pages.settings"),
+    activity: t("pages.activity"),
+    domains: t("pages.domains"),
+    dns: t("pages.dns"),
+    waf: t("pages.waf"),
+    new: t("pages.new"),
+  };
+  const pageTitle = isDashboardPageKey(rawPage) ? pageTitles[rawPage] : toTitleCase(rawPage);
 
   return {
     title: t("titleTemplate", { team, page: pageTitle }),
@@ -42,6 +64,6 @@ export async function generateTeamMetadata(params: Params, pageOverride?: string
   };
 }
 
-export default async function generateMetadata({ params }: { params: Params }) {
+export default async function generateMetadata({ params }: { params: TeamMetadataParams }) {
   return generateTeamMetadata(params);
 }

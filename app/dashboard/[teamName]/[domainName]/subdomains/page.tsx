@@ -9,6 +9,14 @@ type Props = {
   } | Promise<{ teamName: string, domainName: string }>
 }
 
+type Subdomain = {
+  subdomain: string
+  full_domain: string
+  target_url: string
+  request_count?: number
+  active: boolean
+}
+
 const SubdomainsPage = async ({ params }: Props) => {
   const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
   const t = await getTranslations("DashboardPages.subdomains")
@@ -22,7 +30,7 @@ const SubdomainsPage = async ({ params }: Props) => {
     )
   }
 
-  const subdomains = domain.subdomains || [];
+  const subdomains: Subdomain[] = domain.subdomains || [];
 
   return (
     <div className="space-y-6 min-h-svh">
@@ -40,7 +48,7 @@ const SubdomainsPage = async ({ params }: Props) => {
         
         {subdomains.length > 0 ? (
           <div className="space-y-4">
-            {subdomains.map((sub: any) => (
+            {subdomains.map((sub) => (
               <div key={sub.subdomain} className="flex justify-between items-center p-4 border border-neutral-100 dark:border-neutral-800 rounded-lg">
                 <div>
                   <div className="font-medium text-sm">{sub.full_domain}</div>

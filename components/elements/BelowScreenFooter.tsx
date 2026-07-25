@@ -2,7 +2,6 @@
 
 import {
   GitCommit,
-  Github,
   ArrowUpCircle,
   CheckCircle2,
   ChevronUp,
@@ -24,6 +23,10 @@ const languages: Record<string, string> = {
   jp: "日本語",
 };
 
+function persistLocale(locale: string) {
+  document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000`;
+}
+
 export default function BelowScreenFooter() {
   const locale = useLocale();
   const serverCommit = process.env.NEXT_PUBLIC_COMMIT_HASH || "dev";
@@ -33,7 +36,7 @@ export default function BelowScreenFooter() {
   const langTriggerRef = useRef<HTMLButtonElement>(null);
 
   const handleLanguageChange = (newLocale: string) => {
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`; // 1 year
+    persistLocale(newLocale);
     window.location.reload();
   };
 
@@ -55,13 +58,13 @@ export default function BelowScreenFooter() {
     <footer className="relative bottom-0 mt-[10svh] w-full z-20 max-w-full py-10 px-4 sm:px-6 lg:px-8 mx-auto bg-neutral-900/85 filter backdrop-blur border-t border-neutral-800/95">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-10">
         <div className="col-span-full hidden lg:col-span-1 lg:block">
-          <a
+          <Link
             className="flex-none font-semibold text-xl text-neutral-200 focus:outline-hidden focus:opacity-80"
             href="/"
             aria-label="Netgoat"
           >
             Netgoat
-          </a>
+          </Link>
           <p
             className="mt-3 text-xs sm:text-sm text-neutral-300/85"
             suppressHydrationWarning
@@ -101,20 +104,20 @@ export default function BelowScreenFooter() {
             </p>
             */}
             <p>
-              <a
+              <Link
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="/changelog"
               >
                 Changelog
-              </a>
+              </Link>
             </p>
             <p>
-              <a
+              <Link
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="/docs"
               >
                 Docs
-              </a>
+              </Link>
             </p>
           </div>
         </div>
@@ -126,37 +129,37 @@ export default function BelowScreenFooter() {
 
           <div className="mt-3 grid space-y-3 text-sm">
             <p>
-              <a
+              <Link
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="/about"
               >
                 About us
-              </a>
+              </Link>
             </p>
             <p>
-              <a
+              <Link
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="/blog"
               >
                 Blog
-              </a>
+              </Link>
             </p>
             <p>
-              <a
+              <Link
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="/contributing"
               >
                 Contributing
-              </a>
-              <span className="inline text-blue-500">— We're Searching!</span>
+              </Link>
+              <span className="inline text-blue-500">— We&apos;re Searching!</span>
             </p>
             <p>
-              <a
+              <Link
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="/blogs"
               >
                 Blogs
-              </a>
+              </Link>
             </p>
           </div>
         </div>
@@ -185,12 +188,12 @@ export default function BelowScreenFooter() {
               </a>
             </p>
             <p>
-              <a
+              <Link
                 className="inline-flex gap-x-2 text-gray-600 dark:text-neutral-300 hover:text-gray-800 dark:hover:text-neutral-200 focus:outline-hidden focus:text-gray-800 dark:focus:text-neutral-200"
                 href="/whats-new"
               >
-                What's New
-              </a>
+                What&apos;s New
+              </Link>
             </p>
             <p>
               <a
@@ -292,13 +295,13 @@ export default function BelowScreenFooter() {
 
           <div className="flex flex-wrap justify-between items-center gap-3">
             <div className="mt-3 sm:hidden">
-              <a
+              <Link
                 className="flex-none font-semibold text-xl text-gray-800 dark:text-neutral-200 focus:outline-hidden focus:opacity-80"
                 href="/"
                 aria-label="Netgoat"
               >
                 Netgoat
-              </a>
+              </Link>
               <p className="mt-1 text-xs sm:text-sm text-gray-600 dark:text-neutral-300">
                 © {new Date().getFullYear()} The NetgoatOSS Foundation.
               </p>

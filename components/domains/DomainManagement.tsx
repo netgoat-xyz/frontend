@@ -13,6 +13,20 @@ import {
 } from '@/lib/domain-validation'
 import { toast } from 'sonner'
 
+interface DomainSubdomain {
+  subdomain: string
+  full_domain: string
+  target_url: string
+  request_count: number
+}
+
+interface DomainWAFRule {
+  name: string
+  expression: string
+  action: string
+  priority: number
+}
+
 interface Domain {
   _id: string
   domain: string
@@ -20,14 +34,18 @@ interface Domain {
   ssl_enabled: boolean
   verified: boolean
   active: boolean
-  subdomains: any[]
-  waf_rules: any[]
+  subdomains: DomainSubdomain[]
+  waf_rules: DomainWAFRule[]
   stats: {
     total_requests: number
     total_blocked: number
     bandwidth_used: number
   }
   created_at: Date
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'An unexpected error occurred'
 }
 
 export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
@@ -40,9 +58,9 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
     try {
       setLoading(true)
       const result = await listDomains(teamSlug)
-      setDomains(result as any)
-    } catch (error: any) {
-      toast.error(error.message)
+      setDomains(Array.isArray(result) ? (result as Domain[]) : [])
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error))
     } finally {
       setLoading(false)
     }
@@ -72,8 +90,8 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
       toast.success('Domain created! Agents will receive update automatically.')
       setNewDomain({ domain: '', target_url: '' })
       await loadDomains()
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error))
     } finally {
       setLoading(false)
     }
@@ -100,8 +118,8 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
       }, teamSlug)
       toast.success(`Subdomain ${sanitizedSubdomain}.${domain} created!`)
       await loadDomains()
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error))
     } finally {
       setLoading(false)
     }
@@ -124,8 +142,8 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
       }, teamSlug)
       toast.success('WAF rule added! Agents will enforce it immediately.')
       await loadDomains()
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error))
     } finally {
       setLoading(false)
     }
@@ -227,7 +245,7 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
                 </div>
                 {domain.subdomains?.length > 0 && (
                   <div className="space-y-2">
-                    {domain.subdomains.map((sub: any) => (
+                    {domain.subdomains.map((sub) => (
                       <div
                         key={sub.subdomain}
                         className="flex justify-between items-center p-2 bg-muted rounded"
@@ -259,7 +277,7 @@ export function DomainManagement({ teamSlug = '@me' }: { teamSlug?: string }) {
                 </div>
                 {domain.waf_rules?.length > 0 && (
                   <div className="space-y-2">
-                    {domain.waf_rules.map((rule: any) => (
+                    {domain.waf_rules.map((rule) => (
                       <div
                         key={rule.name}
                         className="flex justify-between items-center p-2 bg-muted rounded"

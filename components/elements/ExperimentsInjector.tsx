@@ -11,18 +11,32 @@ import { Bug, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+type ExperimentFlag = {
+  key: string;
+  description?: string;
+  variants?: string[];
+  isActive?: boolean;
+  percentage?: number;
+};
+
+declare global {
+  interface Window {
+    giveMeAllTheBugs?: () => Promise<void>;
+  }
+}
+
 export default function ExperimentsInjector() {
   const [showUI, setShowUI] = useState(false);
   const [open, setOpen] = useState(false);
-  const [availableFlags, setAvailableFlags] = useState<any[]>([]);
+  const [availableFlags, setAvailableFlags] = useState<ExperimentFlag[]>([]);
   const [userFlags, setUserFlags] = useState<Record<string, boolean | string>>({});
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isDev = localStorage.getItem("netgoat_experiments_ui") === "true";
-      setShowUI(isDev);
+      const showUITimer = window.setTimeout(() => setShowUI(isDev), 0);
 
-      (window as any).giveMeAllTheBugs = async () => {
+      window.giveMeAllTheBugs = async () => {
         if (process.env.NODE_ENV === 'development') console.log("🐛 Enabling Experiment UI...");
         localStorage.setItem("netgoat_experiments_ui", "true");
         setShowUI(true);
@@ -34,6 +48,11 @@ export default function ExperimentsInjector() {
         } catch (e) {
           console.error("❌ Failed to enable experiments. Are you logged in?", e);
         }
+      };
+
+      return () => {
+        window.clearTimeout(showUITimer);
+        delete window.giveMeAllTheBugs;
       };
     }
   }, []);
@@ -58,7 +77,7 @@ export default function ExperimentsInjector() {
     try {
         await setExperimentValue(key, value === false ? "false" : value.toString());
         toast.success(`Updated ${key}`);
-    } catch (e) {
+    } catch {
         toast.error("Failed to update experiment");
     }
   };
@@ -84,7 +103,9 @@ export default function ExperimentsInjector() {
                 <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
                     {availableFlags.map((flag) => {
                          const currentValue = userFlags[flag.key] ?? false;
-                         const hasVariants = flag.variants && flag.variants.length > 0;
+                         const variants = flag.variants ?? [];
+                         const percentage = flag.percentage ?? 0;
+                         const hasVariants = variants.length > 0;
                          
                          return (
                              <div key={flag.key} className="flex flex-col gap-2 p-3 border rounded-lg bg-secondary/20">
@@ -103,8 +124,10 @@ export default function ExperimentsInjector() {
                                  
                                  {hasVariants && (
                                      <Select 
-                                         value={currentValue.toString() === "true" ? flag.variants[0] : (currentValue.toString() || "false")} 
-                                         onValueChange={(v) => handleUpdate(flag.key, v)}
+                                         value={currentValue.toString() === "true" ? (variants[0] ?? "true") : (currentValue.toString() || "false")}
+                                         onValueChange={(value) => {
+                                           if (value !== null) void handleUpdate(flag.key, value);
+                                         }}
                                      >
                                          <SelectTrigger>
                                              <SelectValue placeholder="Select variant" />
@@ -112,7 +135,7 @@ export default function ExperimentsInjector() {
                                          <SelectContent>
                                              <SelectItem value="false">No (Disabled)</SelectItem>
                                              <SelectItem value="true">Yes (Default)</SelectItem>
-                                             {flag.variants.map((v: string) => (
+                                             {variants.map((v) => (
                                                  <SelectItem key={v} value={v}>Variant: {v}</SelectItem>
                                              ))}
                                          </SelectContent>
@@ -121,7 +144,7 @@ export default function ExperimentsInjector() {
                                  
                                  <div className="flex gap-2 mt-1">
                                     {flag.isActive && <span className="text-[10px] px-1.5 py-0.5 bg-green-500/10 text-green-500 rounded border border-green-500/20">Globally Active</span>}
-                                    {flag.percentage > 0 && <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/10 text-blue-500 rounded border border-blue-500/20">{flag.percentage}% Rollout</span>}
+                                    {percentage > 0 && <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/10 text-blue-500 rounded border border-blue-500/20">{percentage}% Rollout</span>}
                                  </div>
                              </div>
                          )
