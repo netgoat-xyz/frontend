@@ -9,6 +9,11 @@ import { headers } from "next/headers";
 import os from "os";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { getRuntimeLogs } from "@/lib/runtime-logs";
+import {
+  normalizeDynamicRulesConfig,
+  validateDynamicRulesConfig,
+  type DynamicRulesConfig,
+} from "@/lib/agent-config";
 
 function serialize<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
@@ -93,6 +98,31 @@ export async function updateGlobalSettings(newSettings: any) {
   revalidateTag("public-settings");
 
   return serialize(settings);
+}
+
+/**
+ * Updates only the dynamic-rule portion of the agent snapshot. This avoids
+ * overwriting the cache, queue, metrics, or model settings managed elsewhere.
+ */
+export async function updateAgentDynamicRules(dynamicRules: unknown): Promise<DynamicRulesConfig> {
+  await checkAdmin();
+
+  const validationErrors = validateDynamicRulesConfig(dynamicRules);
+  if (validationErrors.length > 0) {
+    throw new Error(validationErrors.join(" "));
+  }
+
+  const normalized = normalizeDynamicRulesConfig(dynamicRules);
+  await dbConnect();
+
+  await Settings.findOneAndUpdate(
+    { key: { $exists: false } },
+    { $set: { "agentConfig.dynamic_rules": normalized } },
+    { new: true, upsert: true, setDefaultsOnInsert: true },
+  ).lean();
+
+  revalidateTag("public-settings");
+  return normalized;
 }
 
 export async function getUsers(page = 1, limit = 10, search = "") {

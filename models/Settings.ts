@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const SettingsSchema = new mongoose.Schema({
+  // Kept for compatibility with legacy key/value settings documents. Agent
+  // configuration belongs only on the unkeyed global settings document.
+  key: { type: String },
+  value: { type: mongoose.Schema.Types.Mixed },
+
   siteName: { type: String, default: "NetGoat" },
   registrationEnabled: { type: Boolean, default: true },
   maintenanceMode: { type: Boolean, default: false },
@@ -19,11 +24,16 @@ const SettingsSchema = new mongoose.Schema({
 
   globalBannerEnabled: { type: Boolean, default: false },
   globalBannerText: { type: String, default: "" },
-  globalBannerVariant: { 
-    type: String, 
-    default: "info", 
-    enum: ["info", "warning", "error", "success", "announcement", "marketing", "rainbow", "midnight"] 
+  globalBannerVariant: {
+    type: String,
+    default: "info",
+    enum: ["info", "warning", "error", "success", "announcement", "marketing", "rainbow", "midnight"]
   },
+
+  // Published by the stream server to edge agents. Keep this as a mixed
+  // document so newly added, non-secret agent settings survive dashboard
+  // updates while targeted editor actions can update nested fields safely.
+  agentConfig: { type: mongoose.Schema.Types.Mixed, default: () => ({}) },
 
   featureFlags: [{
     key: String,

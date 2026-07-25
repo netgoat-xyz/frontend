@@ -6,6 +6,7 @@ import {
   Zap,
   Lock,
   AlertTriangle,
+  Code2,
   Loader2,
   Megaphone,
   Settings,
@@ -22,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BANNER_VARIANTS } from "@/lib/banner-variants";
 import { cn } from "@/lib/utils";
+import { DynamicRulesSettings } from "@/components/interface/admin/DynamicRulesSettings";
 
 interface AdminSettingsFormProps {
   initialSettings: any;
@@ -68,6 +70,9 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
           </TabsTrigger>
           <TabsTrigger value="features">
             <Zap className="mr-2 h-4 w-4" /> Features & Limits
+          </TabsTrigger>
+          <TabsTrigger value="edge-rules">
+            <Code2 className="mr-2 h-4 w-4" /> Edge Rules
           </TabsTrigger>
           <TabsTrigger value="integrations">
             <Globe className="mr-2 h-4 w-4" /> Integrations
@@ -189,6 +194,11 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* EDGE RULES TAB */}
+          <TabsContent value="edge-rules" className="space-y-4">
+            <DynamicRulesSettings initialValue={settings.agentConfig?.dynamic_rules} />
           </TabsContent>
 
           {/* INTEGRATIONS TAB */}
