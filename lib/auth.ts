@@ -54,6 +54,17 @@ if (!resendApiKey) {
 const resend = new Resend(resendApiKey);
 const emailFrom = process.env.EMAIL_FROM ?? "noreply@netgoat.xyz";
 const appName = "Netgoat";
+const localDevPort = process.env.PORT ?? "3000";
+const trustedOrigins = Array.from(
+  new Set(
+    [
+      process.env.NEXT_PUBLIC_SITE_URL,
+      process.env.BETTER_AUTH_URL,
+      `http://localhost:${localDevPort}`,
+      `http://127.0.0.1:${localDevPort}`,
+    ].filter((value): value is string => Boolean(value)),
+  ),
+);
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
@@ -61,7 +72,7 @@ export const auth = betterAuth({
   experimental: {
     joins: true,
   },
-  trustedOrigins: [process.env.NEXT_PUBLIC_SITE_URL as string],
+  trustedOrigins,
   logger: {
     level: process.env.NODE_ENV === "development" ? "warn" : "error",
   },

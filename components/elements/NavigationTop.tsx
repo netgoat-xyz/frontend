@@ -21,6 +21,11 @@ import {
   Shield,
   Users,
   FileText,
+  Boxes,
+  Code2,
+  PackageCheck,
+  ShieldCheck,
+  BookOpen,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import useLastTeamName from "@/hooks/lastTeam";
@@ -87,10 +92,15 @@ export default function NavigationTop() {
   const isDashboard = segments[0] === "dashboard";
   const isAccount = segments[0] === "account";
   const isAdmin = segments[0] === "admin";
+  const isDevelopers = segments[0] === "developers";
 
   const isGlobalTeamsPath = isDashboard && segments[1] === "teams";
-
-  const teamName = isGlobalTeamsPath ? segments[2] : segments[1];
+  const globalTeamsSubview = isGlobalTeamsPath ? segments[2] ?? null : null;
+  const teamName = isGlobalTeamsPath
+    ? globalTeamsSubview && globalTeamsSubview !== "new"
+      ? globalTeamsSubview
+      : null
+    : segments[1];
 
   // Fetch team data when teamName changes
   useEffect(() => {
@@ -132,15 +142,28 @@ export default function NavigationTop() {
       : null;
 
   const teamPath = isGlobalTeamsPath
-    ? `/dashboard/teams/${teamName}`
-    : `/dashboard/${teamName}`;
+    ? "/dashboard/teams"
+    : teamName
+      ? `/dashboard/${teamName}`
+      : null;
 
   const projectPath = domainName
     ? `/dashboard/${teamName}/${domainName}`
     : null;
 
+  const developerTabs: NavigationTab[] = [
+    { title: "Overview", href: "/developers/overview", icon: LayoutDashboard },
+    { title: "Catalog", href: "/developers/catalog", icon: Boxes },
+    { title: "My Plugins", href: "/developers/plugins", icon: Code2 },
+    { title: "Team Installs", href: "/developers/installations", icon: PackageCheck },
+    { title: "Publisher", href: "/developers/publisher", icon: ShieldCheck },
+    { title: "Docs", href: "/developers/docs", icon: BookOpen },
+  ];
+
   const tabs = useMemo<NavigationTab[]>(() => {
-    if (isAccount) {
+    if (isDevelopers) {
+      return developerTabs;
+    } else if (isAccount) {
       return [
         { title: "Overview", href: "/account", icon: Home },
         { title: "Activity", href: "/account/activity", icon: Activity },
@@ -197,12 +220,17 @@ export default function NavigationTop() {
           ? pathname === tab.href
           : pathname.startsWith(tab.href);
       }
-      if (tab.href === teamPath || tab.href === projectPath) {
+      if (isDevelopers) {
+        return tab.href === "/developers/overview"
+          ? pathname === tab.href || pathname === "/developers"
+          : pathname.startsWith(tab.href);
+      }
+      if ((teamPath && tab.href === teamPath) || (projectPath && tab.href === projectPath)) {
         return pathname === tab.href;
       }
       return pathname.startsWith(tab.href);
     }) || tabs[0]
-  , [tabs, pathname, isAccount, isAdmin, teamPath, projectPath]);
+  , [tabs, pathname, isAccount, isAdmin, isDevelopers, teamPath, projectPath]);
 
   const activeTitle = activeTab?.title || "Overview";
   const teamPlanBadge = useMemo(() => {
@@ -215,7 +243,7 @@ export default function NavigationTop() {
       <nav className="sticky top-0 z-50 w-full flex-none flex flex-col">
         <div className="bg-neutral-900 border-b border-neutral-800 w-full h-16 px-4 md:px-6 flex items-center justify-between min-w-0">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <Link href="/dashboard" aria-label="Home">
+            <Link href={isDevelopers ? "/developers" : "/dashboard"} aria-label="Home">
               <Image
                 src="/branding/netgoat_ico.png"
                 alt="Logo"
@@ -228,6 +256,16 @@ export default function NavigationTop() {
             <SlashSeparator />
 
             <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+              {isDevelopers && (
+                <>
+                  <span className="text-sm font-medium text-neutral-200">Developers</span>
+                  <SlashSeparator />
+                  <span className="text-sm font-medium text-neutral-400 truncate">
+                    {activeTitle}
+                  </span>
+                </>
+              )}
+
               {isAccount && (
                 <>
                   My Account
@@ -242,7 +280,7 @@ export default function NavigationTop() {
                 </>
               )}
 
-              {!isAccount && !isAdmin && isGlobalTeamsPath && (
+              {!isAccount && !isAdmin && !isDevelopers && isGlobalTeamsPath && (
                 <>
                   <Link
                     className="text-sm font-medium text-neutral-400 hover:text-neutral-300 transition-all"
@@ -250,11 +288,18 @@ export default function NavigationTop() {
                   >
                     Teams
                   </Link>
-                  {teamName && <SlashSeparator />}
+                  {globalTeamsSubview && <SlashSeparator />}
+                  {globalTeamsSubview && (
+                    <span className="text-sm font-medium text-neutral-200">
+                      {globalTeamsSubview === "new"
+                        ? "New Team"
+                        : decodeURIComponent(globalTeamsSubview)}
+                    </span>
+                  )}
                 </>
               )}
 
-              {!isAccount && !isAdmin && teamName && (
+              {!isAccount && !isAdmin && !isDevelopers && teamName && (
                 <div className="flex items-center gap-2">
                   {loadingTeam ? (
                     <>
@@ -282,7 +327,7 @@ export default function NavigationTop() {
                 </div>
               )}
 
-              {!isAccount && !isAdmin && domainName && (
+              {!isAccount && !isAdmin && !isDevelopers && domainName && (
                 <>
                   <SlashSeparator />
                   <span className="text-sm font-medium truncate max-w-28 sm:max-w-44">
@@ -291,8 +336,8 @@ export default function NavigationTop() {
                 </>
               )}
 
-              {!isAccount && !isAdmin && teamName && <SlashSeparator />}
-              {!isAccount && !isAdmin && activeTitle !== "Teams" && (
+              {!isAccount && !isAdmin && !isDevelopers && teamName && <SlashSeparator />}
+              {!isAccount && !isAdmin && !isDevelopers && activeTitle !== "Teams" && (
                 <span className="hidden sm:inline text-sm font-medium text-neutral-400 truncate">
                   {activeTitle}
                 </span>
@@ -333,13 +378,17 @@ export default function NavigationTop() {
         <div className="bg-neutral-900 border-b border-neutral-800 w-full px-4 md:px-6 overflow-x-auto no-scrollbar">
           <div className="h-12 flex items-center gap-6 text-sm text-neutral-400 relative">
             {tabs.map((tab) => {
-              const isActive = isAccount
-                ? tab.href === "/account"
-                  ? pathname === tab.href
+              const isActive = isDevelopers
+                ? tab.href === "/developers/overview"
+                  ? pathname === tab.href || pathname === "/developers"
                   : pathname.startsWith(tab.href)
-                : tab.href === teamPath || tab.href === projectPath
-                  ? pathname === tab.href
-                  : pathname.startsWith(tab.href);
+                : isAccount
+                  ? tab.href === "/account"
+                    ? pathname === tab.href
+                    : pathname.startsWith(tab.href)
+                  : (teamPath && tab.href === teamPath) || (projectPath && tab.href === projectPath)
+                    ? pathname === tab.href
+                    : pathname.startsWith(tab.href);
 
               const Icon = tab.icon;
 

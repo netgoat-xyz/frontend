@@ -8,6 +8,7 @@ import User from '@/models/User'
 import { revalidatePath } from 'next/cache'
 import mongoose from 'mongoose'
 import { sendTeamInviteEmail } from '@/lib/email'
+import { validateTeamSlug } from '@/lib/team-slug'
 import type {
   ITeam,
   ITeamAccessGroup,
@@ -266,17 +267,27 @@ export async function createTeam(data: {
 
   await connectDB()
 
+  const normalizedName = String(data.name || '').trim().slice(0, 80)
+  if (!normalizedName) {
+    throw new Error('Team name is required')
+  }
+
+  const slugValidation = validateTeamSlug(data.slug)
+  if (!slugValidation.valid) {
+    throw new Error(slugValidation.message || 'Team slug is invalid')
+  }
+
   // Check if slug is available
-  const existing = await Team.findOne({ slug: data.slug })
+  const existing = await Team.findOne({ slug: slugValidation.sanitized })
   if (existing) {
     throw new Error('Team slug already taken')
   }
 
   // Create team with user as owner
   const team = await Team.create({
-    name: data.name,
-    slug: data.slug,
-    description: data.description,
+    name: normalizedName,
+    slug: slugValidation.sanitized,
+    description: String(data.description || '').trim().slice(0, 200) || undefined,
     members: [{
       user_id: userObjectId,
       role: 'owner',
@@ -286,7 +297,7 @@ export async function createTeam(data: {
   })
 
   revalidatePath('/dashboard')
-  return { success: true, team: team.toObject() }
+  return { success: true, team: JSON.parse(JSON.stringify(team.toObject())) }
 }
 
 /**
@@ -466,7 +477,7 @@ export async function updateTeam(
   await team.save()
 
   revalidatePath('/dashboard')
-  return { success: true, team: team.toObject() }
+  return { success: true, team: JSON.parse(JSON.stringify(team.toObject())) }
 }
 
 export async function createAccessGroup(

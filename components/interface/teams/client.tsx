@@ -2,6 +2,7 @@
 
 import TeamRow from "@/components/elements/TeamRow";
 import { PlusIcon } from "@heroicons/react/16/solid";
+import Link from "next/link";
 
 export default function TeamsOverview({ teams }: { teams: Team[] }) {
   return (
@@ -13,15 +14,13 @@ export default function TeamsOverview({ teams }: { teams: Team[] }) {
             Switch between teams or manage your organization settings.
           </p>
         </div>
-        <button
-          disabled
-          aria-disabled="true"
-          title="Team creation is temporarily disabled"
-          className="flex items-center gap-2 bg-neutral-700 text-neutral-300 px-4 py-2 rounded-md font-medium text-sm cursor-not-allowed opacity-70"
+        <Link
+          href="/dashboard/teams/new"
+          className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-md font-medium text-sm hover:bg-neutral-200 transition-all"
         >
           <PlusIcon className="size-4 stroke-3" />
           Create Team
-        </button>
+        </Link>
       </div>
 
       <div className="space-y-3">

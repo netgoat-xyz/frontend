@@ -1,452 +1,483 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 import { toast } from "sonner";
 import {
   ArrowLeft,
-  Copy,
-  Check,
-  Loader2, ShieldCheck,
-  Globe,
   ArrowRight,
+  Check,
+  Copy,
+  Globe,
   Info,
+  Loader2,
+  Lock,
+  ShieldCheck,
 } from "lucide-react";
-import Link from "next/link";
+import { getTeam } from "@/actions/teams";
+import { createDomainForTeam } from "@/actions/teamDomains";
 import {
   generateDomainVerification,
   verifyDomainOwnership,
 } from "@/actions/domainVerification";
-import { getTeam } from "@/actions/teams";
-import { createDomainForTeam } from "@/actions/teamDomains";
 import { sanitizeDomainInput, validateDomainSyntax } from "@/lib/domain-validation";
+import { validateOriginUrl } from "@/lib/origin-url";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
 
 type TeamSummary = {
-  name?: string
-}
+  name?: string;
+};
+
+type VerificationMode = "dns" | "local";
 
 export default function NewDomainPage() {
-  const t = useTranslations("DashboardPages.newDomain");
   const params = useParams();
   const router = useRouter();
   const teamSlug = params.teamName as string;
-  
+
   const [teamData, setTeamData] = useState<TeamSummary | null>(null);
   const [loadingTeam, setLoadingTeam] = useState(true);
-
   const [step, setStep] = useState<"input" | "verify">("input");
   const [domain, setDomain] = useState("");
+  const [originUrl, setOriginUrl] = useState("");
+  const [autoSsl, setAutoSsl] = useState(true);
   const [verificationToken, setVerificationToken] = useState("");
-  const [verifying, setVerifying] = useState(false);
-  const [verified, setVerified] = useState(false);
+  const [verificationMode, setVerificationMode] = useState<VerificationMode>("dns");
+  const [submitting, setSubmitting] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   useEffect(() => {
-    if (teamSlug) {
-      getTeam(teamSlug)
-        .then((data) => {
-          if (typeof data === "object" && data !== null && "name" in data && typeof data.name === "string") {
-            setTeamData({ name: data.name });
-            return;
-          }
+    if (!teamSlug) return;
 
-          setTeamData(null);
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoadingTeam(false));
-    }
+    getTeam(teamSlug)
+      .then((data) => {
+        if (typeof data === "object" && data !== null && "name" in data && typeof data.name === "string") {
+          setTeamData({ name: data.name });
+          return;
+        }
+
+        setTeamData(null);
+      })
+      .catch((error) => {
+        console.error(error);
+        setTeamData(null);
+      })
+      .finally(() => setLoadingTeam(false));
   }, [teamSlug]);
 
-  const handleNextToVerify = async () => {
-    if (!domain) {
-      toast.error(t("errors.enterDomain"));
-      return;
-    }
+  const teamLabel = useMemo(() => {
+    return loadingTeam ? "Project" : teamData?.name || "Project";
+  }, [loadingTeam, teamData?.name]);
 
+  const handleNext = async () => {
     const domainValidation = validateDomainSyntax(domain);
+    const originValidation = validateOriginUrl(originUrl);
+
     if (!domainValidation.valid) {
-      toast.error(t("errors.invalidDomain"));
+      toast.error(domainValidation.message || "Enter a valid domain.");
       return;
     }
 
-    const sanitizedDomain = domainValidation.sanitized;
-    if (sanitizedDomain !== domain) {
-      setDomain(sanitizedDomain);
+    if (!originValidation.valid) {
+      toast.error(originValidation.message || "Enter a valid origin URL.");
+      return;
     }
+
+    setDomain(domainValidation.sanitized);
+    setOriginUrl(originValidation.normalized);
 
     try {
-      setVerifying(true);
-      // Generate verification token securely on the server
-      const result = await generateDomainVerification(teamSlug, sanitizedDomain);
-      
-      if (result.success && result.token) {
-        setVerificationToken(result.token);
-        setStep("verify");
-      } else {
-        throw new Error(t("errors.tokenFailed"));
+      setSubmitting(true);
+      const result = await generateDomainVerification(teamSlug, domainValidation.sanitized);
+      if (!result.success || !result.token) {
+        throw new Error("Failed to prepare domain verification.");
       }
-    } catch (error: unknown) {
-      toast.error(error instanceof Error ? error.message : t("errors.generic"));
+
+      setVerificationToken(result.token);
+      setVerificationMode(result.verificationMode === "local" ? "local" : "dns");
+      setStep("verify");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to prepare verification.");
     } finally {
-      setVerifying(false);
+      setSubmitting(false);
     }
   };
 
-  const handleVerify = async () => {
+  const handleCreate = async () => {
     const domainValidation = validateDomainSyntax(domain);
+    const originValidation = validateOriginUrl(originUrl);
+
     if (!domainValidation.valid) {
-      toast.error(t("errors.invalidDomain"));
+      toast.error(domainValidation.message || "Enter a valid domain.");
       return;
     }
 
-    const sanitizedDomain = domainValidation.sanitized;
-    if (sanitizedDomain !== domain) {
-      setDomain(sanitizedDomain);
+    if (!originValidation.valid) {
+      toast.error(originValidation.message || "Enter a valid origin URL.");
+      return;
     }
 
-    setVerifying(true);
-
     try {
-      const result = await verifyDomainOwnership(teamSlug, sanitizedDomain, verificationToken);
-      
-      if (result.success && result.verified) {
-        // The server action independently checks the token before persisting
-        // this state. Do not pre-mark the client as verified or enable SSL.
-        await createDomainForTeam(teamSlug, {
-          domain: sanitizedDomain,
-          target_url: "", // Set later by user
-          verification_token: verificationToken,
-        });
+      setSubmitting(true);
+      const verification = await verifyDomainOwnership(
+        teamSlug,
+        domainValidation.sanitized,
+        verificationToken,
+      );
 
-        setVerified(true);
-        toast.success(t("toasts.verified"));
-        toast.success(t("toasts.added"));
-        router.push(`/dashboard/${teamSlug}/${sanitizedDomain}`);
-      } else {
-        toast.error(t("errors.verifyFailed"));
+      if (!verification.success || !verification.verified) {
+        toast.error(verification.message || "Verification is still pending.");
+        return;
       }
-    } catch {
-      toast.error(t("errors.propagation"));
+
+      await createDomainForTeam(teamSlug, {
+        domain: domainValidation.sanitized,
+        target_url: originValidation.normalized,
+        auto_ssl: autoSsl,
+        verification_token: verificationToken,
+      });
+
+      if (verificationMode === "local") {
+        toast.success("Local development domain created.");
+        toast.info("Open the SSL page next if you want to install a local certificate.");
+        router.push(`/dashboard/${teamSlug}/${domainValidation.sanitized}/ssl`);
+      } else {
+        toast.success("Domain verified and created.");
+        router.push(`/dashboard/${teamSlug}/${domainValidation.sanitized}`);
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create domain.");
     } finally {
-      setVerifying(false);
+      setSubmitting(false);
     }
   };
 
-  const copyToClipboard = async (text: string, field: string) => {
-    await navigator.clipboard.writeText(text);
+  const copyToClipboard = async (value: string, field: string) => {
+    await navigator.clipboard.writeText(value);
     setCopiedField(field);
-    toast.success(t("toasts.copied"));
-    setTimeout(() => setCopiedField(null), 2000);
+    toast.success("Copied.");
+    setTimeout(() => setCopiedField(null), 1500);
   };
 
-  const steps = [
-    { id: "input", label: t("steps.domain") },
-    { id: "verify", label: t("steps.verify") },
-  ];
+  const verificationActionLabel = verificationMode === "local" ? "Create Domain" : "Verify & Create";
 
   return (
-    <div className="min-h-svh bg-neutral-50/50 dark:bg-neutral-950 py-10 sm:py-12 px-4">
-      <div className="max-w-145 mx-auto space-y-8">
-        {/* Navigation */}
+    <div className="min-h-svh bg-neutral-950 px-4 py-10 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl space-y-8">
         <div>
           <Link
-            href={`/dashboard/${teamSlug}/`}
-            className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors mb-6"
+            href={`/dashboard/${teamSlug}`}
+            className="mb-6 inline-flex items-center text-sm text-neutral-500 transition-colors hover:text-neutral-200"
           >
-            <ArrowLeft className="w-4 h-4 mr-1.5" />
-            {t("backTo", { name: loadingTeam ? t("projectFallback") : teamData?.name || t("projectFallback") })}
+            <ArrowLeft className="mr-1.5 h-4 w-4" />
+            Back to {teamLabel}
           </Link>
-          {loadingTeam ? (
-            <>
-              <Skeleton className="h-8 w-48 mb-2" />
-              <Skeleton className="h-4 w-64" />
-            </>
-          ) : (
-            <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-               {t("title", { teamName: teamData?.name || t("projectFallback") })}
-            </h1>
-          )}
+
+          <h1 className="text-3xl font-semibold tracking-tight text-neutral-50">
+            Add a domain to {teamLabel}
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-neutral-400">
+            Connect a public domain or a local development hostname, point it at an origin, and keep the
+            proxy configuration ready for the agent snapshot.
+          </p>
         </div>
 
-        {/* Minimalist Stepper */}
-        {loadingTeam ? (
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-6 w-24" />
-            <Skeleton className="h-4 w-4 rounded-full" />
-            <Skeleton className="h-6 w-24" />
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            {steps.map((s, i) => (
-              <div key={s.id} className="flex items-center">
-                <div
+        <div className="flex items-center gap-2">
+          {[
+            { id: "input", label: "Configure" },
+            { id: "verify", label: verificationMode === "local" ? "Review" : "Verify" },
+          ].map((item, index) => (
+            <div key={item.id} className="flex items-center">
+              <div
+                className={cn(
+                  "flex items-center text-sm font-medium transition-colors",
+                  step === item.id || (item.id === "input" && step === "verify")
+                    ? "text-neutral-100"
+                    : "text-neutral-500",
+                )}
+              >
+                <span
                   className={cn(
-                    "flex items-center text-sm font-medium transition-colors",
-                    step === s.id
-                      ? "text-neutral-900 dark:text-neutral-50"
-                      : s.id === "input" && step === "verify"
-                      ? "text-neutral-900 dark:text-neutral-50"
-                      : "text-neutral-400 dark:text-neutral-600"
+                    "mr-2 flex h-6 w-6 items-center justify-center rounded-full text-xs",
+                    step === item.id
+                      ? "bg-white text-black"
+                      : item.id === "input" && step === "verify"
+                        ? "bg-emerald-500/10 text-emerald-300"
+                        : "bg-neutral-900 text-neutral-500",
                   )}
                 >
-                  <span
-                    className={cn(
-                      "flex items-center justify-center w-6 h-6 rounded-full mr-2 text-xs",
-                      step === s.id
-                        ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
-                        : s.id === "input" && step === "verify"
-                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                        : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
-                    )}
-                  >
-                    {s.id === "input" && step === "verify" ? (
-                      <Check className="w-3.5 h-3.5" />
-                    ) : (
-                      i + 1
-                    )}
-                  </span>
-                  {s.label}
-                </div>
-                {i < steps.length - 1 && (
-                  <div
-                    className={cn(
-                      "w-8 h-px mx-3",
-                      s.id === "input" && step === "verify"
-                        ? "bg-neutral-200 dark:bg-neutral-800"
-                        : "bg-neutral-200 dark:bg-neutral-800"
-                    )}
-                  />
-                )}
+                  {item.id === "input" && step === "verify" ? <Check className="h-3.5 w-3.5" /> : index + 1}
+                </span>
+                {item.label}
               </div>
-            ))}
-          </div>
-        )}
+              {index === 0 && <div className="mx-3 h-px w-8 bg-neutral-800" />}
+            </div>
+          ))}
+        </div>
 
-        <div className="relative">
-          <div
-            className={cn(
-              "transition-all duration-500 ease-in-out absolute w-full",
-              step === "input"
-                ? "opacity-100 translate-x-0 relative"
-                : "opacity-0 -translate-x-8 pointer-events-none"
-            )}
-          >
-            <Card className="border-neutral-200/60 dark:border-neutral-800/60 shadow-lg shadow-neutral-200/20 dark:shadow-none bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-4 border border-indigo-500/20 shadow-inner">
-                  <Globe className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+        {step === "input" ? (
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+            <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 shadow-2xl shadow-black/20 backdrop-blur-md">
+              <div className="mb-6 flex items-start gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-500/20 bg-sky-500/10">
+                  <Globe className="h-6 w-6 text-sky-300" />
                 </div>
-                <CardTitle className="text-xl">{t("input.title")}</CardTitle>
-                <CardDescription className="text-[15px]">
-                  {t("input.description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none opacity-50 group-focus-within:opacity-100 transition-opacity">
-                      <Globe className="h-4 w-4 text-neutral-500" />
+                <div>
+                  <h2 className="text-lg font-semibold text-neutral-100">Domain routing</h2>
+                  <p className="mt-1 text-sm text-neutral-500">
+                    Choose the hostname users will visit and the upstream origin NetGoat should proxy to first.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                    Domain
+                  </label>
+                  <input
+                    id="domain-name"
+                    aria-label="Domain"
+                    value={domain}
+                    onChange={(event) => setDomain(sanitizeDomainInput(event.target.value))}
+                    placeholder="app.example.com or app.localhost"
+                    className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-100 outline-none transition focus:border-neutral-700 focus:ring-1 focus:ring-neutral-700"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                    Origin URL
+                  </label>
+                  <input
+                    id="origin-url"
+                    aria-label="Origin URL"
+                    value={originUrl}
+                    onChange={(event) => setOriginUrl(event.target.value)}
+                    placeholder="http://127.0.0.1:3000"
+                    className="w-full rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-100 outline-none transition focus:border-neutral-700 focus:ring-1 focus:ring-neutral-700"
+                  />
+                  <p className="mt-2 text-xs text-neutral-500">
+                    The first upstream becomes the primary route target. You can add additional servers later.
+                  </p>
+                </div>
+
+                <label className="flex items-center justify-between rounded-xl border border-neutral-800 bg-neutral-950/40 px-4 py-3">
+                  <div>
+                    <div className="text-sm font-medium text-neutral-200">Request automatic SSL</div>
+                    <div className="text-xs text-neutral-500">
+                      Public domains can request managed certificates. Local domains usually need a manual certificate.
                     </div>
-                    <Input
-                      id="domain"
-                      placeholder={t("input.placeholder")}
-                      value={domain}
-                      onChange={(e) => setDomain(sanitizeDomainInput(e.target.value))}
-                      className="pl-10 h-12 text-base transition-shadow focus-visible:ring-2 focus-visible:ring-indigo-500/20"
-                      autoComplete="off"
-                      autoCorrect="off"
-                      spellCheck="false"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleNextToVerify();
-                        }
-                      }}
-                    />
                   </div>
-                </div>
-              </CardContent>
-              <CardFooter className="pt-2 pb-6">
-                <Button
-                  onClick={handleNextToVerify}
-                  disabled={!domain || verifying}
-                  className="w-full h-11 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-900 transition-all font-medium text-[15px]"
+                  <input
+                    type="checkbox"
+                    checked={autoSsl}
+                    onChange={(event) => setAutoSsl(event.target.checked)}
+                    className="h-4 w-4 accent-white"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-8 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={submitting}
+                  className="inline-flex items-center rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-black transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {verifying ? (
+                  {submitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t("actions.preparing")}
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Preparing
                     </>
                   ) : (
                     <>
-                      {t("actions.continue")}
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      Continue
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </>
                   )}
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
+                </button>
+              </div>
+            </section>
 
-          <div
-            className={cn(
-              "transition-all duration-500 ease-in-out absolute w-full",
-              step === "verify"
-                ? "opacity-100 translate-x-0 relative"
-                : "opacity-0 translate-x-8 pointer-events-none"
+            <aside className="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-5">
+              <h3 className="text-sm font-semibold text-neutral-200">Environment tips</h3>
+              <div className="mt-4 space-y-3 text-sm text-neutral-400">
+                <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 px-4 py-3">
+                  Public domains use DNS TXT verification before they are marked trusted.
+                </div>
+                <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 px-4 py-3">
+                  `localhost`, `.test`, `.local`, and similar reserved development domains skip public DNS checks.
+                </div>
+                <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 px-4 py-3">
+                  You can refine upstream pools, WebSocket support, and health checks after creation.
+                </div>
+              </div>
+            </aside>
+          </div>
+        ) : (
+          <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6 shadow-2xl shadow-black/20 backdrop-blur-md">
+            <div className="mb-6 flex items-start gap-4">
+              <div
+                className={cn(
+                  "flex h-12 w-12 items-center justify-center rounded-2xl border",
+                  verificationMode === "local"
+                    ? "border-emerald-500/20 bg-emerald-500/10"
+                    : "border-amber-500/20 bg-amber-500/10",
+                )}
+              >
+                {verificationMode === "local" ? (
+                  <ShieldCheck className="h-6 w-6 text-emerald-300" />
+                ) : (
+                  <Lock className="h-6 w-6 text-amber-300" />
+                )}
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-neutral-100">
+                  {verificationMode === "local" ? "Review local setup" : "Verify domain ownership"}
+                </h2>
+                <p className="mt-1 text-sm text-neutral-500">
+                  {verificationMode === "local"
+                    ? "This domain matches a reserved local-development suffix, so NetGoat can trust it without waiting on public DNS."
+                    : "Create the TXT record below, wait for propagation, and then verify ownership before the domain is activated."}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <SummaryItem label="Domain" value={domain} />
+              <SummaryItem label="Origin" value={originUrl} mono />
+              <SummaryItem label="Automatic SSL" value={autoSsl ? "Requested" : "Disabled"} />
+            </div>
+
+            {verificationMode === "dns" ? (
+              <div className="mt-6 space-y-4">
+                <div className="rounded-xl border border-neutral-800 bg-neutral-950/50 divide-y divide-neutral-800 overflow-hidden">
+                  <CopyRow
+                    label="Record type"
+                    value="TXT"
+                    field="type"
+                    copiedField={copiedField}
+                    onCopy={copyToClipboard}
+                  />
+                  <CopyRow
+                    label="Host"
+                    value="_netgoat-verify"
+                    field="host"
+                    copiedField={copiedField}
+                    onCopy={copyToClipboard}
+                  />
+                  <CopyRow
+                    label="Value"
+                    value={verificationToken}
+                    field="value"
+                    copiedField={copiedField}
+                    onCopy={copyToClipboard}
+                    mono
+                  />
+                </div>
+
+                <div className="rounded-xl border border-sky-500/15 bg-sky-500/10 px-4 py-3 text-sm text-sky-100">
+                  <div className="flex items-center gap-2 font-medium">
+                    <Info className="h-4 w-4" />
+                    DNS propagation can take a few minutes
+                  </div>
+                  <p className="mt-1 text-xs leading-relaxed text-sky-100/80">
+                    Once the TXT record resolves for `_netgoat-verify.{domain}`, verify and create the domain.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-6 rounded-xl border border-emerald-500/15 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+                <div className="flex items-center gap-2 font-medium">
+                  <ShieldCheck className="h-4 w-4" />
+                  No public DNS verification required
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-emerald-100/80">
+                  This domain will be created immediately. If you want HTTPS locally, the SSL page is the best
+                  place to install a local certificate after creation.
+                </p>
+              </div>
             )}
-          >
-            <Card className="border-neutral-200/60 dark:border-neutral-800/60 shadow-lg shadow-neutral-200/20 dark:shadow-none bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center border shadow-inner transition-colors",
-                    verified
-                      ? "bg-emerald-500/10 border-emerald-500/20"
-                      : "bg-amber-500/10 border-amber-500/20"
-                  )}>
-                    {verified ? (
-                      <Check className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-                    ) : (
-                      <ShieldCheck className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-                    )}
-                  </div>
-                  <Badge
-                    variant="outline"
-                    className="font-mono text-xs px-2.5 py-1 bg-white dark:bg-neutral-950"
-                  >
-                    {domain}
-                  </Badge>
-                </div>
-                <CardTitle className="text-xl">
-                  {verified ? t("verify.verifiedTitle") : t("verify.title")}
-                </CardTitle>
-                <CardDescription className="text-[15px]">
-                  {verified
-                    ? t("verify.verifiedDescription")
-                    : t("verify.description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {!verified && (
-                  <div className="space-y-4">
-                    <div className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden divide-y divide-neutral-200 dark:divide-neutral-800">
-                      <div className="p-4 flex items-center justify-between group">
-                        <div className="space-y-1 overflow-hidden pr-4">
-                          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                            {t("verify.fields.type")}
-                          </p>
-                          <p className="text-[15px] font-mono font-medium truncate">
-                            TXT
-                          </p>
-                        </div>
-                      </div>
 
-                      <div className="p-4 flex items-center justify-between group hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50 transition-colors cursor-copy" onClick={() => copyToClipboard("_netgoat", "name")}>
-                        <div className="space-y-1 overflow-hidden pr-4">
-                          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                            {t("verify.fields.name")}
-                          </p>
-                          <p className="text-[15px] font-mono font-medium truncate">
-                            _netgoat
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          {copiedField === "name" ? (
-                            <Check className="h-4 w-4 text-emerald-500" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-between">
+              <button
+                type="button"
+                onClick={() => setStep("input")}
+                disabled={submitting}
+                className="inline-flex items-center justify-center rounded-xl border border-neutral-700 px-4 py-2.5 text-sm font-medium text-neutral-200 transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </button>
 
-                      <div className="p-4 flex items-center justify-between group hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50 transition-colors cursor-copy" onClick={() => copyToClipboard(verificationToken, "value")}>
-                        <div className="space-y-1 overflow-hidden pr-4">
-                          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                            {t("verify.fields.value")}
-                          </p>
-                          <p className="text-[15px] font-mono text-neutral-600 dark:text-neutral-400 truncate">
-                            {verificationToken}
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-neutral-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                        >
-                          {copiedField === "value" ? (
-                            <Check className="h-4 w-4 text-emerald-500" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <Alert className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/50 dark:border-blue-900/30 text-blue-800 dark:text-blue-300">
-                      <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      <AlertDescription className="text-sm ml-1 leading-relaxed">
-                        {t("verify.propagationHint")}
-                      </AlertDescription>
-                    </Alert>
-                  </div>
+              <button
+                type="button"
+                onClick={handleCreate}
+                disabled={submitting}
+                className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-black transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Working
+                  </>
+                ) : (
+                  verificationActionLabel
                 )}
-                
-                {verified && (
-                  <div className="py-8 flex flex-col items-center justify-center text-center space-y-4">
-                    <p className="text-neutral-500">{t("verify.ready")}</p>
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex flex-col sm:flex-row gap-3 pt-2 pb-6">
-                <Button
-                  variant="outline"
-                  onClick={() => setStep("input")}
-                  disabled={verifying || verified}
-                  className="w-full sm:w-auto h-11 px-6 shadow-sm order-2 sm:order-1"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  {t("actions.back")}
-                </Button>
-                <div className="flex w-full gap-2 order-1 sm:order-2">
-                  <Button
-                    onClick={handleVerify}
-                    disabled={verifying || verified}
-                    className="w-full h-11 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-900 transition-all font-medium flex-1 shadow-sm"
-                  >
-                    {verifying ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {t("actions.verifying")}
-                      </>
-                    ) : (
-                      t("actions.verify")
-                    )}
-                  </Button>
-                </div>
-              </CardFooter>
-            </Card>
-          </div>
-        </div>
+              </button>
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SummaryItem({
+  label,
+  value,
+  mono = false,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div className="rounded-xl border border-neutral-800 bg-neutral-950/40 px-4 py-3">
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">{label}</div>
+      <div className={cn("mt-1 text-sm text-neutral-100", mono && "font-mono text-xs")}>{value}</div>
+    </div>
+  );
+}
+
+function CopyRow({
+  label,
+  value,
+  field,
+  copiedField,
+  onCopy,
+  mono = false,
+}: {
+  label: string;
+  value: string;
+  field: string;
+  copiedField: string | null;
+  onCopy: (value: string, field: string) => Promise<void>;
+  mono?: boolean;
+}) {
+  return (
+    <div
+      className="group flex cursor-pointer items-center justify-between px-4 py-4 transition-colors hover:bg-neutral-900/60"
+      onClick={() => onCopy(value, field)}
+    >
+      <div className="min-w-0 pr-4">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">{label}</div>
+        <div className={cn("mt-1 text-sm text-neutral-100", mono && "truncate font-mono text-xs")}>{value}</div>
+      </div>
+      <div className="text-neutral-500 transition-colors group-hover:text-neutral-200">
+        {copiedField === field ? <Check className="h-4 w-4 text-emerald-300" /> : <Copy className="h-4 w-4" />}
       </div>
     </div>
   );

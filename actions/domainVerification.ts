@@ -13,7 +13,10 @@ import crypto from 'crypto'
 import dns from 'dns'
 import { promisify } from 'util'
 import { revalidatePath } from 'next/cache'
-import { validateDomainWithOnlineTld } from '@/lib/domain-validation'
+import {
+  isLocalDevelopmentDomain,
+  validateDomainWithOnlineTld
+} from '@/lib/domain-validation'
 
 const resolveTxt = promisify(dns.resolveTxt)
 
@@ -120,7 +123,8 @@ export async function generateDomainVerification(
       domain: normalizedDomain,
       token,
       recordName: '_netgoat-verify',
-      recordType: 'TXT'
+      recordType: 'TXT',
+      verificationMode: domainValidation.domainKind === 'local' ? 'local' : 'dns'
     }
   } catch (error) {
     console.error('Domain verification generation error:', error)
@@ -195,6 +199,15 @@ export async function verifyDomainOwnership(
     }
 
     const normalizedDomain = domainValidation.sanitized
+    if (isLocalDevelopmentDomain(normalizedDomain) || domainValidation.domainKind === 'local') {
+      return {
+        success: true,
+        verified: true,
+        domain: normalizedDomain,
+        verificationMode: 'local',
+        message: 'Local development domains are trusted without DNS TXT verification.'
+      }
+    }
 
     // Check DNS TXT record
     const verificationHost = `_netgoat-verify.${normalizedDomain}`
@@ -249,6 +262,15 @@ export async function checkDNSPropagation(domain: string) {
         success: false,
         propagated: false,
         error: domainValidation.message || 'Invalid domain name'
+      }
+    }
+
+    if (isLocalDevelopmentDomain(domainValidation.sanitized) || domainValidation.domainKind === 'local') {
+      return {
+        success: true,
+        propagated: true,
+        verificationMode: 'local',
+        records: []
       }
     }
 
@@ -338,6 +360,25 @@ export async function verifyDomain(teamSlug: string, domainName: string) {
 
     if (!domain.verification_token) {
       throw new Error('Domain has no verification token')
+    }
+
+    if (isLocalDevelopmentDomain(normalizedDomain) || domainValidation.domainKind === 'local') {
+      domain.verified = true
+      domain.last_verification_check = new Date()
+      domain.verification_attempts = (domain.verification_attempts || 0) + 1
+      domain.next_verification_check = null
+      await domain.save()
+
+      revalidatePath(`/dashboard/${teamSlug}`)
+      revalidatePath(`/dashboard/${teamSlug}/${normalizedDomain}`)
+
+      return {
+        success: true,
+        verified: true,
+        verificationMode: 'local',
+        message: 'Local development domains do not require DNS verification.',
+        domain: JSON.parse(JSON.stringify(domain.toObject()))
+      }
     }
 
     // Update verification attempt tracking

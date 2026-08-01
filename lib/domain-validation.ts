@@ -3,8 +3,18 @@ const TLD_CACHE_TTL_MS = 12 * 60 * 60 * 1000
 
 const DOMAIN_CHARS_REGEX = /^[a-z0-9.-]+$/
 const DOMAIN_LABEL_REGEX = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/
+const LOCAL_DEVELOPMENT_SUFFIXES = [
+  'localhost',
+  'test',
+  'example',
+  'invalid',
+  'local',
+  'internal',
+  'home.arpa'
+] as const
 
-export type TldSource = 'online' | 'cache' | 'unavailable'
+export type TldSource = 'online' | 'cache' | 'local' | 'unavailable'
+export type DomainKind = 'public' | 'local'
 
 export interface DomainValidationResult {
   valid: boolean
@@ -12,6 +22,7 @@ export interface DomainValidationResult {
   message?: string
   tld?: string
   tldSource?: TldSource
+  domainKind?: DomainKind
 }
 
 let tldCache: Set<string> | null = null
@@ -56,6 +67,7 @@ export function sanitizeDomainInput(input: string): string {
 
 export function validateDomainSyntax(input: string): DomainValidationResult {
   const sanitized = sanitizeDomainInput(input)
+  const localDevelopmentDomain = isLocalDevelopmentDomain(sanitized)
 
   if (!sanitized) {
     return {
@@ -82,7 +94,7 @@ export function validateDomainSyntax(input: string): DomainValidationResult {
   }
 
   const labels = sanitized.split('.')
-  if (labels.length < 2) {
+  if (labels.length < 2 && sanitized !== 'localhost') {
     return {
       valid: false,
       sanitized,
@@ -112,8 +124,19 @@ export function validateDomainSyntax(input: string): DomainValidationResult {
   return {
     valid: true,
     sanitized,
-    tld
+    tld,
+    domainKind: localDevelopmentDomain ? 'local' : 'public'
   }
+}
+
+export function isLocalDevelopmentDomain(input: string): boolean {
+  const sanitized = sanitizeDomainInput(input)
+  if (!sanitized) return false
+  if (sanitized === 'localhost') return true
+
+  return LOCAL_DEVELOPMENT_SUFFIXES.some((suffix) => {
+    return sanitized === suffix || sanitized.endsWith(`.${suffix}`)
+  })
 }
 
 function parseIanaTldList(rawList: string): Set<string> {
@@ -183,6 +206,16 @@ export async function validateDomainWithOnlineTld(input: string): Promise<Domain
     return syntaxResult
   }
 
+  if (syntaxResult.domainKind === 'local' || isLocalDevelopmentDomain(syntaxResult.sanitized)) {
+    return {
+      valid: true,
+      sanitized: syntaxResult.sanitized,
+      tld: syntaxResult.tld,
+      tldSource: 'local',
+      domainKind: 'local'
+    }
+  }
+
   const { tlds, source } = await fetchOnlineTldList()
   if (!tlds) {
     return {
@@ -190,6 +223,7 @@ export async function validateDomainWithOnlineTld(input: string): Promise<Domain
       sanitized: syntaxResult.sanitized,
       tld: syntaxResult.tld,
       tldSource: source,
+      domainKind: 'public',
       message: 'Unable to validate the top-level domain right now. Please try again.'
     }
   }
@@ -200,6 +234,7 @@ export async function validateDomainWithOnlineTld(input: string): Promise<Domain
       sanitized: syntaxResult.sanitized,
       tld: syntaxResult.tld,
       tldSource: source,
+      domainKind: 'public',
       message: `Unsupported top-level domain: .${syntaxResult.tld}`
     }
   }
@@ -208,7 +243,8 @@ export async function validateDomainWithOnlineTld(input: string): Promise<Domain
     valid: true,
     sanitized: syntaxResult.sanitized,
     tld: syntaxResult.tld,
-    tldSource: source
+    tldSource: source,
+    domainKind: 'public'
   }
 }
 

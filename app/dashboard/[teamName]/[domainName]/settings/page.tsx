@@ -30,7 +30,11 @@ const SettingsPage = async ({ params }: Props) => {
     <div className="space-y-6">
       <HeaderSection domainData={domainData} />
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <OriginSettings />
+        <OriginSettings
+          teamSlug={teamName}
+          domainId={domain._id.toString()}
+          initialTargetUrl={domain.target_url}
+        />
         <CacheSettings
           teamSlug={teamName}
           domainId={domain._id.toString()}

@@ -20,6 +20,7 @@ try {
     .toString()
     .trim();
 } catch {}
+const projectRoot = process.cwd();
 
 const nextConfig: NextConfig = {
   env: {
@@ -28,6 +29,9 @@ const nextConfig: NextConfig = {
   pageExtensions: ["ts", "tsx"],
   devIndicators: false,
   allowedDevOrigins: ["demo.netgoat.xyz", "127.0.0.1", "192.168.50.35"],
+  turbopack: {
+    root: projectRoot,
+  },
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"

@@ -1,5 +1,6 @@
 import { HeaderSection } from "@/components/interface/domains/overview/HeaderSection";
 import { SslCertificate } from "@/components/interface/domains/ssl/SslCertificate";
+import { SslConfigurationForm } from "@/components/interface/domains/ssl/SslConfigurationForm";
 import { SslHealthCheck } from "@/components/interface/domains/ssl/SslHealthCheck";
 import { loadDomainByRoute } from "../_lib/domain-data";
 import { getTranslations } from "next-intl/server";
@@ -27,6 +28,13 @@ const SslPage = async ({ params }: Props) => {
   return (
     <div className="space-y-6">
       <HeaderSection domainData={domainData} />
+      <SslConfigurationForm
+        teamSlug={teamName}
+        domainId={domain._id.toString()}
+        domainName={domain.domain}
+        autoSslEnabled={domain.auto_ssl}
+        hasManualCertificate={Boolean(domain.ssl_enabled && domain.certificate_pem)}
+      />
       <SslCertificate domain={domain} />
       <SslHealthCheck domain={domain} />
     </div>

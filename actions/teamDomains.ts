@@ -13,10 +13,12 @@ import { randomBytes } from 'crypto'
 import dns from 'dns'
 import { promisify } from 'util'
 import {
+  isLocalDevelopmentDomain,
   isValidSubdomainLabel,
   sanitizeSubdomainLabel,
   validateDomainWithOnlineTld
 } from '@/lib/domain-validation'
+import { validateOriginUrl } from '@/lib/origin-url'
 
 const resolveTxt = promisify(dns.resolveTxt)
 
@@ -86,6 +88,79 @@ function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message
   if (isRecord(error) && typeof error.message === 'string') return error.message
   return 'An unexpected error occurred'
+}
+
+function normalizePemMaterial(certificatePem?: string, privateKeyPem?: string) {
+  const certificate = String(certificatePem || '').trim()
+  const privateKey = String(privateKeyPem || '').trim()
+
+  if (!certificate && !privateKey) {
+    return {
+      certificate_pem: null,
+      private_key_pem: null,
+      ssl_enabled: false
+    }
+  }
+
+  if (!certificate || !privateKey) {
+    throw new Error('Certificate PEM and private key PEM must be provided together')
+  }
+
+  if (!certificate.includes('BEGIN CERTIFICATE') || !certificate.includes('END CERTIFICATE')) {
+    throw new Error('Certificate PEM does not appear to be valid')
+  }
+
+  if (!privateKey.includes('BEGIN') || !privateKey.includes('PRIVATE KEY')) {
+    throw new Error('Private key PEM does not appear to be valid')
+  }
+
+  return {
+    certificate_pem: certificate,
+    private_key_pem: privateKey,
+    ssl_enabled: true
+  }
+}
+
+function normalizeUpstreamServers(input: unknown): string[] {
+  if (!Array.isArray(input)) {
+    throw new Error('Upstream servers must be provided as an array')
+  }
+
+  const seen = new Set<string>()
+  const normalized: string[] = []
+
+  for (const entry of input) {
+    const validation = validateOriginUrl(String(entry || ''))
+    if (!validation.valid) {
+      throw new Error(validation.message || 'Each upstream server must be a valid origin URL')
+    }
+
+    if (seen.has(validation.normalized)) {
+      continue
+    }
+
+    seen.add(validation.normalized)
+    normalized.push(validation.normalized)
+  }
+
+  if (normalized.length === 0) {
+    throw new Error('At least one upstream server is required')
+  }
+
+  if (normalized.length > 8) {
+    throw new Error('Upstream pool cannot include more than 8 servers')
+  }
+
+  return normalized
+}
+
+function revalidateDomainPaths(teamSlug: string, domainName: string) {
+  revalidatePath(`/dashboard/${teamSlug}`)
+  revalidatePath(`/dashboard/${teamSlug}/${domainName}`)
+  revalidatePath(`/dashboard/${teamSlug}/${domainName}/settings`)
+  revalidatePath(`/dashboard/${teamSlug}/${domainName}/reverse-proxies`)
+  revalidatePath(`/dashboard/${teamSlug}/${domainName}/ssl`)
+  revalidatePath(`/dashboard/${teamSlug}/${domainName}/subdomains`)
 }
 
 function hasDocumentId(value: unknown, id: string): boolean {
@@ -167,6 +242,10 @@ function normalizeRoutePolicy(value: unknown): RoutePolicy | undefined {
 }
 
 async function hasVerificationToken(domain: string, token: string): Promise<boolean> {
+  if (isLocalDevelopmentDomain(domain)) {
+    return true
+  }
+
   try {
     const records = await resolveTxt(`_netgoat-verify.${domain}`)
     return records.flat().some((record) => record === token)
@@ -303,6 +382,13 @@ export async function createDomainForTeam(
   }
 
   const normalizedDomain = domainValidation.sanitized
+  const originValidation = validateOriginUrl(data.target_url)
+  if (!originValidation.valid) {
+    throw new Error(originValidation.message || 'Origin URL is invalid')
+  }
+  const normalizedOrigin = originValidation.normalized
+  const sslMaterial = normalizePemMaterial(data.certificate_pem, data.private_key_pem)
+  const localDevelopmentDomain = domainValidation.domainKind === 'local'
 
   const existingDomain = await Domain.findOne({
     team_id: team._id,
@@ -315,7 +401,9 @@ export async function createDomainForTeam(
 
   // Use provided token or generate a new one
   const verificationToken = data.verification_token || `netgoat-verify-${randomBytes(32).toString('hex')}`
-  const verified = await hasVerificationToken(normalizedDomain, verificationToken)
+  const verified = localDevelopmentDomain
+    ? true
+    : await hasVerificationToken(normalizedDomain, verificationToken)
   
   // Set next verification check for 30 minutes from now
   const nextCheck = new Date()
@@ -324,16 +412,16 @@ export async function createDomainForTeam(
   const domain = await Domain.create({
     team_id: team._id,
     domain: normalizedDomain,
-    target_url: data.target_url,
-    certificate_pem: data.certificate_pem || null,
-    private_key_pem: data.private_key_pem || null,
-    ssl_enabled: !!(data.certificate_pem && data.private_key_pem),
+    target_url: normalizedOrigin,
+    certificate_pem: sslMaterial.certificate_pem,
+    private_key_pem: sslMaterial.private_key_pem,
+    ssl_enabled: sslMaterial.ssl_enabled,
     auto_ssl: Boolean(data.auto_ssl),
     active: true,
     verified,
     verification_token: verificationToken,
     verification_attempts: 0,
-    next_verification_check: nextCheck,
+    next_verification_check: localDevelopmentDomain ? null : nextCheck,
     waf_rules: [],
     subdomains: [],
     settings: {
@@ -354,10 +442,10 @@ export async function createDomainForTeam(
   team.updated_at = new Date()
   await team.save()
 
-  revalidatePath(`/dashboard/${teamSlug}`)
+  revalidateDomainPaths(teamSlug, normalizedDomain)
   return { 
     success: true, 
-    domain: domain.toObject(),
+    domain: JSON.parse(JSON.stringify(domain.toObject())),
     verification: {
       token: verificationToken,
       recordName: '_netgoat-verify',
@@ -558,7 +646,11 @@ export async function deleteDomain(teamSlug: string, domainId: string) {
     throw new Error('Domain not found')
   }
 
-  await Domain.deleteOne({ _id: domainId })
+  await Promise.all([
+    Domain.deleteOne({ _id: domainId }),
+    ProxyConfig.deleteMany({ team_id: team._id, domain_id: domain._id }),
+    DNSRecord.deleteMany({ team_id: team._id, domain_id: domain._id })
+  ])
 
   team.domain_count = Math.max(0, team.domain_count - 1)
   team.updated_at = new Date()
@@ -623,13 +715,18 @@ export async function addSubdomain(
   }
 
   const fullDomain = `${sanitizedSubdomain}.${domain.domain}`
+  const originValidation = validateOriginUrl(data.target_url)
+  if (!originValidation.valid) {
+    throw new Error(originValidation.message || 'Origin URL is invalid')
+  }
+  const sslMaterial = normalizePemMaterial(data.certificate_pem, data.private_key_pem)
 
-  await domain.addSubdomain(sanitizedSubdomain, data.target_url, {
-    certificate_pem: data.certificate_pem,
-    private_key_pem: data.private_key_pem
+  await domain.addSubdomain(sanitizedSubdomain, originValidation.normalized, {
+    certificate_pem: sslMaterial.certificate_pem || undefined,
+    private_key_pem: sslMaterial.private_key_pem || undefined
   })
 
-  revalidatePath(`/dashboard/${teamSlug}`)
+  revalidateDomainPaths(teamSlug, domain.domain)
   return { success: true, subdomain: fullDomain }
 }
 
@@ -668,8 +765,20 @@ export async function removeSubdomain(teamSlug: string, domainId: string, subdom
   }
 
   await domain.removeSubdomain(sanitizedSubdomain)
+  await Promise.all([
+    ProxyConfig.deleteMany({
+      team_id: team._id,
+      domain_id: domain._id,
+      subdomain: sanitizedSubdomain
+    }),
+    DNSRecord.deleteMany({
+      team_id: team._id,
+      domain_id: domain._id,
+      name: sanitizedSubdomain
+    })
+  ])
 
-  revalidatePath(`/dashboard/${teamSlug}`)
+  revalidateDomainPaths(teamSlug, domain.domain)
   return { success: true }
 }
 
@@ -985,30 +1094,308 @@ export async function toggleDomainActive(teamSlug: string, domainId: string, act
   return { success: true }
 }
 
+export async function updateDomainOrigin(
+  teamSlug: string,
+  domainId: string,
+  data: {
+    target_url: string
+  }
+) {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+
+  await connectDB()
+
+  const userName = session.user.name || session.user.email?.split('@')[0] || 'User'
+  const team = await resolveTeam(teamSlug, session.user.id, userName)
+  if (!team) {
+    throw new Error('Team not found')
+  }
+
+  if (!Team.hasPermission(team, session.user.id, 'member')) {
+    throw new Error('Insufficient permissions')
+  }
+
+  const originValidation = validateOriginUrl(data.target_url)
+  if (!originValidation.valid) {
+    throw new Error(originValidation.message || 'Origin URL is invalid')
+  }
+
+  const domain = await Domain.findOneAndUpdate(
+    { _id: domainId, team_id: team._id },
+    {
+      $set: {
+        target_url: originValidation.normalized,
+        updated_at: new Date()
+      }
+    },
+    { returnDocument: 'after' }
+  )
+
+  if (!domain) {
+    throw new Error('Domain not found')
+  }
+
+  revalidateDomainPaths(teamSlug, domain.domain)
+  return {
+    success: true,
+    domain: JSON.parse(JSON.stringify(domain.toObject()))
+  }
+}
+
+export async function updateDomainSslConfiguration(
+  teamSlug: string,
+  domainId: string,
+  data: {
+    auto_ssl?: boolean
+    certificate_pem?: string
+    private_key_pem?: string
+    clear_manual_ssl?: boolean
+  }
+) {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+
+  await connectDB()
+
+  const userName = session.user.name || session.user.email?.split('@')[0] || 'User'
+  const team = await resolveTeam(teamSlug, session.user.id, userName)
+  if (!team) {
+    throw new Error('Team not found')
+  }
+
+  if (!Team.hasPermission(team, session.user.id, 'admin')) {
+    throw new Error('Insufficient permissions')
+  }
+
+  const domain = await Domain.findOne({
+    _id: domainId,
+    team_id: team._id
+  })
+
+  if (!domain) {
+    throw new Error('Domain not found')
+  }
+
+  const shouldClearManualSsl = Boolean(data.clear_manual_ssl)
+  const hasNewManualPair =
+    String(data.certificate_pem || '').trim().length > 0 ||
+    String(data.private_key_pem || '').trim().length > 0
+  const sslMaterial = shouldClearManualSsl
+    ? normalizePemMaterial('', '')
+    : hasNewManualPair
+      ? normalizePemMaterial(data.certificate_pem, data.private_key_pem)
+      : {
+          certificate_pem: domain.certificate_pem || null,
+          private_key_pem: domain.private_key_pem || null,
+          ssl_enabled: Boolean(domain.ssl_enabled && domain.certificate_pem && domain.private_key_pem)
+        }
+  domain.auto_ssl = Boolean(data.auto_ssl)
+  domain.certificate_pem = sslMaterial.certificate_pem
+  domain.private_key_pem = sslMaterial.private_key_pem
+  domain.ssl_enabled = sslMaterial.ssl_enabled
+  if (isLocalDevelopmentDomain(domain.domain)) {
+    domain.verified = true
+  }
+  domain.updated_at = new Date()
+  await domain.save()
+
+  revalidateDomainPaths(teamSlug, domain.domain)
+  return {
+    success: true,
+    domain: JSON.parse(JSON.stringify(domain.toObject()))
+  }
+}
+
+export async function upsertDomainProxyConfig(
+  teamSlug: string,
+  domainId: string,
+  data: {
+    configId?: string
+    name?: string
+    subdomain?: string
+    upstream_servers: string[]
+    preserve_host?: boolean
+    websocket_enabled?: boolean
+    health_check_path?: string
+  }
+) {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+
+  await connectDB()
+
+  const userName = session.user.name || session.user.email?.split('@')[0] || 'User'
+  const team = await resolveTeam(teamSlug, session.user.id, userName)
+  if (!team) {
+    throw new Error('Team not found')
+  }
+
+  if (!Team.hasPermission(team, session.user.id, 'member')) {
+    throw new Error('Insufficient permissions')
+  }
+
+  const domain = await Domain.findOne({
+    _id: domainId,
+    team_id: team._id
+  })
+
+  if (!domain) {
+    throw new Error('Domain not found')
+  }
+
+  const upstreamServers = normalizeUpstreamServers(data.upstream_servers)
+  const normalizedSubdomain = data.subdomain
+    ? sanitizeSubdomainLabel(data.subdomain)
+    : ''
+  if (normalizedSubdomain && !isValidSubdomainLabel(normalizedSubdomain)) {
+    throw new Error('Invalid subdomain label')
+  }
+
+  if (normalizedSubdomain) {
+    const subdomainEntry = Array.isArray(domain.subdomains)
+      ? domain.subdomains.find((entry: unknown) => isRecord(entry) && entry.subdomain === normalizedSubdomain)
+      : null
+
+    if (!subdomainEntry || !isRecord(subdomainEntry)) {
+      throw new Error('Subdomain not found')
+    }
+
+    subdomainEntry.target_url = upstreamServers[0]
+  } else {
+    domain.target_url = upstreamServers[0]
+  }
+
+  const healthCheckPath = String(data.health_check_path || '').trim()
+  const proxyName = String(data.name || '').trim() || (normalizedSubdomain
+    ? `${normalizedSubdomain}.${domain.domain} upstream pool`
+    : `${domain.domain} upstream pool`)
+
+  const proxyQuery = data.configId
+    ? { _id: data.configId, team_id: team._id, domain_id: domain._id }
+    : {
+        team_id: team._id,
+        domain_id: domain._id,
+        ...(normalizedSubdomain ? { subdomain: normalizedSubdomain } : { $or: [{ subdomain: { $exists: false } }, { subdomain: '' }, { subdomain: null }] })
+      }
+
+  const proxyConfig = await ProxyConfig.findOneAndUpdate(
+    proxyQuery,
+    {
+      $set: {
+        team_id: team._id,
+        domain_id: domain._id,
+        name: proxyName,
+        subdomain: normalizedSubdomain || undefined,
+        upstream_servers: upstreamServers.map((url) => ({ url })),
+        preserve_host: data.preserve_host !== false,
+        websocket_enabled: Boolean(data.websocket_enabled),
+        enabled: true,
+        health_check: {
+          enabled: Boolean(healthCheckPath),
+          path: healthCheckPath || '/',
+          interval: 30,
+          timeout: 5,
+          expected_status: 200,
+          fall: 3,
+          rise: 2
+        }
+      }
+    },
+    {
+      upsert: true,
+      returnDocument: 'after',
+      runValidators: true
+    }
+  )
+
+  domain.updated_at = new Date()
+  await domain.save()
+
+  revalidateDomainPaths(teamSlug, domain.domain)
+  return {
+    success: true,
+    domain: JSON.parse(JSON.stringify(domain.toObject())),
+    proxyConfig: JSON.parse(JSON.stringify(proxyConfig?.toObject?.() || proxyConfig))
+  }
+}
+
+export async function deleteDomainProxyConfig(teamSlug: string, domainId: string, configId: string) {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+
+  await connectDB()
+
+  const userName = session.user.name || session.user.email?.split('@')[0] || 'User'
+  const team = await resolveTeam(teamSlug, session.user.id, userName)
+  if (!team) {
+    throw new Error('Team not found')
+  }
+
+  if (!Team.hasPermission(team, session.user.id, 'admin')) {
+    throw new Error('Insufficient permissions')
+  }
+
+  const domain = await Domain.findOne({
+    _id: domainId,
+    team_id: team._id
+  })
+  if (!domain) {
+    throw new Error('Domain not found')
+  }
+
+  const deleted = await ProxyConfig.findOneAndDelete({
+    _id: configId,
+    team_id: team._id,
+    domain_id: domain._id
+  })
+
+  if (!deleted) {
+    throw new Error('Proxy configuration not found')
+  }
+
+  revalidateDomainPaths(teamSlug, domain.domain)
+  return { success: true }
+}
+
 export async function addReverseProxy(
   teamSlug: string,
   domainId: string,
   proxyData: Record<string, unknown>
 ) {
   try {
-    const session = await auth.api.getSession({ headers: await headers() })
-    if (!session?.user?.id) throw new Error('Unauthorized')
-    
-    await connectDB()
-    const team = await Team.findBySlug(teamSlug.replace(/^@/, '')) || await Team.findOne({ slug: teamSlug })
-    if (!team) throw new Error('Team not found')
-      
-    if (!Team.hasPermission(team, session.user.id, 'member')) throw new Error('Insufficient permissions')
-      
-    const domain = await Domain.findOne({ _id: domainId, team_id: team._id })
-    if (!domain) throw new Error('Domain not found')
-      
-    if (!domain.reverse_proxies) domain.reverse_proxies = [];
-    domain.reverse_proxies.push(proxyData);
-    await domain.save();
-    
-    revalidatePath(`/dashboard/${teamSlug}/${domain.domain}/reverse-proxies`);
-    return { success: true }
+    const domain = await getDomain(teamSlug, domainId) as Record<string, unknown>
+    const existingPrimary = validateOriginUrl(String(domain.target_url || '')).normalized
+    const targetValidation = validateOriginUrl(String(proxyData.target_url || ''))
+    if (!targetValidation.valid) {
+      throw new Error(targetValidation.message || 'Origin URL is invalid')
+    }
+
+    const upstreamServers = existingPrimary && existingPrimary !== targetValidation.normalized
+      ? [existingPrimary, targetValidation.normalized]
+      : [targetValidation.normalized]
+
+    const result = await upsertDomainProxyConfig(teamSlug, domainId, {
+      name: String(proxyData.name || '').trim() || 'Compatibility upstream pool',
+      upstream_servers: upstreamServers
+    })
+    return { success: true, proxyConfig: result.proxyConfig }
   } catch (error: unknown) {
     return { success: false, error: getErrorMessage(error) }
   }
@@ -1016,22 +1403,7 @@ export async function addReverseProxy(
 
 export async function removeReverseProxy(teamSlug: string, domainId: string, proxyId: string) {
   try {
-    const session = await auth.api.getSession({ headers: await headers() })
-    if (!session?.user?.id) throw new Error('Unauthorized')
-    
-    await connectDB()
-    const team = await Team.findBySlug(teamSlug.replace(/^@/, '')) || await Team.findOne({ slug: teamSlug })
-    if (!team) throw new Error('Team not found')
-      
-    const domain = await Domain.findOne({ _id: domainId, team_id: team._id })
-    if (!domain) throw new Error('Domain not found')
-      
-    domain.reverse_proxies = domain.reverse_proxies.filter(
-      (proxy: unknown) => !hasDocumentId(proxy, proxyId)
-    );
-    await domain.save();
-    
-    revalidatePath(`/dashboard/${teamSlug}/${domain.domain}/reverse-proxies`);
+    await deleteDomainProxyConfig(teamSlug, domainId, proxyId)
     return { success: true }
   } catch (error: unknown) {
     return { success: false, error: getErrorMessage(error) }

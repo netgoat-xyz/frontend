@@ -30,7 +30,7 @@ export default function TeamRow({ team }: { team: Team }) {
       <div className="flex items-center gap-2">
         {/* Configure Button */}
         <Link 
-          href={`/dashboard/teams/${team.slug}/settings`}
+          href={`/dashboard/${team.slug}/settings`}
           className="p-2 text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-md transition-colors"
           title="Team Settings"
         >
@@ -39,7 +39,7 @@ export default function TeamRow({ team }: { team: Team }) {
         
         {/* Switch to Team Button */}
         <Link 
-          href={`/dashboard/teams/${team.slug}`}
+          href={`/dashboard/${team.slug}`}
           className="flex items-center gap-1 text-xs font-medium bg-neutral-800 text-neutral-200 px-3 py-1.5 rounded-md hover:bg-neutral-700 transition-colors"
         >
           Go to Team

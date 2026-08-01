@@ -15,6 +15,7 @@ type DomainsSectionProps = {
   searchQuery?: string;
   viewMode?: DomainsViewMode;
   statusFilter?: DomainStatusFilter;
+  maxItems?: number | null;
 };
 
 type TeamDomainSummary = {
@@ -32,6 +33,7 @@ export default function DomainsSection({
   searchQuery = "",
   viewMode = "grid",
   statusFilter = "all",
+  maxItems = 4,
 }: DomainsSectionProps) {
   const t = useTranslations("DashboardPages.homeDomains");
   const params = useParams();
@@ -100,7 +102,10 @@ export default function DomainsSection({
     });
   }, [transformedDomains, searchQuery, statusFilter]);
 
-  const visibleDomains = useMemo(() => filteredDomains.slice(0, 4), [filteredDomains]);
+  const visibleDomains = useMemo(
+    () => (maxItems === null ? filteredDomains : filteredDomains.slice(0, maxItems)),
+    [filteredDomains, maxItems],
+  );
 
   // Loading state
   if (loading) {
@@ -187,7 +192,7 @@ export default function DomainsSection({
           />
         ))}
       </div>
-      {filteredDomains.length > 4 && (
+      {maxItems !== null && filteredDomains.length > maxItems && (
         <div className="mt-4 text-center">
           <Link href={`/dashboard/${teamSlug}/domains`}>
             <Button variant="outline" className="text-neutral-400 hover:text-neutral-100">

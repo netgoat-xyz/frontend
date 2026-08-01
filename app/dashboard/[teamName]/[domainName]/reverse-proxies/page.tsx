@@ -23,26 +23,36 @@ const ReverseProxiesPage = async ({ params }: Props) => {
     )
   }
 
-  // Use domain.reverse_proxies array now included in DomainSchema
-  const reverseProxies = JSON.parse(JSON.stringify(domain.reverse_proxies || []));
+  const subdomains = JSON.parse(JSON.stringify(domain.subdomains || []));
+  const reverseProxies = JSON.parse(
+    JSON.stringify([
+      ...(Array.isArray(domain.proxy_configs) ? domain.proxy_configs : []),
+      ...(Array.isArray(domain.subdomains)
+        ? domain.subdomains.flatMap((subdomain) =>
+            Array.isArray(subdomain?.proxy_configs)
+              ? subdomain.proxy_configs.map((config) => ({
+                  ...config,
+                  subdomain: config?.subdomain || subdomain.subdomain,
+                }))
+              : [],
+          )
+        : []),
+    ]),
+  );
 
   return (
     <div className="space-y-6 min-h-svh">
       <HeaderSection domainData={domainData} />
       
-      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">
+      <div className="rounded-xl border border-neutral-800 bg-neutral-950/30 p-6">
         <ReverseProxiesClient 
-           teamSlug={teamName} 
-           domainId={domain._id.toString()} 
-           reverseProxies={reverseProxies} 
+           teamSlug={teamName}
+           domainId={domain._id.toString()}
+           domainName={domain.domain}
+           primaryTarget={domain.target_url}
+           reverseProxies={reverseProxies}
+           subdomains={subdomains}
         />
-        
-        {domain.target_url && (
-           <div className="mt-8 pt-6 border-t border-neutral-100 dark:border-neutral-800 flex justify-between items-center text-sm">
-             <span className="text-neutral-500">{t("fallbackTarget")}</span>
-             <span className="font-mono text-neutral-900 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800 px-3 py-1.5 rounded-md">{domain.target_url}</span>
-           </div>
-        )}
       </div>
     </div>
   );

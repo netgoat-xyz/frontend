@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 
 import {
   ChevronDownIcon,
@@ -100,9 +101,13 @@ export default function ProjectToolbar({
         >
           {viewMode === "grid" ? <ListIcon className="size-5" /> : <GridIcon className="size-5" />}
         </button>
-        <button className="lg:hidden flex items-center justify-center w-10 h-10 bg-white text-black rounded-md hover:bg-neutral-200 transition-colors">
+        <Link
+          href={`/dashboard/${params.teamName}/new`}
+          className="lg:hidden flex items-center justify-center w-10 h-10 bg-white text-black rounded-md hover:bg-neutral-200 transition-colors"
+          aria-label={t("actions.domain")}
+        >
           <PlusIcon className="size-5" />
-        </button>
+        </Link>
         <div className="relative">
           <button
             ref={dropdownRef}
@@ -132,14 +137,14 @@ export default function ProjectToolbar({
                 icon={<GlobeAltIcon className="size-4" />}
                 className="mt-1"
                 label={t("actions.domain")}
-                href={`./${params.teamName}/new`}
+                href={`/dashboard/${params.teamName}/new`}
               />
 
               <DropdownItem
                 icon={<FolderIcon className="size-4" />}
                 className="mt-1"
                 label={t("actions.group")}
-                href={`./${params.teamName}/groups`}
+                href={`/dashboard/${params.teamName}/groups`}
               />
             </div>
           </Dropdown>
