@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
-const TARGET_DATE = new Date("2026-08-01T00:00:00Z").getTime();
+const TARGET_DATE = new Date("2026-08-02T07:00:00Z").getTime();
 
 const FlipBlock = ({ value, label }: { value: number; label: string }) => {
   const formattedValue = value.toString().padStart(2, "0");
