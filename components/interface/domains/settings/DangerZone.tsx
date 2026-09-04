@@ -8,6 +8,9 @@ export function DangerZone() {
       <h3 className="font-semibold text-sm flex items-center gap-2 mb-4 text-red-400">
         <AlertTriangle size={16} /> Danger Zone
       </h3>
+      <p className="mb-4 text-[11px] leading-relaxed text-amber-200/80">
+        Not yet streamed / not wired. Pause and delete do not persist or update agents.
+      </p>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between p-4 border border-red-500/10 rounded-lg bg-red-500/5">

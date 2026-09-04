@@ -167,6 +167,15 @@ DomainSchema.methods.addWAFRule = function(rule: WAFRule) {
   return this.save();
 };
 
+DomainSchema.methods.removeWAFRule = function(ruleName: string) {
+  const before = this.waf_rules.length;
+  this.waf_rules = this.waf_rules.filter((rule: WAFRule) => rule.name !== ruleName);
+  if (this.waf_rules.length === before) {
+    throw new Error('WAF rule not found');
+  }
+  return this.save();
+};
+
 DomainSchema.methods.addSubdomainWAFRule = function(subdomain: string, rule: WAFRule) {
   const sub = this.subdomains.find((s: DomainSubdomain) => s.subdomain === subdomain);
   if (sub) {
@@ -174,6 +183,19 @@ DomainSchema.methods.addSubdomainWAFRule = function(subdomain: string, rule: WAF
     return this.save();
   }
   throw new Error('Subdomain not found');
+};
+
+DomainSchema.methods.removeSubdomainWAFRule = function(subdomain: string, ruleName: string) {
+  const sub = this.subdomains.find((s: DomainSubdomain) => s.subdomain === subdomain);
+  if (!sub) {
+    throw new Error('Subdomain not found');
+  }
+  const before = sub.waf_rules.length;
+  sub.waf_rules = sub.waf_rules.filter((rule: WAFRule) => rule.name !== ruleName);
+  if (sub.waf_rules.length === before) {
+    throw new Error('WAF rule not found');
+  }
+  return this.save();
 };
 
 // Statics

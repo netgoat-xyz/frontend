@@ -1,5 +1,22 @@
 # Control Plane
 
+## Connect an agent
+
+This dashboard writes Mongo. stream-server (companion service) polls those documents and serves a ConfigSnapshot on `GET /domains`. The Go agent does not need local `routes:`.
+
+```yaml
+api:
+  url: http://127.0.0.1:8787   # stream-server URL (or API_STREAM_URL)
+  key: ""                      # match stream-server API_KEY; prefer API_STREAM_KEY in env
+routes: {}
+```
+
+Use the same `API_STREAM_KEY` / `API_KEY` the stream-server expects. Empty local `routes: {}` are OK: routes, certs, WAF, and policy come from the snapshot. stream-server emits `policy` from Mongo `route_policy`.
+
+If the control plane is down, the agent continues serving last-known-good config from its on-disk recovery snapshot. That behavior lives in the agent, not this frontend.
+
+Dashboard surfaces that persist those fields: domain create (`target_url`), reverse-proxies (upstream pools), SSL (PEM + `auto_ssl`), WAF Rule Sets (`waf_rules`), and Settings cache/bandwidth (`route_policy` → streamed `policy`).
+
 The Control Plane forms the reliable bridge between the central MongoDB source and our decentralized Edge Nodes. It monitors state changes seamlessly and propagates those differences in real-time.
 
 **Technology Stack:**
