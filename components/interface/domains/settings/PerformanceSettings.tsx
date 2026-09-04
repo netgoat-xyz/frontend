@@ -8,6 +8,9 @@ export function PerformanceSettings() {
       <h3 className="font-semibold text-sm flex items-center gap-2 mb-4">
         <Sliders size={16} className="text-neutral-400" /> Performance
       </h3>
+      <p className="mb-4 text-[11px] leading-relaxed text-amber-200/80">
+        Not yet streamed to agents. These controls are local UI only and do not persist.
+      </p>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between py-2.5 border-b border-neutral-800/30">

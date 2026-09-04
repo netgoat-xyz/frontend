@@ -35,7 +35,11 @@ const WafPage = async ({ params }: Props) => {
         <div className="xl:col-span-2">
           <WafEvents />
         </div>
-        <WafRules rules={domain.waf_rules || []} />
+        <WafRules
+          teamSlug={teamName}
+          domainId={domain._id.toString()}
+          rules={domain.waf_rules || []}
+        />
       </div>
     </div>
   );

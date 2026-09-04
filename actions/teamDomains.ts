@@ -19,25 +19,17 @@ import {
   validateDomainWithOnlineTld
 } from '@/lib/domain-validation'
 import { validateOriginUrl } from '@/lib/origin-url'
+import {
+  normalizeDomainWafRule,
+  normalizePemMaterial,
+  normalizeRoutePolicy,
+  type RoutePolicy
+} from '@/lib/control-plane'
+
+export type { RouteKeyMode, RoutePolicy } from '@/lib/control-plane'
 
 const resolveTxt = promisify(dns.resolveTxt)
 
-export type RouteKeyMode = 'ip' | 'host' | 'route' | 'global'
-
-export type RoutePolicy = {
-  cache?: {
-    enabled?: boolean
-    ttl_seconds?: number
-    max_entries?: number
-    max_body_bytes?: number
-  }
-  bandwidth?: {
-    enabled?: boolean
-    bytes_per_second?: number
-    burst_bytes?: number
-    key?: RouteKeyMode
-  }
-}
 
 type Stringifiable = {
   toString(): string
@@ -90,37 +82,6 @@ function getErrorMessage(error: unknown): string {
   return 'An unexpected error occurred'
 }
 
-function normalizePemMaterial(certificatePem?: string, privateKeyPem?: string) {
-  const certificate = String(certificatePem || '').trim()
-  const privateKey = String(privateKeyPem || '').trim()
-
-  if (!certificate && !privateKey) {
-    return {
-      certificate_pem: null,
-      private_key_pem: null,
-      ssl_enabled: false
-    }
-  }
-
-  if (!certificate || !privateKey) {
-    throw new Error('Certificate PEM and private key PEM must be provided together')
-  }
-
-  if (!certificate.includes('BEGIN CERTIFICATE') || !certificate.includes('END CERTIFICATE')) {
-    throw new Error('Certificate PEM does not appear to be valid')
-  }
-
-  if (!privateKey.includes('BEGIN') || !privateKey.includes('PRIVATE KEY')) {
-    throw new Error('Private key PEM does not appear to be valid')
-  }
-
-  return {
-    certificate_pem: certificate,
-    private_key_pem: privateKey,
-    ssl_enabled: true
-  }
-}
-
 function normalizeUpstreamServers(input: unknown): string[] {
   if (!Array.isArray(input)) {
     throw new Error('Upstream servers must be provided as an array')
@@ -160,85 +121,12 @@ function revalidateDomainPaths(teamSlug: string, domainName: string) {
   revalidatePath(`/dashboard/${teamSlug}/${domainName}/settings`)
   revalidatePath(`/dashboard/${teamSlug}/${domainName}/reverse-proxies`)
   revalidatePath(`/dashboard/${teamSlug}/${domainName}/ssl`)
+  revalidatePath(`/dashboard/${teamSlug}/${domainName}/waf`)
   revalidatePath(`/dashboard/${teamSlug}/${domainName}/subdomains`)
 }
 
 function hasDocumentId(value: unknown, id: string): boolean {
   return isRecord(value) && isStringifiable(value._id) && value._id.toString() === id
-}
-
-function optionalPolicyRecord(value: unknown, field: string): Record<string, unknown> | undefined {
-  if (value === undefined) return undefined
-  if (!isRecord(value)) {
-    throw new Error(`${field} must be an object`)
-  }
-  return value
-}
-
-function optionalBoolean(value: unknown, field: string): boolean | undefined {
-  if (value === undefined) return undefined
-  if (typeof value !== 'boolean') {
-    throw new Error(`${field} must be a boolean`)
-  }
-  return value
-}
-
-function optionalBoundedInteger(
-  value: unknown,
-  field: string,
-  min: number,
-  max: number
-): number | undefined {
-  if (value === undefined) return undefined
-  if (typeof value !== 'number' || !Number.isInteger(value) || value < min || value > max) {
-    throw new Error(`${field} must be an integer between ${min} and ${max}`)
-  }
-  return value
-}
-
-function optionalRouteKey(value: unknown): RouteKeyMode | undefined {
-  if (value === undefined) return undefined
-  if (value === 'ip' || value === 'host' || value === 'route' || value === 'global') {
-    return value
-  }
-  throw new Error('route_policy.bandwidth.key must be ip, host, route, or global')
-}
-
-function normalizeRoutePolicy(value: unknown): RoutePolicy | undefined {
-  if (value === null) return undefined
-  if (!isRecord(value)) {
-    throw new Error('route_policy must be an object or null')
-  }
-
-  const cacheRaw = optionalPolicyRecord(value.cache, 'route_policy.cache')
-  const bandwidthRaw = optionalPolicyRecord(value.bandwidth, 'route_policy.bandwidth')
-  const policy: RoutePolicy = {}
-
-  if (cacheRaw) {
-    const cache = {
-      enabled: optionalBoolean(cacheRaw.enabled, 'route_policy.cache.enabled'),
-      ttl_seconds: optionalBoundedInteger(cacheRaw.ttl_seconds, 'route_policy.cache.ttl_seconds', 1, 86400),
-      max_entries: optionalBoundedInteger(cacheRaw.max_entries, 'route_policy.cache.max_entries', 1, 100000),
-      max_body_bytes: optionalBoundedInteger(cacheRaw.max_body_bytes, 'route_policy.cache.max_body_bytes', 1024, 104857600)
-    }
-    if (Object.values(cache).some((entry) => entry !== undefined)) {
-      policy.cache = cache
-    }
-  }
-
-  if (bandwidthRaw) {
-    const bandwidth = {
-      enabled: optionalBoolean(bandwidthRaw.enabled, 'route_policy.bandwidth.enabled'),
-      bytes_per_second: optionalBoundedInteger(bandwidthRaw.bytes_per_second, 'route_policy.bandwidth.bytes_per_second', 1024, 10737418240),
-      burst_bytes: optionalBoundedInteger(bandwidthRaw.burst_bytes, 'route_policy.bandwidth.burst_bytes', 1024, 10737418240),
-      key: optionalRouteKey(bandwidthRaw.key)
-    }
-    if (Object.values(bandwidth).some((entry) => entry !== undefined)) {
-      policy.bandwidth = bandwidth
-    }
-  }
-
-  return policy.cache || policy.bandwidth ? policy : undefined
 }
 
 async function hasVerificationToken(domain: string, token: string): Promise<boolean> {
@@ -822,15 +710,9 @@ export async function addDomainWAFRule(
     throw new Error('Domain not found')
   }
 
-  await domain.addWAFRule(
-    data.name,
-    data.expression,
-    data.action || 'BLOCK',
-    data.priority || 0,
-    data.description
-  )
+  await domain.addWAFRule(normalizeDomainWafRule(data))
 
-  revalidatePath(`/dashboard/${teamSlug}`)
+  revalidateDomainPaths(teamSlug, domain.domain)
   return { success: true }
 }
 
@@ -866,7 +748,7 @@ export async function removeDomainWAFRule(teamSlug: string, domainId: string, ru
 
   await domain.removeWAFRule(ruleName)
 
-  revalidatePath(`/dashboard/${teamSlug}`)
+  revalidateDomainPaths(teamSlug, domain.domain)
   return { success: true }
 }
 
@@ -916,13 +798,10 @@ export async function addSubdomainWAFRule(
 
   await domain.addSubdomainWAFRule(
     sanitizedSubdomain,
-    data.name,
-    data.expression,
-    data.action || 'BLOCK',
-    data.priority || 0
+    normalizeDomainWafRule(data)
   )
 
-  revalidatePath(`/dashboard/${teamSlug}`)
+  revalidateDomainPaths(teamSlug, domain.domain)
   return { success: true }
 }
 
@@ -967,7 +846,7 @@ export async function removeSubdomainWAFRule(
 
   await domain.removeSubdomainWAFRule(sanitizedSubdomain, ruleName)
 
-  revalidatePath(`/dashboard/${teamSlug}`)
+  revalidateDomainPaths(teamSlug, domain.domain)
   return { success: true }
 }
 
