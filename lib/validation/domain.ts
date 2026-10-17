@@ -58,7 +58,8 @@ export function sanitizeDomainInput(input: string): string {
 
 export function isLocalDevelopmentDomain(domain: string): boolean {
   const normalized = sanitizeDomainInput(domain);
-  if (!normalized || normalized === "localhost") return true;
+  if (!normalized) return false;
+  if (normalized === "localhost") return true;
   return LOCAL_DEVELOPMENT_SUFFIXES.some(
     (suffix) => normalized === suffix || normalized.endsWith(`.${suffix}`),
   );

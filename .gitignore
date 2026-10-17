@@ -31,3 +31,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# runtime uploads (served from public/uploads)
+/public/uploads/
