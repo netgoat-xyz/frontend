@@ -24,7 +24,10 @@ export function toActionResult(error: unknown, fallback = "Something went wrong.
 
   // Known business-rule failures are surfaced verbatim; everything else is
   // logged server-side and replaced with a generic message.
-  if (error instanceof Error && error.name === "DomainError") {
+  if (
+    error instanceof Error &&
+    (error.name === "DomainError" || error.name === "BusinessError")
+  ) {
     return { ok: false, error: error.message };
   }
 
@@ -37,5 +40,13 @@ export class DomainError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "DomainError";
+  }
+}
+
+/** Same contract as DomainError, for non-domain admin/business rules. */
+export class BusinessError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BusinessError";
   }
 }
