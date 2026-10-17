@@ -31,6 +31,18 @@ const SubdomainWAFRuleSchema = new Schema(
   { _id: false },
 );
 
+const AccessControlSchema = new Schema(
+  {
+    mode: {
+      type: String,
+      enum: ["off", "allowlist", "blocklist", "inherit"],
+      default: "off",
+    },
+    cidrs: { type: [String], default: [] },
+  },
+  { _id: false },
+);
+
 const SubdomainSchema = new Schema(
   {
     subdomain: { type: String, required: true },
@@ -40,6 +52,10 @@ const SubdomainSchema = new Schema(
     certificate_pem: String,
     private_key_pem: String,
     route_policy: { type: Schema.Types.Mixed },
+    access_control: {
+      type: AccessControlSchema,
+      default: () => ({ mode: "off", cidrs: [] }),
+    },
     waf_rules: { type: [SubdomainWAFRuleSchema], default: [] },
     request_count: { type: Number, default: 0 },
     blocked_count: { type: Number, default: 0 },
@@ -82,6 +98,10 @@ const DomainSchema = new Schema(
     auto_ssl: { type: Boolean, default: false },
 
     route_policy: { type: Schema.Types.Mixed },
+    access_control: {
+      type: AccessControlSchema,
+      default: () => ({ mode: "off", cidrs: [] }),
+    },
 
     active: { type: Boolean, default: true },
     verified: { type: Boolean, default: false },
@@ -144,6 +164,11 @@ export type WAFRule = {
 
 export type SubdomainWAFRule = Omit<WAFRule, "description">;
 
+export type DomainAccessControl = {
+  mode: "off" | "allowlist" | "blocklist" | "inherit";
+  cidrs: string[];
+};
+
 export type DomainSubdomain = {
   subdomain: string;
   full_domain: string;
@@ -152,6 +177,7 @@ export type DomainSubdomain = {
   certificate_pem?: string;
   private_key_pem?: string;
   route_policy?: unknown;
+  access_control?: DomainAccessControl;
   waf_rules: SubdomainWAFRule[];
   request_count: number;
   blocked_count: number;
@@ -180,6 +206,7 @@ export type DomainDocument = {
   ssl_enabled: boolean;
   auto_ssl: boolean;
   route_policy?: unknown;
+  access_control?: DomainAccessControl;
   active: boolean;
   verified: boolean;
   verification_token?: string;

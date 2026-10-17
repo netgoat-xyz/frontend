@@ -12,7 +12,9 @@ import {
   hasVerificationToken,
 } from "@/lib/domain-verification";
 import { validateDomain, validateOriginUrl } from "@/lib/validation/domain";
+import DNSRecord from "@/models/DNSRecord";
 import Domain from "@/models/Domain";
+import ProxyConfig from "@/models/ProxyConfig";
 import Team from "@/models/Team";
 
 export type DomainVerification = {
@@ -205,10 +207,16 @@ export async function deleteDomainAction(input: {
 
     if (!deleted) throw new DomainError("Domain not found.");
 
-    await Team.updateOne(
-      { _id: team._id, domain_count: { $gt: 0 } },
-      { $inc: { domain_count: -1 }, $set: { updated_at: new Date() } },
-    );
+    await Promise.all([
+      Team.updateOne(
+        { _id: team._id, domain_count: { $gt: 0 } },
+        { $inc: { domain_count: -1 }, $set: { updated_at: new Date() } },
+      ),
+      // Orphaned DNS records and proxy configs would otherwise keep the agent
+      // streaming a domain that no longer exists.
+      DNSRecord.deleteMany({ team_id: team._id, domain_id: deleted._id }),
+      ProxyConfig.deleteMany({ team_id: team._id, domain_id: deleted._id }),
+    ]);
 
     revalidatePath(`/dashboard/${team.slug}`, "layout");
     return { ok: true, data: { deleted: true } };
