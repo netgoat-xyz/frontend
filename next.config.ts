@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: workspaceRoot,
   },
+  experimental: {
+    // Enables forbidden()/unauthorized() route interrupts for auth gates.
+    authInterrupts: true,
+  },
 };
 
 export default nextConfig;
