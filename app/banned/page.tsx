@@ -11,9 +11,6 @@ export const metadata: Metadata = {
 export default function BannedPage() {
   return (
     <main className="mx-auto flex min-h-svh max-w-md flex-col items-center justify-center gap-5 px-6 text-center">
-      <p className="text-destructive text-sm font-medium tracking-widest uppercase">
-        Suspended
-      </p>
       <h1 className="font-heading text-2xl font-semibold tracking-tight">
         Your account is suspended
       </h1>

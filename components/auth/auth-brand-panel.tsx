@@ -42,19 +42,6 @@ export function AuthBrandPanel() {
         animate="visible"
         className="relative flex flex-1 flex-col justify-center gap-12 px-14"
       >
-        <motion.div variants={fadeUp} className="flex items-center gap-4">
-          <Image
-            src="/branding/netgoat_ico.png"
-            alt=""
-            width={56}
-            height={56}
-            className="rounded-xl"
-          />
-          <span className="font-heading text-2xl font-semibold tracking-tight text-white">
-            NetGoat
-          </span>
-        </motion.div>
-
         <motion.p
           variants={fadeUp}
           className="font-heading max-w-md text-3xl leading-snug font-medium text-balance text-white"
@@ -68,7 +55,7 @@ export function AuthBrandPanel() {
             <motion.div key={item.title} variants={fadeUp} className="flex gap-4">
               <span
                 aria-hidden="true"
-                className="mt-2 size-1.5 shrink-0 rounded-full bg-emerald-400"
+                className="mt-2 size-1.5 shrink-0 rounded-full bg-blue-400"
               />
               <div>
                 <p className="text-sm font-medium text-white">{item.title}</p>
