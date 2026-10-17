@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { forbidden, redirect } from "next/navigation";
+import { cache } from "react";
 
 import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
@@ -52,11 +53,29 @@ export class AuthError extends Error {
  * Redirects to the login page (or /banned) when the requirement is not met.
  */
 export async function requireUser(): Promise<SessionUser> {
-  const user = await getSessionUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/auth/login");
   if (user.banned) redirect("/banned");
   return user;
 }
+
+/**
+ * Request-scoped session lookup. Layouts, pages and guards in the same render
+ * share one lookup instead of hitting the auth store repeatedly.
+ */
+export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
+  return getSessionUser();
+});
+
+/**
+ * Request-scoped team resolution with the same caching contract. Throws
+ * `notFound()` when the team does not exist or the user is not a member.
+ */
+export const getTeamContext = cache(async (slug: string) => {
+  const user = await requireUser();
+  const team = await findTeamForUser(slug, user);
+  return { user, team };
+});
 
 /** Server component guard: requires a signed-in admin. */
 export async function requireAdminPage(): Promise<SessionUser> {
@@ -71,7 +90,7 @@ export async function requireAdminPage(): Promise<SessionUser> {
 
 /** Action guard: requires a signed-in, non-banned user. */
 export async function assertUser(): Promise<SessionUser> {
-  const user = await getSessionUser();
+  const user = await getCurrentUser();
   if (!user) throw new AuthError("You must be signed in to do that.");
   if (user.banned) throw new AuthError("Your account is suspended.");
   return user;
