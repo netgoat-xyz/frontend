@@ -24,6 +24,7 @@ export type SessionUser = {
   image?: string | null;
   role?: string | null;
   banned?: boolean | null;
+  emailVerified?: boolean | null;
 };
 
 export async function getSession() {

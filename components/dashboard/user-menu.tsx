@@ -59,13 +59,13 @@ export function UserMenu({ user }: { user: ShellUser }) {
             <HugeiconsIcon icon={UserCircleIcon} />
             Account
           </MenuLinkItem>
+          <MenuLinkItem render={<Link href="/account/security" />}>
+            <HugeiconsIcon icon={Settings01Icon} />
+            Security
+          </MenuLinkItem>
           <MenuLinkItem render={<Link href="/account/billing" />}>
             <HugeiconsIcon icon={CreditCardIcon} />
             Billing
-          </MenuLinkItem>
-          <MenuLinkItem render={<Link href="/account/settings" />}>
-            <HugeiconsIcon icon={Settings01Icon} />
-            Settings
           </MenuLinkItem>
         </MenuGroup>
 
