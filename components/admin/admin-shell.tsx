@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation";
 
 import { NetgoatLogo } from "@/components/brand/netgoat-logo";
 import { ThemeToggle } from "@/components/dashboard/theme-toggle";
+import { PageTransition } from "@/components/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -100,7 +101,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </header>
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6 md:py-8">
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );

@@ -240,3 +240,112 @@
     @apply font-sans font-mono;
     }
 }
+
+/* ---------------------------------------------------------------------------
+   Motion tokens
+   The shared motion scale (transitions.dev). Menus, tabs and page changes all
+   read from these, so timing and easing stay consistent across the app.
+--------------------------------------------------------------------------- */
+:root {
+    /* Durations */
+    --duration-stagger: 40ms;    /* per-item stagger offset */
+    --duration-micro: 80ms;      /* tooltip delay, shake segment, large stagger */
+    --duration-quick: 150ms;     /* dropdown/modal close, text swap, tooltip appear */
+    --duration-fast: 250ms;      /* dropdown open, tabs sliding, page slide */
+    --duration-medium: 350ms;    /* panel close, toast close */
+    --duration-slow: 400ms;      /* panel open, skeleton content reveal */
+    --duration-very-slow: 500ms; /* emphasis moments, badge appear */
+    /* Easings */
+    --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: ease-in-out;
+    --ease-out: ease-out;
+    --ease-linear: linear;
+    --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+    --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1);
+    /* Distances */
+    --distance-micro: 4px;
+    --distance-small: 6px;
+    --distance-base: 8px;
+    --distance-medium: 12px;
+    --distance-large: 30px;
+    /* Scales */
+    --scale-large: 0.96;  /* modal pre-scale */
+    --scale-medium: 0.97; /* dropdown pre-scale */
+    --scale-small: 0.98;  /* tooltip pre-scale */
+    --scale-tiny: 0.99;   /* dropdown closing scale */
+    /* Blur */
+    --blur-small: 2px;
+    --blur-medium: 3px;
+    --blur-large: 8px;
+}
+
+/* ---------------------------------------------------------------------------
+   Page transitions
+   Route changes crossfade only the content region (see PageTransition). The
+   persistent shell is left out of the snapshot so the sidebar and top bar
+   never move; the root swap is instant for the same reason.
+--------------------------------------------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+}
+
+/* Keep the app clickable while a transition is running. */
+::view-transition {
+    pointer-events: none;
+}
+
+/* Paired navigation: React matches the old and new content boundaries by
+   name and plays the `page-morph` share transition. */
+::view-transition-group(.page-morph) {
+    animation-duration: var(--duration-fast);
+    animation-timing-function: var(--ease-smooth-out);
+}
+::view-transition-old(.page-morph) {
+    animation: var(--duration-quick) var(--ease-smooth-out) both page-exit;
+}
+::view-transition-new(.page-morph) {
+    animation: var(--duration-fast) var(--ease-smooth-out) both page-enter;
+}
+
+/* Fallback for boundaries that enter or exit unpaired (for example when the
+   destination suspends and its content arrives in a later commit). */
+::view-transition-old(.page-exit) {
+    animation: var(--duration-quick) var(--ease-smooth-out) both page-exit;
+}
+::view-transition-new(.page-enter) {
+    animation: var(--duration-fast) var(--ease-smooth-out) both page-enter;
+}
+
+@keyframes page-exit {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    }
+  to {
+    opacity: 0;
+    filter: blur(var(--blur-small));
+    }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    filter: blur(var(--blur-small));
+    translate: 0 var(--distance-base);
+    }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    translate: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    }
+}

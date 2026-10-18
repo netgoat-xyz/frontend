@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import type { TeamOption } from "@/components/dashboard/team-switcher";
 import { ThemeToggle } from "@/components/dashboard/theme-toggle";
 import type { ShellUser } from "@/components/dashboard/user-menu";
+import { PageTransition } from "@/components/page-transition";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 type DashboardShellProps = {
@@ -41,7 +42,9 @@ export function DashboardShell({
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-4 md:p-6">
+          <PageTransition>{children}</PageTransition>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

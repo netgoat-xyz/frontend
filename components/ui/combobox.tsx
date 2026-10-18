@@ -190,14 +190,12 @@ export function ComboboxPopup({
         side={side}
         sideOffset={sideOffset}
       >
-        <span
-          className={cn(
-            "relative flex max-h-full min-w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin) rounded-lg border bg-popover not-dark:bg-clip-padding shadow-lg/5 transition-[scale,opacity] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
-            className,
-          )}
-        >
+        <span className="relative flex max-h-full min-w-(--anchor-width) max-w-(--available-width)">
           <ComboboxPrimitive.Popup
-            className="flex max-h-[min(var(--available-height),23rem)] flex-1 flex-col text-foreground"
+            className={cn(
+              "relative flex max-h-[min(var(--available-height),23rem)] flex-1 flex-col origin-(--transform-origin) rounded-lg border bg-popover not-dark:bg-clip-padding text-foreground shadow-lg/5 transition-[scale,opacity] duration-(--duration-fast) ease-(--ease-smooth-out) data-starting-style:scale-(--scale-medium) data-starting-style:opacity-0 data-ending-style:scale-(--scale-tiny) data-ending-style:opacity-0 data-ending-style:duration-(--duration-quick) before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
+              className,
+            )}
             data-slot="combobox-popup"
             {...props}
           >
