@@ -5,7 +5,7 @@ import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
  */
 const SessionSchema = new Schema(
   {
-    userId: { type: String, required: true, index: true },
+    userId: { type: String, required: true },
     token: { type: String, required: true },
     expiresAt: { type: Date, required: true },
     ipAddress: String,
