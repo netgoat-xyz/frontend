@@ -60,11 +60,17 @@ export function TeamSwitcher({
     <Menu>
       <MenuTrigger
         render={
-          <SidebarMenuButton size="lg" className="data-popup-open:bg-sidebar-accent" />
+          <SidebarMenuButton
+            size="lg"
+            className="data-popup-open:bg-sidebar-accent"
+          />
         }
       >
-        <TeamAvatar team={current} className="size-6 rounded-md text-xs" />
-        <span className="grid flex-1 text-start leading-tight">
+        <TeamAvatar
+          team={current}
+          className="size-6 rounded-md text-xs group-data-[collapsible=icon]:size-4 group-data-[collapsible=icon]:rounded group-data-[collapsible=icon]:text-[9px]"
+        />
+        <span className="grid flex-1 text-start leading-tight group-data-[collapsible=icon]:hidden">
           <span className="truncate text-sm font-medium">{current.name}</span>
           <span className="text-muted-foreground truncate text-xs">
             {current.slug}
@@ -72,7 +78,7 @@ export function TeamSwitcher({
         </span>
         <HugeiconsIcon
           icon={UnfoldMoreIcon}
-          className="text-muted-foreground ms-auto size-4"
+          className="text-muted-foreground ms-auto size-4 group-data-[collapsible=icon]:hidden"
         />
       </MenuTrigger>
 

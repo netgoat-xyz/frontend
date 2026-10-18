@@ -1,43 +1,43 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Add01Icon, ArrowRight01Icon, Globe02Icon } from "@hugeicons/core-free-icons";
+import {
+  Add01Icon,
+  ArrowRight01Icon,
+  Globe02Icon,
+} from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { NetgoatLogo } from "@/components/brand/netgoat-logo";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { TeamAvatar } from "@/components/dashboard/team-switcher";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { listUserTeams, requireUser } from "@/lib/auth-guards";
-import { resolveTeamRole } from "@/models/Team";
+import { personalTeamSlug } from "@/lib/teams";
+import { resolveTeamRole, type TeamDocument } from "@/models/Team";
 
 export const metadata: Metadata = {
   title: "Teams",
 };
+
+function isPersonal(userId: string, team: TeamDocument): boolean {
+  return team.slug === personalTeamSlug(userId);
+}
 
 export default async function TeamsPage() {
   const user = await requireUser();
   const teams = await listUserTeams(user.id);
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-10">
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <NetgoatLogo href="/dashboard" />
-        </div>
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      <PageHeader
+        title="Teams"
+        description={`Workspaces you can open with ${user.email}. Domains, members and billing stay separate per team.`}
+      >
         <Button render={<Link href="/dashboard/teams/new" />}>
           <HugeiconsIcon icon={Add01Icon} />
           New team
         </Button>
-      </header>
-
-      <div className="flex flex-col gap-1">
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">
-          Your teams
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Workspaces you can open with {user.email}.
-        </p>
-      </div>
+      </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2">
         {teams.map((team) => {
@@ -76,6 +76,9 @@ export default async function TeamsPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-1.5">
+                {isPersonal(user.id, team) ? (
+                  <Badge variant="info">Personal</Badge>
+                ) : null}
                 <Badge variant="secondary">{role?.name ?? "Member"}</Badge>
                 <Badge variant="outline" className="capitalize">
                   {team.plan}

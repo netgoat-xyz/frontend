@@ -35,16 +35,19 @@ export function UserMenu({ user }: { user: ShellUser }) {
     <Menu>
       <MenuTrigger
         render={
-          <SidebarMenuButton size="lg" className="data-popup-open:bg-sidebar-accent" />
+          <SidebarMenuButton
+            size="lg"
+            className="data-popup-open:bg-sidebar-accent"
+          />
         }
       >
-        <Avatar className="size-6 rounded-md">
+        <Avatar className="size-6 rounded-md group-data-[collapsible=icon]:size-4 group-data-[collapsible=icon]:rounded">
           {user.image ? <AvatarImage src={user.image} alt="" /> : null}
-          <AvatarFallback className="rounded-md text-[10px]">
+          <AvatarFallback className="rounded-md text-[10px] group-data-[collapsible=icon]:rounded group-data-[collapsible=icon]:text-[8px]">
             {initials}
           </AvatarFallback>
         </Avatar>
-        <span className="grid flex-1 text-start leading-tight">
+        <span className="grid flex-1 text-start leading-tight group-data-[collapsible=icon]:hidden">
           <span className="truncate text-sm font-medium">{user.name}</span>
           <span className="text-muted-foreground truncate text-xs">
             {user.email}

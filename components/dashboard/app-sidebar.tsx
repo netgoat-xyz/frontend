@@ -60,9 +60,13 @@ export function AppSidebar({ user, teams, team }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="gap-3">
-        <div className="flex h-8 items-center px-1 group-data-[collapsible=icon]:justify-center">
-          <NetgoatLogo size="sm" href="/dashboard" className="group-data-[collapsible=icon]:[&>span]:hidden" />
+      <SidebarHeader>
+        <div className="flex h-10 items-center px-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+          <NetgoatLogo
+            size="sm"
+            href="/dashboard"
+            className="group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:[&>span]:hidden"
+          />
         </div>
         <TeamSwitcher teams={teams} current={team} />
       </SidebarHeader>

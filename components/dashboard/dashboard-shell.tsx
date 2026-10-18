@@ -10,6 +10,8 @@ type DashboardShellProps = {
   user: ShellUser;
   teams: TeamOption[];
   team: TeamOption;
+  /** Shown in the top bar instead of the team name (account, teams, …). */
+  contextLabel?: string;
   children: React.ReactNode;
 };
 
@@ -21,6 +23,7 @@ export function DashboardShell({
   user,
   teams,
   team,
+  contextLabel,
   children,
 }: DashboardShellProps) {
   return (
@@ -30,8 +33,8 @@ export function DashboardShell({
       <SidebarInset>
         <header className="bg-background/80 sticky top-0 z-20 flex h-14 items-center gap-2 border-b px-4 backdrop-blur-sm">
           <SidebarTrigger />
-          <span className="text-muted-foreground hidden text-sm sm:inline">
-            {team.name}
+          <span className="text-muted-foreground truncate text-sm">
+            {contextLabel ?? team.name}
           </span>
           <div className="ms-auto flex items-center gap-1">
             <ThemeToggle />
