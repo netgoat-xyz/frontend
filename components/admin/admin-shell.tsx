@@ -5,6 +5,7 @@ import {
   Alert02Icon,
   AlertDiamondIcon,
   AnalyticsUpIcon,
+  CpuIcon,
   DashboardSquare01Icon,
   File02Icon,
   PuzzleIcon,
@@ -36,6 +37,7 @@ const ADMIN_LINKS: Array<{
   { href: "/admin/logs", label: "Logs", icon: ScrollIcon },
   { href: "/admin/plugins", label: "Plugins", icon: PuzzleIcon },
   { href: "/admin/settings", label: "Settings", icon: Settings01Icon },
+  { href: "/admin/system", label: "System", icon: CpuIcon },
 ];
 
 /** Chrome for the admin console: brand, section nav and quick exits. */
