@@ -9,7 +9,6 @@ import {
   DashboardSquare01Icon,
   File02Icon,
   Message02Icon,
-  PuzzleIcon,
   ScrollIcon,
   Settings01Icon,
   UserGroupIcon,
@@ -37,7 +36,6 @@ const ADMIN_LINKS: Array<{
   { href: "/admin/analytics", label: "Analytics", icon: AnalyticsUpIcon },
   { href: "/admin/logs", label: "Logs", icon: ScrollIcon },
   { href: "/admin/feedback", label: "Feedback", icon: Message02Icon },
-  { href: "/admin/plugins", label: "Plugins", icon: PuzzleIcon },
   { href: "/admin/settings", label: "Settings", icon: Settings01Icon },
   { href: "/admin/system", label: "System", icon: CpuIcon },
 ];
