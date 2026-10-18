@@ -1,7 +1,10 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Search01Icon } from "@hugeicons/core-free-icons";
+import {
+  InformationCircleIcon,
+  Search01Icon,
+} from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
@@ -9,9 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -115,6 +120,13 @@ export function IntegrationsCatalog() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<Category | "all">("all");
   const [selected, setSelected] = useState<Integration | null>(null);
+  // Kept while the dialog animates out so the closing frame is not empty.
+  const [detail, setDetail] = useState<Integration | null>(null);
+
+  function openDetail(integration: Integration) {
+    setDetail(integration);
+    setSelected(integration);
+  }
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -176,7 +188,7 @@ export function IntegrationsCatalog() {
             <button
               key={integration.key}
               type="button"
-              onClick={() => setSelected(integration)}
+              onClick={() => openDetail(integration)}
               className="bg-card hover:border-foreground/20 focus-visible:ring-ring flex flex-col gap-3 rounded-xl border p-4 text-start transition-colors outline-none focus-visible:ring-2"
             >
               <div className="flex items-center gap-3">
@@ -210,38 +222,60 @@ export function IntegrationsCatalog() {
           if (!open) setSelected(null);
         }}
       >
-        <DialogPopup className="max-w-lg">
-          {selected ? (
+        <DialogPopup>
+          {detail ? (
             <>
-              <DialogHeader>
-                <div className="flex items-center gap-3">
-                  <Image
-                    src={selected.logo}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="size-10 rounded-lg object-cover"
-                  />
-                  <div className="flex flex-col">
-                    <DialogTitle>{selected.name}</DialogTitle>
-                    <DialogDescription>
-                      {CATEGORY_LABELS[selected.category]}
+              <DialogHeader className="pe-10">
+                <div className="flex items-center gap-3.5">
+                  <span className="bg-muted flex size-12 shrink-0 items-center justify-center rounded-xl border">
+                    <Image
+                      src={detail.logo}
+                      alt=""
+                      width={28}
+                      height={28}
+                      className="size-7 rounded-md object-cover"
+                    />
+                  </span>
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <DialogTitle>{detail.name}</DialogTitle>
+                    <DialogDescription className="flex flex-wrap items-center gap-1.5">
+                      <Badge variant="outline">
+                        {CATEGORY_LABELS[detail.category]}
+                      </Badge>
+                      <Badge variant="info">Preview</Badge>
                     </DialogDescription>
                   </div>
-                  <Badge variant="outline" className="ms-auto">
-                    Preview
-                  </Badge>
                 </div>
               </DialogHeader>
 
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {selected.details}
-              </p>
+              <DialogPanel className="flex flex-col gap-4">
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {detail.details}
+                </p>
+                <div className="bg-muted/50 text-muted-foreground flex items-start gap-2.5 rounded-lg border p-3 text-xs leading-relaxed">
+                  <HugeiconsIcon
+                    icon={InformationCircleIcon}
+                    className="mt-0.5 size-3.5 shrink-0"
+                  />
+                  <span>
+                    This connector is in preview. Early access is opened per
+                    workspace while the rollout is in progress.
+                  </span>
+                </div>
+              </DialogPanel>
 
               <DialogFooter>
+                <DialogClose render={<Button variant="ghost" />}>
+                  Close
+                </DialogClose>
                 <Button
-                  variant="outline"
-                  render={<a href="mailto:support@netgoat.dev?subject=Integration%20access" />}
+                  render={
+                    <a
+                      href={`mailto:support@netgoat.dev?subject=${encodeURIComponent(
+                        `Integration access: ${detail.name}`,
+                      )}`}
+                    />
+                  }
                 >
                   Request early access
                 </Button>
