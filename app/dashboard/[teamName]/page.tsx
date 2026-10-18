@@ -68,7 +68,7 @@ export default async function TeamOverviewPage({
       {alerts.length > 0 ? (
         <div className="mb-6 flex flex-col gap-3">
           {alerts.map((alert) => (
-            <Alert key={String(alert._id)} variant={ALERT_VARIANTS[alert.variant]}>
+            <Alert key={alert.id} variant={ALERT_VARIANTS[alert.variant]}>
               <HugeiconsIcon icon={Alert02Icon} />
               <AlertTitle>{alert.title}</AlertTitle>
               <AlertDescription>{alert.body}</AlertDescription>
