@@ -323,7 +323,7 @@ export function AlertsManager({ alerts }: { alerts: AlertView[] }) {
                 placeholder="Dismiss"
               />
               <FieldDescription>
-                Shown on the alert's button. Defaults to “Dismiss”.
+                Shown on the alert&rsquo;s button. Defaults to &ldquo;Dismiss&rdquo;.
               </FieldDescription>
             </Field>
 
