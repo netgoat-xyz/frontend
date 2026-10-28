@@ -1,13 +1,25 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
+import localFont from "next/font/local";
 
 import { AppProviders } from "@/app/providers";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const interHeading = Inter({ subsets: ["latin"], variable: "--font-heading" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
+
+/**
+ * Headings are set in Cal Sans v2 (OFL, bundled in `app/fonts`). It is one
+ * variable font with optical sizing, so the browser swaps in the display
+ * drawing for headlines and the text drawing for small labels on its own.
+ */
+const calSans = localFont({
+  src: "./fonts/cal-sans-var.woff2",
+  variable: "--font-heading",
+  display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3002";
 
@@ -46,11 +58,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
         className={cn(
           inter.variable,
-          interHeading.variable,
+          calSans.variable,
           geistMono.variable,
           "bg-background text-foreground font-sans antialiased",
         )}

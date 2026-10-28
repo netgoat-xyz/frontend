@@ -349,3 +349,110 @@
     animation-delay: 0s !important;
     }
 }
+
+/* ---------------------------------------------------------------------------
+   Marketing pages
+   The public pages reuse the motion tokens above. Entrances run once, on first
+   paint or on first scroll into view. Nothing loops.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-padding-top: 4.5rem;
+  }
+
+  @keyframes hero-rise {
+  from {
+    opacity: 0;
+    translate: 0 var(--distance-medium);
+        }
+  to {
+    opacity: 1;
+    translate: 0 0;
+        }
+    }
+
+  .hero-rise {
+    animation: hero-rise var(--duration-slow) var(--ease-smooth-out) both;
+    }
+
+  /* The wire: a hairline that draws itself in from the left when a section
+     enters, like a link coming up. */
+  @keyframes wire-draw-x {
+  from {
+    scale: 0 1;
+        }
+  to {
+    scale: 1 1;
+        }
+    }
+
+  .wire-draw {
+    transform-origin: left center;
+    animation: wire-draw-x var(--duration-slow) var(--ease-smooth-out) both;
+    }
+
+  /* A request travelling the wire: one small dot crossing the closing band.
+     It is the only looping animation on the page and it never moves layout. */
+  @keyframes wire-sweep {
+  0% {
+    left: 0%;
+    opacity: 0;
+        }
+  10% {
+    opacity: 1;
+        }
+  85% {
+    opacity: 1;
+        }
+  100% {
+    left: 100%;
+    opacity: 0;
+        }
+    }
+
+  .wire-sweep {
+    animation: wire-sweep 9s var(--ease-linear) infinite;
+    }
+}
+
+.reveal {
+    opacity: 0;
+    translate: 0 var(--distance-base);
+    transition:
+        opacity var(--duration-slow) var(--ease-smooth-out),
+        translate var(--duration-slow) var(--ease-smooth-out);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal[data-shown] {
+    opacity: 1;
+    translate: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    translate: none;
+    transition: none;
+    }
+}
+
+/* Faint instrument grid behind the hero, fading out on every side. */
+.edge-grid {
+    background-image:
+        linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(
+        ellipse 70% 55% at 50% 0%,
+        black 10%,
+        transparent 78%
+    );
+}
+
+/* Cal Sans v2 ships neutral, text and display drawings in one file. The
+   marketing headlines run the geometry up to the display cut; the panel keeps
+   the default geometry so small headings stay quiet. */
+[data-marketing] :is(h1, h2).font-heading {
+    font-variation-settings: "GEOM" 50;
+}
