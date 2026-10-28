@@ -120,6 +120,10 @@ review. CI runs the same checks on every pull request.
 
 ## License
 
-See [LICENSE](LICENSE) in the repository root. NetGoat branding and mascot
-artwork are project assets and are not licensed for reuse as third-party
-branding.
+[GNU Affero General Public License v3.0](LICENSE), matching the NetGoat agent
+and stream server. NetGoat branding and mascot artwork are project assets and
+are not licensed for reuse as third-party branding.
+
+> The `main` branch of this repository currently ships a file named `LICENSE`
+> that contains a privacy-policy page rather than licence text. It was left
+> untouched; aligning it with this branch is a maintainer decision.
