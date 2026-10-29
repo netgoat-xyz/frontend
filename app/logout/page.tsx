@@ -1,28 +1,40 @@
 "use client";
-import { authClient } from "@/lib/auth-client";
+
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function YeetMe() {
+import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/auth-client";
+
+export default function LogoutPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const performSignOut = async () => {
-      await authClient.signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            router.push("/");
-          },
-        },
-      });
-    };
+    let active = true;
 
-    performSignOut();
+    async function signOut() {
+      try {
+        await authClient.signOut();
+      } finally {
+        if (active) {
+          router.replace("/");
+          router.refresh();
+        }
+      }
+    }
+
+    void signOut();
+    return () => {
+      active = false;
+    };
   }, [router]);
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-      <h1 className="text-2xl font-bold">Logging you out...</h1>
-    </div>
+    <main className="flex min-h-svh items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <Spinner className="size-5" />
+        <p className="text-muted-foreground text-sm">Signing you out…</p>
+      </div>
+    </main>
   );
 }

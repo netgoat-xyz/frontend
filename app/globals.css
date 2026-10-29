@@ -1,201 +1,458 @@
-@import "highlight.js/styles/github-dark.css";
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
-
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-calsans: 'Cal Sans';
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+    --animate-skeleton: skeleton 2s -1s infinite linear;
+    --animate-caret-blink: 1s ease-out infinite caret-blink;
+    --animate-toast-success-odd: toast-success-odd 0.32s cubic-bezier(0.5, 1, 0.89, 1);
+    --animate-toast-success-even: toast-success-even 0.32s cubic-bezier(0.5, 1, 0.89, 1);
+    --animate-toast-error-odd: toast-error-odd 0.28s cubic-bezier(0.5, 1, 0.89, 1);
+    --animate-toast-error-even: toast-error-even 0.28s cubic-bezier(0.5, 1, 0.89, 1);
+    --font-heading: var(--font-heading);
+    --font-mono: var(--font-mono);
+    --font-sans: var(--font-sans);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar: var(--sidebar);
+    --color-code-highlight: var(--code-highlight);
+    --code-foreground: var(--code-foreground);
+    --color-code: var(--code);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-ring: var(--ring);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-input: var(--input);
+    --color-foreground: var(--foreground);
+    --color-destructive: var(--destructive);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-border: var(--border);
+    --color-background: var(--background);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-warning: var(--warning);
+    --color-success-foreground: var(--success-foreground);
+    --color-success: var(--success);
+    --color-info-foreground: var(--info-foreground);
+    --color-info: var(--info);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+  @keyframes skeleton {
+  to {
+    background-position: -200% 0;
+        }
+    }
+  @keyframes caret-blink {
+  0%, 70%, to {
+    opacity: 1;
+        }
+  20%, 50% {
+    opacity: 0;
+        }
+    }
+  @keyframes toast-success-odd {
+  0% {
+    scale: 1;
+        }
+  30% {
+    scale: 1.025;
+        }
+  60% {
+    scale: 0.99;
+        }
+  100% {
+    scale: 1;
+        }
+    }
+  @keyframes toast-error-odd {
+  0% {
+    translate: 0 0;
+        }
+  25% {
+    translate: -3px 0;
+        }
+  50% {
+    translate: 3px 0;
+        }
+  75% {
+    translate: -3px 0;
+        }
+  100% {
+    translate: 0 0;
+        }
+    }
+  @keyframes toast-success-even {
+  0% {
+    scale: 1;
+        }
+  30% {
+    scale: 1.025;
+        }
+  60% {
+    scale: 0.99;
+        }
+  100% {
+    scale: 1;
+        }
+    }
+  @keyframes toast-error-even {
+  0% {
+    translate: 0 0;
+        }
+  25% {
+    translate: -3px 0;
+        }
+  50% {
+    translate: 3px 0;
+        }
+  75% {
+    translate: -3px 0;
+        }
+  100% {
+    translate: 0 0;
+        }
+    }
 }
 
 :root {
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.205 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.205 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+    --destructive-foreground: var(--color-red-700);
+    --info: var(--color-blue-500);
+    --info-foreground: var(--color-blue-700);
+    --success: var(--color-emerald-500);
+    --success-foreground: var(--color-emerald-700);
+    --warning: var(--color-amber-500);
+    --warning-foreground: var(--color-amber-700);
+    --accent: --alpha(var(--color-black) / 4%);
+    --accent-foreground: var(--color-neutral-800);
+    --background: var(--color-white);
+    --border: --alpha(var(--color-black) / 8%);
+    --card: var(--color-white);
+    --card-foreground: var(--color-neutral-800);
+    --destructive: var(--color-red-500);
+    --foreground: var(--color-neutral-800);
+    --input: --alpha(var(--color-black) / 10%);
+    --muted: --alpha(var(--color-black) / 4%);
+    --muted-foreground: color-mix(in srgb, var(--color-neutral-500) 90%, var(--color-black));
+    --popover: var(--color-white);
+    --popover-foreground: var(--color-neutral-800);
+    --primary: var(--color-neutral-800);
+    --primary-foreground: var(--color-neutral-50);
+    --ring: var(--color-neutral-400);
+    --secondary: --alpha(var(--color-black) / 4%);
+    --secondary-foreground: var(--color-neutral-800);
+    --chart-1: var(--color-orange-600);
+    --chart-2: var(--color-teal-600);
+    --chart-3: var(--color-cyan-900);
+    --chart-4: var(--color-amber-400);
+    --chart-5: var(--color-amber-500);
+    --code: var(--color-white);
+    --code-foreground: var(--foreground);
+    --code-highlight: --alpha(var(--color-black) / 4%);
+    --radius: 0.625rem;
+    --sidebar: var(--color-neutral-50);
+    --sidebar-accent: --alpha(var(--color-black) / 4%);
+    --sidebar-accent-foreground: var(--color-neutral-800);
+    --sidebar-border: --alpha(var(--color-black) / 6%);
+    --sidebar-foreground: color-mix(in srgb, var(--color-neutral-800) 64%, var(--sidebar));
+    --sidebar-primary: var(--color-neutral-800);
+    --sidebar-primary-foreground: var(--color-neutral-50);
+    --sidebar-ring: var(--color-neutral-400);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.87 0.00 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.87 0.00 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.87 0.00 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+    --destructive-foreground: var(--color-red-400);
+    --info: var(--color-blue-500);
+    --info-foreground: var(--color-blue-400);
+    --success: var(--color-emerald-500);
+    --success-foreground: var(--color-emerald-400);
+    --warning: var(--color-amber-500);
+    --warning-foreground: var(--color-amber-400);
+    --accent: --alpha(var(--color-white) / 4%);
+    --accent-foreground: var(--color-neutral-100);
+    --background: color-mix(in srgb, var(--color-neutral-950) 95%, var(--color-white));
+    --border: --alpha(var(--color-white) / 6%);
+    --card: color-mix(in srgb, var(--background) 98%, var(--color-white));
+    --card-foreground: var(--color-neutral-100);
+    --destructive: color-mix(in srgb, var(--color-red-500) 90%, var(--color-white));
+    --foreground: var(--color-neutral-100);
+    --input: --alpha(var(--color-white) / 8%);
+    --muted: --alpha(var(--color-white) / 4%);
+    --muted-foreground: color-mix(in srgb, var(--color-neutral-500) 90%, var(--color-white));
+    --popover: color-mix(in srgb, var(--background) 98%, var(--color-white));
+    --popover-foreground: var(--color-neutral-100);
+    --primary: var(--color-neutral-100);
+    --primary-foreground: var(--color-neutral-800);
+    --ring: var(--color-neutral-500);
+    --secondary: --alpha(var(--color-white) / 4%);
+    --secondary-foreground: var(--color-neutral-100);
+    --chart-1: var(--color-blue-700);
+    --chart-2: var(--color-emerald-500);
+    --chart-3: var(--color-amber-500);
+    --chart-4: var(--color-purple-500);
+    --chart-5: var(--color-rose-500);
+    --code: color-mix(in srgb, var(--background) 98%, var(--color-white));
+    --code-foreground: var(--foreground);
+    --code-highlight: --alpha(var(--color-white) / 4%);
+    --sidebar: color-mix(in srgb, var(--color-neutral-950) 97%, var(--color-white));
+    --sidebar-accent: --alpha(var(--color-white) / 4%);
+    --sidebar-accent-foreground: var(--color-neutral-100);
+    --sidebar-border: --alpha(var(--color-white) / 5%);
+    --sidebar-foreground: color-mix(in srgb, var(--color-neutral-100) 64%, var(--sidebar));
+    --sidebar-primary: var(--color-neutral-100);
+    --sidebar-primary-foreground: var(--color-neutral-800);
+    --sidebar-ring: var(--color-neutral-400);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    @apply border-border outline-ring/50;
-  }
+    }
   body {
     @apply bg-background text-foreground;
-    @apply bg-background text-foreground;
-  }
+    }
+  code, kbd, samp, pre {
+    font-family: var(--font-mono);
+    }
+  html {
+    @apply font-sans font-mono;
+    }
 }
 
-.animate-gradient-x {
-  background-size: 200% 200%;
-  animation: gradient-x 15s ease infinite;
+/* ---------------------------------------------------------------------------
+   Motion tokens
+   The shared motion scale (transitions.dev). Menus, tabs and page changes all
+   read from these, so timing and easing stay consistent across the app.
+--------------------------------------------------------------------------- */
+:root {
+    /* Durations */
+    --duration-stagger: 40ms;    /* per-item stagger offset */
+    --duration-micro: 80ms;      /* tooltip delay, shake segment, large stagger */
+    --duration-quick: 150ms;     /* dropdown/modal close, text swap, tooltip appear */
+    --duration-fast: 250ms;      /* dropdown open, tabs sliding, page slide */
+    --duration-medium: 350ms;    /* panel close, toast close */
+    --duration-slow: 400ms;      /* panel open, skeleton content reveal */
+    --duration-very-slow: 500ms; /* emphasis moments, badge appear */
+    /* Easings */
+    --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: ease-in-out;
+    --ease-out: ease-out;
+    --ease-linear: linear;
+    --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+    --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1);
+    /* Distances */
+    --distance-micro: 4px;
+    --distance-small: 6px;
+    --distance-base: 8px;
+    --distance-medium: 12px;
+    --distance-large: 30px;
+    /* Scales */
+    --scale-large: 0.96;  /* modal pre-scale */
+    --scale-medium: 0.97; /* dropdown pre-scale */
+    --scale-small: 0.98;  /* tooltip pre-scale */
+    --scale-tiny: 0.99;   /* dropdown closing scale */
+    /* Blur */
+    --blur-small: 2px;
+    --blur-medium: 3px;
+    --blur-large: 8px;
 }
 
-@keyframes gradient-x {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+/* ---------------------------------------------------------------------------
+   Page transitions
+   Route changes crossfade only the content region (see PageTransition). The
+   persistent shell is left out of the snapshot so the sidebar and top bar
+   never move; the root swap is instant for the same reason.
+--------------------------------------------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
 }
 
-.mask-gradient-b {
-  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+/* Keep the app clickable while a transition is running. */
+::view-transition {
+    pointer-events: none;
 }
 
-@layer components {
-  .docs-prose {
-    @apply prose-headings:font-semibold prose-headings:text-foreground prose-headings:tracking-tight prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-foreground prose-strong:font-semibold prose-code:text-foreground/90 prose-code:bg-muted/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-[0.9em] prose-pre:text-muted-foreground;
+/* Paired navigation: React matches the old and new content boundaries by
+   name and plays the `page-morph` share transition. */
+::view-transition-group(.page-morph) {
+    animation-duration: var(--duration-fast);
+    animation-timing-function: var(--ease-smooth-out);
+}
+::view-transition-old(.page-morph) {
+    animation: var(--duration-quick) var(--ease-smooth-out) both page-exit;
+}
+::view-transition-new(.page-morph) {
+    animation: var(--duration-fast) var(--ease-smooth-out) both page-enter;
+}
+
+/* Fallback for boundaries that enter or exit unpaired (for example when the
+   destination suspends and its content arrives in a later commit). */
+::view-transition-old(.page-exit) {
+    animation: var(--duration-quick) var(--ease-smooth-out) both page-exit;
+}
+::view-transition-new(.page-enter) {
+    animation: var(--duration-fast) var(--ease-smooth-out) both page-enter;
+}
+
+@keyframes page-exit {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    }
+  to {
+    opacity: 0;
+    filter: blur(var(--blur-small));
+    }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    filter: blur(var(--blur-small));
+    translate: 0 var(--distance-base);
+    }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    translate: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+   Marketing pages
+   The public pages reuse the motion tokens above. Entrances run once, on first
+   paint or on first scroll into view. Nothing loops.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-padding-top: 4.5rem;
   }
 
-  .docs-prose :where(a) {
-    @apply text-primary font-medium hover:underline hover:text-primary/80 transition-colors;
-  }
+  @keyframes hero-rise {
+  from {
+    opacity: 0;
+    translate: 0 var(--distance-medium);
+        }
+  to {
+    opacity: 1;
+    translate: 0 0;
+        }
+    }
 
-  .docs-prose :where(hr) {
-    @apply border-border my-8;
-  }
+  .hero-rise {
+    animation: hero-rise var(--duration-slow) var(--ease-smooth-out) both;
+    }
 
-  .docs-prose :where(h1) {
-    @apply text-3xl md:text-4xl tracking-tight mb-6 mt-2;
-  }
+  /* The wire: a hairline that draws itself in from the left when a section
+     enters, like a link coming up. */
+  @keyframes wire-draw-x {
+  from {
+    scale: 0 1;
+        }
+  to {
+    scale: 1 1;
+        }
+    }
 
-  .docs-prose :where(h2) {
-    @apply text-2xl md:text-3xl tracking-tight mt-10 mb-4 border-b border-border pb-2;
-  }
+  .wire-draw {
+    transform-origin: left center;
+    animation: wire-draw-x var(--duration-slow) var(--ease-smooth-out) both;
+    }
 
-  .docs-prose :where(h3) {
-    @apply text-xl md:text-2xl mt-8 mb-4 tracking-tight;
-  }
+  /* A request travelling the wire: one small dot crossing the closing band.
+     It is the only looping animation on the page and it never moves layout. */
+  @keyframes wire-sweep {
+  0% {
+    left: 0%;
+    opacity: 0;
+        }
+  10% {
+    opacity: 1;
+        }
+  85% {
+    opacity: 1;
+        }
+  100% {
+    left: 100%;
+    opacity: 0;
+        }
+    }
 
-  .docs-prose :where(blockquote) {
-    @apply border-l-4 border-primary bg-muted/30 px-6 py-4 text-muted-foreground italic rounded-r-lg my-6;
-  }
+  .wire-sweep {
+    animation: wire-sweep 9s var(--ease-linear) infinite;
+    }
+}
 
-  .docs-prose :where(pre) {
-    @apply rounded-xl border border-border bg-card/60 shadow-sm p-4 my-6 overflow-x-auto text-[0.9em];
-  }
+.reveal {
+    opacity: 0;
+    translate: 0 var(--distance-base);
+    transition:
+        opacity var(--duration-slow) var(--ease-smooth-out),
+        translate var(--duration-slow) var(--ease-smooth-out);
+    transition-delay: var(--reveal-delay, 0ms);
+}
 
-  .docs-prose :where(table) {
-    @apply w-full overflow-hidden rounded-lg border border-border bg-card/40 shadow-sm my-8 text-sm;
-  }
+.reveal[data-shown] {
+    opacity: 1;
+    translate: none;
+}
 
-  .docs-prose :where(thead) {
-    @apply bg-muted/50 border-b border-border text-left;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    translate: none;
+    transition: none;
+    }
+}
 
-  .docs-prose :where(th, td) {
-    @apply border-b border-border p-3 text-muted-foreground;
-  }
-  
-  .docs-prose :where(th) {
-    @apply font-medium text-foreground;
-  }
+/* Faint instrument grid behind the hero, fading out on every side. */
+.edge-grid {
+    background-image:
+        linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(
+        ellipse 70% 55% at 50% 0%,
+        black 10%,
+        transparent 78%
+    );
+}
+
+/* Cal Sans v2 ships neutral, text and display drawings in one file. The
+   marketing headlines run the geometry up to the display cut; the panel keeps
+   the default geometry so small headings stay quiet. */
+[data-marketing] :is(h1, h2).font-heading {
+    font-variation-settings: "GEOM" 50;
 }

@@ -1,29 +1,47 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  image: String,
-  role: { type: String, default: "user" },
-  banned: { type: Boolean, default: false },
-  
-  experiments: [String],
-  
-  // Domain tracking
-  domain_count: { type: Number, default: 0 },
-  max_domains: { type: Number, default: 5 }, // Quota limit
-  
-  // Stats
-  total_bandwidth: { type: Number, default: 0 },
-  total_requests: { type: Number, default: 0 },
+/**
+ * Better-Auth `user` collection. Field names and collection name must stay
+ * compatible with the shared NetGoat database so existing accounts keep
+ * working across frontend and frontend-v2.
+ */
+const UserSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    emailVerified: { type: Boolean, default: false },
+    image: String,
 
-  createdAt: Date,
-  updatedAt: Date
-}, { collection: "user" }); 
+    /** "user" | "admin" — managed server-side only. */
+    role: { type: String, enum: ["user", "admin"], default: "user" },
+    banned: { type: Boolean, default: false },
+    banReason: String,
+    banExpires: Date,
 
-// Virtual for checking if user can add more domains
-UserSchema.virtual('can_add_domain').get(function() {
-  return this.domain_count < this.max_domains;
-});
+    experiments: { type: [String], default: [] },
 
-export default mongoose.models.User || mongoose.model("User", UserSchema);
+    // Domain quota tracking
+    domain_count: { type: Number, default: 0 },
+    max_domains: { type: Number, default: 5 },
+
+    // Aggregate stats
+    total_bandwidth: { type: Number, default: 0 },
+    total_requests: { type: Number, default: 0 },
+
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+  },
+  { collection: "user", versionKey: "__v" },
+);
+
+UserSchema.index({ email: 1 }, { unique: true });
+
+export type UserDocument = InferSchemaType<typeof UserSchema> & {
+  _id: mongoose.Types.ObjectId;
+};
+
+export const User: Model<UserDocument> =
+  (mongoose.models.User as Model<UserDocument>) ??
+  mongoose.model<UserDocument>("User", UserSchema);
+
+export default User;

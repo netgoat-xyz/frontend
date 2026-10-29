@@ -1,0 +1,20 @@
+{
+  "languageVersion": "1.0",
+  "operators": [
+    { "name": "or", "kind": "logical", "arity": 2, "precedence": 1, "description": "Logical disjunction (three-valued)." },
+    { "name": "and", "kind": "logical", "arity": 2, "precedence": 2, "description": "Logical conjunction (three-valued)." },
+    { "name": "==", "kind": "comparison", "arity": 2, "precedence": 3, "description": "Equality. Also valid against null." },
+    { "name": "!=", "kind": "comparison", "arity": 2, "precedence": 3, "description": "Inequality. Also valid against null." },
+    { "name": ">", "kind": "comparison", "arity": 2, "precedence": 3, "description": "Ordering for integer, number, duration." },
+    { "name": ">=", "kind": "comparison", "arity": 2, "precedence": 3, "description": "Ordering for integer, number, duration." },
+    { "name": "<", "kind": "comparison", "arity": 2, "precedence": 3, "description": "Ordering for integer, number, duration." },
+    { "name": "<=", "kind": "comparison", "arity": 2, "precedence": 3, "description": "Ordering for integer, number, duration." },
+    { "name": "contains", "kind": "matching", "arity": 2, "precedence": 3, "description": "Substring test on strings." },
+    { "name": "starts_with", "kind": "matching", "arity": 2, "precedence": 3, "description": "String prefix test." },
+    { "name": "ends_with", "kind": "matching", "arity": 2, "precedence": 3, "description": "String suffix test." },
+    { "name": "matches", "kind": "matching", "arity": 2, "precedence": 3, "description": "Bounded regular expression match. Right operand must be a string literal." },
+    { "name": "in", "kind": "membership", "arity": 2, "precedence": 3, "description": "Membership in a dataset or CIDR." },
+    { "name": "not in", "kind": "membership", "arity": 2, "precedence": 3, "description": "Negated membership." },
+    { "name": "not", "kind": "logical", "arity": 1, "precedence": 4, "description": "Logical negation (three-valued)." }
+  ]
+}

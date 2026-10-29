@@ -1,10 +1,30 @@
-import IntegrationClient from "@/components/interface/dashboard/integrations/client";
-import { generateTeamMetadata, type TeamMetadataParams } from "../metadata";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }: { params: TeamMetadataParams }) {
-  return generateTeamMetadata(params, "integrations");
-}
+import { IntegrationsCatalog } from "@/components/dashboard/integrations-catalog";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { getTeamContext } from "@/lib/auth-guards";
 
-export default function IntegrationsPage() {
-  return <IntegrationClient />;
+export const metadata: Metadata = {
+  title: "Integrations",
+};
+
+export default async function IntegrationsPage({
+  params,
+}: {
+  params: Promise<{ teamName: string }>;
+}) {
+  const { teamName } = await params;
+  const { team } = await getTeamContext(teamName);
+  if (!team) notFound();
+
+  return (
+    <>
+      <PageHeader
+        title="Integrations"
+        description="Connect surrounding services — DNS providers, error tracking and observability."
+      />
+      <IntegrationsCatalog />
+    </>
+  );
 }

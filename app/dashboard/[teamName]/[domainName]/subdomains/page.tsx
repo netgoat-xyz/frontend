@@ -1,56 +1,38 @@
-import { HeaderSection } from "@/components/interface/domains/overview/HeaderSection";
-import { loadDomainByRoute } from "../_lib/domain-data";
-import { SubdomainsClient } from "./SubdomainsClient";
-import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-type Props = {
-  params: {
-    teamName: string
-    domainName: string
-  } | Promise<{ teamName: string, domainName: string }>
-}
+import { PageHeader } from "@/components/dashboard/page-header";
+import { SubdomainsManager } from "@/components/domain/subdomains-manager";
+import { getDomainRoute } from "@/lib/data/domain-detail";
+import { toClientDomain } from "@/lib/domain-view";
 
-type Subdomain = {
-  subdomain: string
-  full_domain: string
-  target_url: string
-  request_count?: number
-  active: boolean
-}
-
-const SubdomainsPage = async ({ params }: Props) => {
-  const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
-  const t = await getTranslations("DashboardPages.subdomains")
-
-  if (!domain || !domainData) {
-    return (
-      <div className="min-h-svh p-4 sm:p-6 lg:p-8">
-        <h2 className="text-2xl font-semibold">{t("notFound.title")}</h2>
-        <p className="text-muted">{t("notFound.description", { domainName, teamName })}</p>
-      </div>
-    )
-  }
-
-  const subdomains: Subdomain[] = domain.subdomains || [];
-
-  return (
-    <div className="space-y-6 min-h-svh">
-      <HeaderSection domainData={domainData} />
-      
-      <div className="rounded-xl border border-neutral-800 bg-neutral-950/30 p-6">
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">
-            {t("title", { count: subdomains.length })}
-          </h3>
-        </div>
-        <SubdomainsClient
-          teamSlug={teamName}
-          domainId={domain._id.toString()}
-          subdomains={subdomains}
-        />
-      </div>
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "Subdomains",
 };
 
-export default SubdomainsPage;
+export default async function DomainSubdomainsPage({
+  params,
+}: {
+  params: Promise<{ teamName: string; domainName: string }>;
+}) {
+  const { teamName, domainName } = await params;
+  const route = await getDomainRoute(teamName, domainName);
+  if (!route) notFound();
+
+  const domain = toClientDomain(route.domain);
+
+  return (
+    <>
+      <PageHeader
+        title="Subdomains"
+        description="Additional hostnames under this domain, each with its own configuration."
+      />
+      <SubdomainsManager
+        teamSlug={route.context.team.slug}
+        domainId={domain._id}
+        domainName={domain.domain}
+        subdomains={domain.subdomains}
+      />
+    </>
+  );
+}

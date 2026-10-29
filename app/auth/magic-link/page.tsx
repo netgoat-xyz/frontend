@@ -1,14 +1,6 @@
-import MagicLinkForm from "@/components/interface/auth/MagicLinkForm";
-import ShaderBackground from "@/components/interface/homescreen/shader-background";
+import { redirect } from "next/navigation";
 
-export default function MagicLinkPage() {
-  return (
-    <ShaderBackground>
-      <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-        <div className="w-full max-w-sm md:max-w-4xl">
-          <MagicLinkForm mode="login" />
-        </div>
-      </div>
-    </ShaderBackground>
-  );
+/** Legacy alias: the generic magic-link route maps to the sign-in flow. */
+export default function MagicLinkAliasPage() {
+  redirect("/auth/login/magic-link");
 }

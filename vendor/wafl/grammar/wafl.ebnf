@@ -1,0 +1,96 @@
+(*
+ * WAFL 1.0 — Web Application Firewall Language
+ * Formal expression grammar (ISO/IEC 14977 EBNF)
+ *
+ * A policy rule is stored as structured data:
+ *     { action: WAFAction, expression: <expression> }
+ *
+ * The "rule" production below is the editor shorthand
+ *     block if attack.sqli == true
+ * and is normalized into the structured form on save.
+ *
+ * Precedence, highest to lowest:
+ *   1. parentheses / postfix index
+ *   2. not
+ *   3. == != > >= < <= contains starts_with ends_with matches in "not in"
+ *   4. and
+ *   5. or
+ *
+ * Comparison operators are non-associative: chained comparisons are a
+ * syntax error, not a silently reinterpreted expression.
+ *)
+
+rule            = action, "if", expression, EOF ;
+
+action          = "allow"
+                | "block", [ "(", integer, ")" ]
+                | "challenge", [ "(", ( string | ident ), ")" ]
+                | "log", [ "(", string, ")" ]
+                | "redirect", "(", integer, ",", string, ")"
+                | "rate_limit", "(", integer, ",", duration, ")" ;
+
+expression      = or_expr ;
+
+or_expr         = and_expr, { "or", and_expr } ;
+
+and_expr        = comparison, { "and", comparison } ;
+
+comparison      = unary, [ comparison_op, unary ] ;
+
+comparison_op   = "==" | "!=" | ">" | ">=" | "<" | "<="
+                | "contains" | "starts_with" | "ends_with" | "matches"
+                | "in" | "not", "in" ;
+
+unary           = "not", unary
+                | postfix ;
+
+postfix         = primary, { "[", expression, "]" } ;
+
+primary         = literal
+                | field
+                | dataset
+                | "(", expression, ")" ;
+
+literal         = string
+                | number
+                | integer
+                | duration
+                | ip
+                | cidr
+                | "true"
+                | "false"
+                | "null" ;
+
+field           = ident, { ".", ident } ;
+dataset         = "$", ident ;
+
+(* Lexical productions *)
+
+ident           = ident_start, { ident_part } ;
+ident_start     = "A".."Z" | "a".."z" | "_" ;
+ident_part      = ident_start | digit ;
+
+integer         = digit, { digit } ;
+
+number          = digit, { digit }, ".", digit, { digit } ;
+
+duration        = integer, ( "ms" | "s" | "m" | "h" | "d" ) ;
+
+string          = '"', { string_char | escape }, '"' ;
+escape          = "\\", ( '"' | "\\" | "/" | "b" | "f" | "n" | "r" | "t"
+                        | "u", 4 * hex_digit ) ;
+
+ip              = ipv4 | ipv6 ;
+ipv4            = octet, ".", octet, ".", octet, ".", octet ;
+octet           = digit, [ digit, [ digit ] ] ;
+
+cidr            = ip, "/", integer ;
+
+(*
+ * ipv6 is accepted only when the entire token parses as a valid address;
+ * the canonical form is computed by the reference parser.
+ *)
+
+digit           = "0".."9" ;
+hex_digit       = digit | "A".."F" | "a".."f" ;
+EOF             = ? end of input ? ;

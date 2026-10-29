@@ -1,17 +1,30 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, type Model, type Types } from "mongoose";
 
-const AlertSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  body: { type: String, required: true },
-  variant: { 
-    type: String, 
-    enum: ["red", "yellow", "blue"], 
-    default: "blue",
-    required: true 
+const AlertSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    body: { type: String, required: true },
+    variant: { type: String, enum: ["red", "yellow", "blue"], default: "blue" },
+    actionText: { type: String, default: "Dismiss" },
+    active: { type: Boolean, default: true },
   },
-  actionText: { type: String, default: "Dismiss" },
-  active: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now }
-}, { collection: "alerts" });
+  { collection: "alerts", timestamps: { createdAt: true, updatedAt: false } },
+);
 
-export default mongoose.models.Alert || mongoose.model("Alert", AlertSchema);
+AlertSchema.index({ active: 1, createdAt: -1 });
+
+export type PlatformAlert = {
+  _id: Types.ObjectId;
+  title: string;
+  body: string;
+  variant: "red" | "yellow" | "blue";
+  actionText: string;
+  active: boolean;
+  createdAt: Date;
+};
+
+export const Alert: Model<PlatformAlert> =
+  (mongoose.models.Alert as Model<PlatformAlert>) ??
+  mongoose.model<PlatformAlert>("Alert", AlertSchema, "alerts");
+
+export default Alert;

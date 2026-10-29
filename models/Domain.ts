@@ -1,214 +1,245 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, type Model, type Types } from "mongoose";
 
-type WAFRule = {
-  name: string;
-  expression: string;
-  action?: 'BLOCK' | 'ALLOW' | 'LOG';
-  priority?: number;
-  enabled?: boolean;
-  description?: string;
-  created_at?: Date;
-  updated_at?: Date;
-};
+/* -------------------------------------------------------------------------- */
+/* Embedded documents                                                          */
+/* -------------------------------------------------------------------------- */
 
-type DomainSubdomain = {
-  subdomain: string;
-  waf_rules: WAFRule[];
-};
-
-const SubdomainWAFRuleSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  expression: { type: String, required: true },
-  action: { type: String, enum: ['BLOCK', 'ALLOW', 'LOG'], default: 'BLOCK' },
-  priority: { type: Number, default: 0 },
-  enabled: { type: Boolean, default: true },
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now }
-});
-
-const SubdomainSchema = new mongoose.Schema({
-  subdomain: { type: String, required: true }, // e.g., "api", "blog", "app"
-  full_domain: { type: String, required: true }, // e.g., "api.example.com"
-  target_url: { type: String, required: true },
-  active: { type: Boolean, default: true },
-  certificate_pem: String,
-  private_key_pem: String,
-  // Optional route-scoped cache and bandwidth policy. Omitted values inherit
-  // the agent defaults and are normalized before being published.
-  route_policy: { type: mongoose.Schema.Types.Mixed },
-  
-  // Subdomain-specific WAF rules
-  waf_rules: [SubdomainWAFRuleSchema],
-  
-  // Stats
-  request_count: { type: Number, default: 0 },
-  blocked_count: { type: Number, default: 0 },
-  last_accessed: Date,
-  
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now }
-});
-
-const DomainWAFRuleSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  expression: { type: String, required: true },
-  action: { type: String, enum: ['BLOCK', 'ALLOW', 'LOG'], default: 'BLOCK' },
-  priority: { type: Number, default: 0 },
-  enabled: { type: Boolean, default: true },
-  description: String,
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now }
-});
-
-const ReverseProxySchema = new mongoose.Schema({ name: { type: String, required: true }, path: { type: String, default: "/*" }, target_url: { type: String, required: true }, enabled: { type: Boolean, default: true }, preserve_host: { type: Boolean, default: true }, created_at: { type: Date, default: Date.now } });
-const DomainSchema = new mongoose.Schema({
-  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true }, // Legacy support
-  team_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', index: true }, // Team-based ownership
-  
-  // Domain info
-  domain: { type: String, required: true }, // e.g., "example.com"
-  target_url: String, // Default target for the root domain
-  
-  // SSL/TLS
-  certificate_pem: String,
-  private_key_pem: String,
-  ssl_enabled: { type: Boolean, default: false },
-  auto_ssl: { type: Boolean, default: false },
-
-  // Optional route-scoped cache and bandwidth policy published to agents.
-  route_policy: { type: mongoose.Schema.Types.Mixed },
-  
-  // Status
-  active: { type: Boolean, default: true },
-  verified: { type: Boolean, default: false },
-  verification_token: String,
-  last_verification_check: Date,
-  verification_attempts: { type: Number, default: 0 },
-  next_verification_check: Date,
-  
-  // Global WAF rules for this domain (applies to all subdomains unless overridden)
-  waf_rules: [DomainWAFRuleSchema],
-  
-  // Subdomains
-  subdomains: [SubdomainSchema],
-
-  // Reverse Proxies
-  reverse_proxies: [ReverseProxySchema],
-  
-  // Settings
-  settings: {
-    rate_limit: { type: Number, default: 100 }, // requests per minute
-    cache_enabled: { type: Boolean, default: true },
-    cache_ttl: { type: Number, default: 300 }, // seconds
-    compression_enabled: { type: Boolean, default: true },
-    log_level: { type: String, enum: ['none', 'errors', 'all'], default: 'errors' }
+const DomainWAFRuleSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    expression: { type: String, required: true },
+    language: { type: String, enum: ["wafl", "wafscript"] },
+    action: { type: String, enum: ["BLOCK", "ALLOW", "LOG"], default: "BLOCK" },
+    priority: { type: Number, default: 0 },
+    enabled: { type: Boolean, default: true },
+    description: String,
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now },
   },
-  
-  // Stats
-  stats: {
-    total_requests: { type: Number, default: 0 },
-    total_blocked: { type: Number, default: 0 },
-    bandwidth_used: { type: Number, default: 0 }, // bytes
-    last_request: Date
-  },
-  
-  // Metadata
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now }
-}, { 
-  collection: "domains",
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
-});
+  { _id: false },
+);
 
-// Indexes
-// Use partial unique indexes so uniqueness is enforced only when the owner field exists.
-// This avoids collisions where `user_id` is null for team-owned domains.
+const SubdomainWAFRuleSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    expression: { type: String, required: true },
+    language: { type: String, enum: ["wafl", "wafscript"] },
+    action: { type: String, enum: ["BLOCK", "ALLOW", "LOG"], default: "BLOCK" },
+    priority: { type: Number, default: 0 },
+    enabled: { type: Boolean, default: true },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
+const AccessControlSchema = new Schema(
+  {
+    mode: {
+      type: String,
+      enum: ["off", "allowlist", "blocklist", "inherit"],
+      default: "off",
+    },
+    cidrs: { type: [String], default: [] },
+  },
+  { _id: false },
+);
+
+const SubdomainSchema = new Schema(
+  {
+    subdomain: { type: String, required: true },
+    full_domain: { type: String, required: true },
+    target_url: { type: String, required: true },
+    active: { type: Boolean, default: true },
+    certificate_pem: String,
+    private_key_pem: String,
+    route_policy: { type: Schema.Types.Mixed },
+    access_control: {
+      type: AccessControlSchema,
+      default: () => ({ mode: "off", cidrs: [] }),
+    },
+    waf_rules: { type: [SubdomainWAFRuleSchema], default: [] },
+    request_count: { type: Number, default: 0 },
+    blocked_count: { type: Number, default: 0 },
+    last_accessed: Date,
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
+const ReverseProxySchema = new Schema(
+  {
+    name: { type: String, required: true },
+    path: { type: String, default: "/*" },
+    target_url: { type: String, required: true },
+    enabled: { type: Boolean, default: true },
+    preserve_host: { type: Boolean, default: true },
+    created_at: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
+/* -------------------------------------------------------------------------- */
+/* Domain                                                                      */
+/* -------------------------------------------------------------------------- */
+
+const DomainSchema = new Schema(
+  {
+    /** Legacy single-user ownership (kept for compatibility). */
+    user_id: { type: Schema.Types.ObjectId, ref: "User", index: true },
+    /** Team ownership. */
+    team_id: { type: Schema.Types.ObjectId, ref: "Team", index: true },
+
+    domain: { type: String, required: true, lowercase: true, trim: true },
+    target_url: String,
+
+    certificate_pem: String,
+    private_key_pem: String,
+    ssl_enabled: { type: Boolean, default: false },
+    auto_ssl: { type: Boolean, default: false },
+
+    route_policy: { type: Schema.Types.Mixed },
+    access_control: {
+      type: AccessControlSchema,
+      default: () => ({ mode: "off", cidrs: [] }),
+    },
+
+    active: { type: Boolean, default: true },
+    dns_enabled: { type: Boolean, default: true },
+    verified: { type: Boolean, default: false },
+    verification_token: String,
+    last_verification_check: Date,
+    verification_attempts: { type: Number, default: 0 },
+    next_verification_check: Date,
+
+    waf_rules: { type: [DomainWAFRuleSchema], default: [] },
+    subdomains: { type: [SubdomainSchema], default: [] },
+    reverse_proxies: { type: [ReverseProxySchema], default: [] },
+
+    settings: {
+      rate_limit: { type: Number, default: 100 },
+      cache_enabled: { type: Boolean, default: true },
+      cache_ttl: { type: Number, default: 300 },
+      compression_enabled: { type: Boolean, default: true },
+      log_level: { type: String, enum: ["none", "errors", "all"], default: "errors" },
+    },
+
+    stats: {
+      total_requests: { type: Number, default: 0 },
+      total_blocked: { type: Number, default: 0 },
+      bandwidth_used: { type: Number, default: 0 },
+      last_request: Date,
+    },
+  },
+  {
+    collection: "domains",
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+    versionKey: "__v",
+  },
+);
+
 DomainSchema.index(
   { user_id: 1, domain: 1 },
-  { unique: true, partialFilterExpression: { user_id: { $exists: true, $ne: null } } }
+  { unique: true, partialFilterExpression: { user_id: { $exists: true, $ne: null } } },
 );
 DomainSchema.index(
   { team_id: 1, domain: 1 },
-  { unique: true, partialFilterExpression: { team_id: { $exists: true, $ne: null } } }
+  { unique: true, partialFilterExpression: { team_id: { $exists: true, $ne: null } } },
 );
 DomainSchema.index({ domain: 1 });
-DomainSchema.index({ 'subdomains.full_domain': 1 });
+DomainSchema.index({ "subdomains.full_domain": 1 });
 
-// Methods
-DomainSchema.methods.addSubdomain = function(
-  subdomain: string,
-  targetUrl: string,
-  certificate?: {
-    certificate_pem?: string
-    private_key_pem?: string
-  }
-) {
-  const fullDomain = `${subdomain}.${this.domain}`;
-  this.subdomains.push({
-    subdomain,
-    full_domain: fullDomain,
-    target_url: targetUrl,
-    active: true,
-    // Keep certificate material supplied by the server action. Previously the
-    // action passed this third argument but this method discarded it.
-    certificate_pem: certificate?.certificate_pem,
-    private_key_pem: certificate?.private_key_pem
-  });
-  return this.save();
+/* -------------------------------------------------------------------------- */
+/* Types                                                                       */
+/* -------------------------------------------------------------------------- */
+
+export type WAFRule = {
+  name: string;
+  expression: string;
+  language?: "wafl" | "wafscript";
+  action: "BLOCK" | "ALLOW" | "LOG";
+  priority: number;
+  enabled: boolean;
+  description?: string;
+  created_at: Date;
+  updated_at: Date;
 };
 
-DomainSchema.methods.removeSubdomain = function(subdomain: string) {
-  this.subdomains = this.subdomains.filter((s: DomainSubdomain) => s.subdomain !== subdomain);
-  return this.save();
+export type SubdomainWAFRule = Omit<WAFRule, "description">;
+
+export type DomainAccessControl = {
+  mode: "off" | "allowlist" | "blocklist" | "inherit";
+  cidrs: string[];
 };
 
-DomainSchema.methods.addWAFRule = function(rule: WAFRule) {
-  this.waf_rules.push(rule);
-  return this.save();
+export type DomainSubdomain = {
+  subdomain: string;
+  full_domain: string;
+  target_url: string;
+  active: boolean;
+  certificate_pem?: string;
+  private_key_pem?: string;
+  route_policy?: unknown;
+  access_control?: DomainAccessControl;
+  waf_rules: SubdomainWAFRule[];
+  request_count: number;
+  blocked_count: number;
+  last_accessed?: Date;
+  created_at: Date;
+  updated_at: Date;
 };
 
-DomainSchema.methods.removeWAFRule = function(ruleName: string) {
-  const before = this.waf_rules.length;
-  this.waf_rules = this.waf_rules.filter((rule: WAFRule) => rule.name !== ruleName);
-  if (this.waf_rules.length === before) {
-    throw new Error('WAF rule not found');
-  }
-  return this.save();
+export type ReverseProxyRule = {
+  name: string;
+  path: string;
+  target_url: string;
+  enabled: boolean;
+  preserve_host: boolean;
+  created_at: Date;
 };
 
-DomainSchema.methods.addSubdomainWAFRule = function(subdomain: string, rule: WAFRule) {
-  const sub = this.subdomains.find((s: DomainSubdomain) => s.subdomain === subdomain);
-  if (sub) {
-    sub.waf_rules.push(rule);
-    return this.save();
-  }
-  throw new Error('Subdomain not found');
+export type DomainDocument = {
+  _id: Types.ObjectId;
+  user_id?: Types.ObjectId | null;
+  team_id?: Types.ObjectId | null;
+  domain: string;
+  target_url?: string;
+  certificate_pem?: string;
+  private_key_pem?: string;
+  ssl_enabled: boolean;
+  auto_ssl: boolean;
+  route_policy?: unknown;
+  access_control?: DomainAccessControl;
+  active: boolean;
+  dns_enabled: boolean;
+  verified: boolean;
+  verification_token?: string;
+  last_verification_check?: Date;
+  verification_attempts: number;
+  next_verification_check?: Date | null;
+  waf_rules: WAFRule[];
+  subdomains: DomainSubdomain[];
+  reverse_proxies: ReverseProxyRule[];
+  settings: {
+    rate_limit: number;
+    cache_enabled: boolean;
+    cache_ttl: number;
+    compression_enabled: boolean;
+    log_level: "none" | "errors" | "all";
+  };
+  stats: {
+    total_requests: number;
+    total_blocked: number;
+    bandwidth_used: number;
+    last_request?: Date;
+  };
+  created_at: Date;
+  updated_at: Date;
 };
 
-DomainSchema.methods.removeSubdomainWAFRule = function(subdomain: string, ruleName: string) {
-  const sub = this.subdomains.find((s: DomainSubdomain) => s.subdomain === subdomain);
-  if (!sub) {
-    throw new Error('Subdomain not found');
-  }
-  const before = sub.waf_rules.length;
-  sub.waf_rules = sub.waf_rules.filter((rule: WAFRule) => rule.name !== ruleName);
-  if (sub.waf_rules.length === before) {
-    throw new Error('WAF rule not found');
-  }
-  return this.save();
-};
+export const Domain: Model<DomainDocument> =
+  (mongoose.models.Domain as Model<DomainDocument>) ??
+  mongoose.model<DomainDocument>("Domain", DomainSchema, "domains");
 
-// Statics
-DomainSchema.statics.findByUserId = function(userId: string) {
-  return this.find({ user_id: userId, active: true });
-};
-
-DomainSchema.statics.findByDomain = function(domain: string) {
-  return this.findOne({ domain, active: true });
-};
-
-DomainSchema.statics.countByUserId = function(userId: string) {
-  return this.countDocuments({ user_id: userId, active: true });
-};
-
-export default mongoose.models.Domain || mongoose.model("Domain", DomainSchema);
+export default Domain;

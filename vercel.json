@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/cron/verify-domains",
-      "schedule": "0 0 * * *" 
-    }
-  ]
-}

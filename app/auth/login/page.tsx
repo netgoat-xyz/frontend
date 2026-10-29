@@ -1,14 +1,17 @@
-import LoginForm from "@/components/interface/auth/LoginForm";
-import ShaderBackground from "@/components/interface/homescreen/shader-background";
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
-  return (
-    <ShaderBackground>
-    <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm md:max-w-4xl">
-        <LoginForm />
-      </div>
-    </div>
-    </ShaderBackground>
-  )
+import { LoginForm } from "@/components/auth/login-form";
+import { getSessionUser } from "@/lib/auth-guards";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  description: "Sign in to your NetGoat account.",
+};
+
+export default async function LoginPage() {
+  const user = await getSessionUser();
+  if (user) redirect("/dashboard");
+
+  return <LoginForm />;
 }

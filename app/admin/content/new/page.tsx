@@ -1,5 +1,11 @@
-import ContentEditor from "@/components/interface/admin/ContentEditor";
+import type { Metadata } from "next";
 
-export default function AdminNewContentPage() {
+import { ContentEditor } from "@/components/admin/content-editor";
+
+export const metadata: Metadata = {
+  title: "New post",
+};
+
+export default function NewPostPage() {
   return <ContentEditor />;
 }

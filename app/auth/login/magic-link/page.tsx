@@ -1,14 +1,16 @@
-import MagicLinkForm from "@/components/interface/auth/MagicLinkForm";
-import ShaderBackground from "@/components/interface/homescreen/shader-background";
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export default function LoginMagicLinkPage() {
-  return (
-    <ShaderBackground>
-      <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-        <div className="w-full max-w-sm md:max-w-4xl">
-          <MagicLinkForm mode="login" />
-        </div>
-      </div>
-    </ShaderBackground>
-  );
+import { MagicLinkForm } from "@/components/auth/magic-link-form";
+import { getSessionUser } from "@/lib/auth-guards";
+
+export const metadata: Metadata = {
+  title: "Sign in with a magic link",
+};
+
+export default async function LoginMagicLinkPage() {
+  const user = await getSessionUser();
+  if (user) redirect("/dashboard");
+
+  return <MagicLinkForm mode="login" />;
 }

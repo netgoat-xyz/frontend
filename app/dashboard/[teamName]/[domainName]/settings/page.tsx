@@ -1,50 +1,63 @@
-import { HeaderSection } from "@/components/interface/domains/overview/HeaderSection";
-import { OriginSettings } from "@/components/interface/domains/settings/OriginSettings";
-import { CacheSettings } from "@/components/interface/domains/settings/CacheSettings";
-import { PerformanceSettings } from "@/components/interface/domains/settings/PerformanceSettings";
-import { DangerZone } from "@/components/interface/domains/settings/DangerZone";
-import { loadDomainByRoute } from "../_lib/domain-data";
-import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-type Props = {
-  params: {
-    teamName: string
-    domainName: string
-  }
-}
+import { PageHeader } from "@/components/dashboard/page-header";
+import {
+  CachePolicyForm,
+  DangerZone,
+  LogLevelForm,
+  OriginForm,
+} from "@/components/domain/settings-forms";
+import { getDomainRoute } from "@/lib/data/domain-detail";
+import { toClientDomain } from "@/lib/domain-view";
 
-const SettingsPage = async ({ params }: Props) => {
-  const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
-  const t = await getTranslations("DashboardPages.domain")
-
-  if (!domain || !domainData) {
-    return (
-      <div className="min-h-svh p-4 sm:p-6 lg:p-8">
-        <h2 className="text-2xl font-semibold">{t("notFound.title")}</h2>
-        <p className="text-muted">{t("notFound.description", { domainName, teamName })}</p>
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-6">
-      <HeaderSection domainData={domainData} />
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <OriginSettings
-          teamSlug={teamName}
-          domainId={domain._id.toString()}
-          initialTargetUrl={domain.target_url}
-        />
-        <CacheSettings
-          teamSlug={teamName}
-          domainId={domain._id.toString()}
-          initialRoutePolicy={domain.route_policy}
-        />
-      </div>
-      <PerformanceSettings />
-      <DangerZone />
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "Settings",
 };
 
-export default SettingsPage;
+export default async function DomainSettingsPage({
+  params,
+}: {
+  params: Promise<{ teamName: string; domainName: string }>;
+}) {
+  const { teamName, domainName } = await params;
+  const route = await getDomainRoute(teamName, domainName);
+  if (!route) notFound();
+
+  const domain = toClientDomain(route.domain);
+  const teamSlug = route.context.team.slug;
+
+  return (
+    <>
+      <PageHeader
+        title="Settings"
+        description="Origin, caching and lifecycle for this domain."
+      />
+
+      <div className="flex max-w-3xl flex-col gap-6">
+        <OriginForm
+          teamSlug={teamSlug}
+          domainId={domain._id}
+          hostname={domain.domain}
+          initialOrigin={domain.target_url}
+        />
+        <CachePolicyForm
+          teamSlug={teamSlug}
+          domainId={domain._id}
+          policy={domain.route_policy}
+        />
+        <LogLevelForm
+          teamSlug={teamSlug}
+          domainId={domain._id}
+          initial={domain.settings.log_level}
+        />
+        <DangerZone
+          teamSlug={teamSlug}
+          domainId={domain._id}
+          domainName={domain.domain}
+          active={domain.active}
+        />
+      </div>
+    </>
+  );
+}

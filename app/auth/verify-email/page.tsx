@@ -1,14 +1,17 @@
-import EmailVerificationForm from "@/components/interface/auth/EmailVerificationForm";
-import ShaderBackground from "@/components/interface/homescreen/shader-background";
+import type { Metadata } from "next";
 
-export default function VerifyEmailPage() {
-  return (
-    <ShaderBackground>
-      <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-        <div className="w-full max-w-sm md:max-w-4xl">
-          <EmailVerificationForm />
-        </div>
-      </div>
-    </ShaderBackground>
-  );
+import { VerifyEmailForm } from "@/components/auth/verify-email-form";
+
+export const metadata: Metadata = {
+  title: "Verify your email",
+};
+
+export default async function VerifyEmailPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ email?: string }>;
+}) {
+  const { email } = await searchParams;
+
+  return <VerifyEmailForm initialEmail={email} />;
 }

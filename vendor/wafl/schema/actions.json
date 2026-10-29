@@ -1,0 +1,64 @@
+{
+  "languageVersion": "1.0",
+  "actions": [
+    {
+      "type": "allow",
+      "terminal": true,
+      "parameters": [],
+      "description": "Allow the request through this policy."
+    },
+    {
+      "type": "block",
+      "terminal": true,
+      "parameters": [
+        { "name": "status", "type": "integer", "required": false, "default": 403, "minimum": 400, "maximum": 599 }
+      ],
+      "description": "Deny the request."
+    },
+    {
+      "type": "challenge",
+      "terminal": true,
+      "parameters": [
+        { "name": "challenge", "type": "string", "required": false, "default": "managed", "enum": ["managed", "js"] }
+      ],
+      "description": "Request a configured security challenge."
+    },
+    {
+      "type": "log",
+      "terminal": false,
+      "parameters": [
+        { "name": "event", "type": "string", "required": false, "maxLength": 64 }
+      ],
+      "description": "Emit a security event and continue evaluation."
+    },
+    {
+      "type": "redirect",
+      "terminal": true,
+      "parameters": [
+        { "name": "status", "type": "integer", "required": true, "enum": [301, 302, 307, 308] },
+        { "name": "url", "type": "string", "required": true, "maxLength": 2048 }
+      ],
+      "description": "Return a validated redirect. Only absolute http(s) URLs are permitted."
+    },
+    {
+      "type": "rate_limit",
+      "terminal": false,
+      "parameters": [
+        { "name": "limit", "type": "integer", "required": true, "minimum": 1 },
+        { "name": "window", "type": "duration", "required": true },
+        { "name": "key", "type": "string_set", "required": false, "default": ["client.ip"] },
+        { "name": "exceedAction", "type": "string", "required": false, "default": "block", "enum": ["block", "challenge"] },
+        { "name": "status", "type": "integer", "required": false, "default": 429, "minimum": 400, "maximum": 599 },
+        { "name": "burst", "type": "integer", "required": false, "minimum": 0 }
+      ],
+      "description": "Evaluate a rate-limit directive. Counting is performed by a stateful backend, not by the expression evaluator."
+    },
+    {
+      "type": "execute",
+      "terminal": true,
+      "supported": false,
+      "parameters": [],
+      "description": "Deliberately unsupported. Policies cannot execute arbitrary code."
+    }
+  ]
+}

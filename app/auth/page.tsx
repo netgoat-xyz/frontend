@@ -1,21 +1,8 @@
 import { redirect } from "next/navigation";
-import type { Route } from "next";
-import { auth } from "@/lib/auth";
-import { isBannedSessionUser } from "@/lib/user-status";
-import { headers } from "next/headers";
 
-export default async function AuthGate() {
-  const session = await auth.api.getSession({
-    headers: await headers(), // you need to pass the headers object.
-  });
+import { getSessionUser } from "@/lib/auth-guards";
 
-  if (!session) {
-    redirect("/auth/login" as Route);
-  }
-
-  if (isBannedSessionUser(session)) {
-    redirect("/banned");
-  }
-
-  redirect("/dashboard/@me");
+export default async function AuthGatePage() {
+  const user = await getSessionUser();
+  redirect(user ? "/dashboard" : "/auth/login");
 }

@@ -1,12 +1,6 @@
-import { auth } from "@/lib/auth";
 import { toNextJsHandler } from "better-auth/next-js";
+import { auth } from "@/lib/auth";
 
-const handler = toNextJsHandler(auth);
+export const runtime = "nodejs";
 
-const stripLength = (res: Response) => {
-  res.headers.delete("content-length");
-  return res;
-};
-
-export const POST = async (req: Request) => stripLength(await handler.POST(req));
-export const GET = async (req: Request) => stripLength(await handler.GET(req));
+export const { GET, POST } = toNextJsHandler(auth);
