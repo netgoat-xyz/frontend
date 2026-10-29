@@ -116,9 +116,15 @@ jobs:
       - name: gitleaks
         # CLI image instead of gitleaks-action: the action requires a paid
         # licence for organization accounts, the CLI is MIT and free.
+        #
+        # The baseline records one fake PEM fixture that was removed from the
+        # tree but is still reachable from main's history. Anything outside
+        # the baseline fails the build.
         run: |
           docker run --rm -v "$PWD:/repo" \
-            ghcr.io/gitleaks/gitleaks:v8.30.1 detect --source=/repo --redact --verbose --no-banner
+            ghcr.io/gitleaks/gitleaks:v8.30.1 detect --source=/repo \
+            --baseline-path=/repo/.gitleaks-baseline.json \
+            --redact --verbose --no-banner
 
   dependency-review:
     name: Dependency review
