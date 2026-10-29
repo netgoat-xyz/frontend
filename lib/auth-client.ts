@@ -1,9 +1,15 @@
+"use client";
+
 import { createAuthClient } from "better-auth/react";
 import { emailOTPClient, magicLinkClient } from "better-auth/client/plugins";
 
+/**
+ * Browser auth client. Defaults to the current origin, so the same build
+ * works on localhost:3002, preview deployments and production without env
+ * juggling.
+ */
 export const authClient = createAuthClient({
   plugins: [emailOTPClient(), magicLinkClient()],
-  baseURL: process.env.BETTER_AUTH_URL,
   sessionOptions: {
     refetchOnWindowFocus: false,
     refetchInterval: 0,

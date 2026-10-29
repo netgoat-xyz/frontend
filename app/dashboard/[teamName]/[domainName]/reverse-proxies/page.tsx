@@ -1,61 +1,51 @@
-import { HeaderSection } from "@/components/interface/domains/overview/HeaderSection";
-import { loadDomainByRoute } from "../_lib/domain-data";
-import { ReverseProxiesClient } from "./ReverseProxiesClient";
-import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-type Props = {
-  params: {
-    teamName: string
-    domainName: string
-  } | Promise<{ teamName: string, domainName: string }>
-}
+import { PageHeader } from "@/components/dashboard/page-header";
+import { RoutesManager } from "@/components/domain/routes-manager";
+import { getDomainRoute, listDomainProxyConfigs } from "@/lib/data/domain-detail";
+import { toClientDomain, toClientProxyConfig } from "@/lib/domain-view";
 
-const ReverseProxiesPage = async ({ params }: Props) => {
-  const { teamName, domainName, domain, domainData } = await loadDomainByRoute(params)
-  const t = await getTranslations("DashboardPages.reverseProxy")
-
-  if (!domain || !domainData) {
-    return (
-      <div className="min-h-svh p-4 sm:p-6 lg:p-8">
-        <h2 className="text-2xl font-semibold">{t("notFound.title")}</h2>
-        <p className="text-muted">{t("notFound.description", { domainName, teamName })}</p>
-      </div>
-    )
-  }
-
-  const subdomains = JSON.parse(JSON.stringify(domain.subdomains || []));
-  const reverseProxies = JSON.parse(
-    JSON.stringify([
-      ...(Array.isArray(domain.proxy_configs) ? domain.proxy_configs : []),
-      ...(Array.isArray(domain.subdomains)
-        ? domain.subdomains.flatMap((subdomain) =>
-            Array.isArray(subdomain?.proxy_configs)
-              ? subdomain.proxy_configs.map((config) => ({
-                  ...config,
-                  subdomain: config?.subdomain || subdomain.subdomain,
-                }))
-              : [],
-          )
-        : []),
-    ]),
-  );
-
-  return (
-    <div className="space-y-6 min-h-svh">
-      <HeaderSection domainData={domainData} />
-      
-      <div className="rounded-xl border border-neutral-800 bg-neutral-950/30 p-6">
-        <ReverseProxiesClient 
-           teamSlug={teamName}
-           domainId={domain._id.toString()}
-           domainName={domain.domain}
-           primaryTarget={domain.target_url}
-           reverseProxies={reverseProxies}
-           subdomains={subdomains}
-        />
-      </div>
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "Reverse proxies",
 };
 
-export default ReverseProxiesPage;
+export default async function DomainReverseProxiesPage({
+  params,
+}: {
+  params: Promise<{ teamName: string; domainName: string }>;
+}) {
+  const { teamName, domainName } = await params;
+  const route = await getDomainRoute(teamName, domainName);
+  if (!route) notFound();
+
+  const domain = toClientDomain(route.domain);
+  const configs = await listDomainProxyConfigs(
+    String(route.context.team._id),
+    domain._id,
+  );
+
+  const scopes = [
+    { value: "", label: domain.domain },
+    ...domain.subdomains.map((entry) => ({
+      value: entry.subdomain,
+      label: entry.full_domain,
+    })),
+  ];
+
+  return (
+    <>
+      <PageHeader
+        title="Reverse proxies"
+        description="Balance traffic across upstream pools per hostname."
+      />
+      <RoutesManager
+        teamSlug={route.context.team.slug}
+        domainId={domain._id}
+        domainName={domain.domain}
+        configs={configs.map(toClientProxyConfig)}
+        scopes={scopes}
+      />
+    </>
+  );
+}

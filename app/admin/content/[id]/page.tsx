@@ -1,16 +1,21 @@
-import ContentEditor from "@/components/interface/admin/ContentEditor";
-import { getPostById } from "@/actions/content";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+import { ContentEditor } from "@/components/admin/content-editor";
+import { getAdminPostById } from "@/lib/data/content";
 
-export default async function AdminEditContentPage(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
-  const post = await getPostById(params.id);
-  
-  if (!post) {
-    notFound();
-  }
+export const metadata: Metadata = {
+  title: "Edit post",
+};
+
+export default async function EditPostPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const post = await getAdminPostById(id);
+  if (!post) notFound();
 
   return <ContentEditor post={post} />;
 }

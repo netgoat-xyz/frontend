@@ -1,36 +1,63 @@
-export const BANNER_VARIANTS: Record<string, { label: string, classes: string }> = {
+import { z } from "zod";
+
+export const BANNER_VARIANT_KEYS = [
+  "info",
+  "warning",
+  "error",
+  "success",
+  "announcement",
+  "marketing",
+  "rainbow",
+  "midnight",
+] as const;
+
+export type BannerVariant = (typeof BANNER_VARIANT_KEYS)[number];
+
+export const BANNER_VARIANTS: Record<
+  BannerVariant,
+  { label: string; classes: string }
+> = {
   info: {
     label: "Info (Blue)",
-    classes: "bg-blue-500/10 text-blue-500 border border-blue-500/20",
+    classes: "bg-info/8 text-info-foreground border-info/20 dark:bg-info/16",
   },
   warning: {
     label: "Warning (Yellow)",
-    classes: "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20",
+    classes: "bg-warning/8 text-warning-foreground border-warning/20 dark:bg-warning/16",
   },
   error: {
     label: "Error (Red)",
-    classes: "bg-red-500/10 text-red-500 border border-red-500/20",
+    classes:
+      "bg-destructive/8 text-destructive-foreground border-destructive/20 dark:bg-destructive/16",
   },
   success: {
     label: "Success (Green)",
-    classes: "bg-green-500/10 text-green-500 border border-green-500/20",
+    classes:
+      "bg-success/8 text-success-foreground border-success/20 dark:bg-success/16",
   },
   announcement: {
     label: "Announcement (Purple)",
-    classes: "bg-purple-500/10 text-purple-500 border border-purple-500/20 font-medium",
+    classes:
+      "bg-violet-500/10 text-violet-700 border-violet-500/20 dark:text-violet-300",
   },
   marketing: {
     label: "Marketing (Gradient)",
-    classes: "bg-gradient-to-r from-pink-500/10 via-red-500/10 to-yellow-500/10 text-pink-500 border border-pink-500/20 font-medium",
+    classes:
+      "border-border text-foreground bg-gradient-to-r from-primary/15 via-info/15 to-success/15",
   },
   rainbow: {
     label: "Rainbow",
-    classes: "bg-gradient-to-r from-red-500/10 via-green-500/10 to-blue-500/10 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-green-500 to-blue-500 border border-white/10 animate-pulse font-bold",
+    classes:
+      "border-border text-foreground bg-[linear-gradient(90deg,rgba(239,68,68,.14),rgba(249,115,22,.14),rgba(234,179,8,.14),rgba(34,197,94,.14),rgba(59,130,246,.14),rgba(168,85,247,.14))]",
   },
   midnight: {
     label: "Midnight",
-    classes: "bg-neutral-500/10 text-neutral-400 border border-neutral-500/20",
-  }
-};  
+    classes: "border-neutral-800 bg-neutral-950 text-neutral-100",
+  },
+};
 
-export type BannerVariant = keyof typeof BANNER_VARIANTS;
+export function bannerVariantOrDefault(value: unknown): BannerVariant {
+  return (BANNER_VARIANT_KEYS as readonly string[]).includes(value as string)
+    ? (value as BannerVariant)
+    : "info";
+}

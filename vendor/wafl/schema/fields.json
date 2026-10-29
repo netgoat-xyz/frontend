@@ -1,0 +1,25 @@
+{
+  "languageVersion": "1.0",
+  "fields": [
+    { "path": "request.id", "type": "string", "phase": "connection", "nullable": false, "description": "Unique request identifier." },
+    { "path": "request.timestamp", "type": "integer", "phase": "connection", "nullable": false, "description": "Request start time, Unix epoch milliseconds." },
+    { "path": "request.size", "type": "integer", "phase": "request_body", "nullable": true, "description": "Total request size in bytes." },
+    { "path": "request.method", "type": "string", "phase": "request_line", "nullable": false, "description": "HTTP method." },
+    { "path": "request.path", "type": "string", "phase": "request_line", "nullable": false, "description": "Normalized URL path." },
+    { "path": "request.query", "type": "string_map", "phase": "request_line", "nullable": false, "description": "Query parameters. Index with request.query[\"name\"]." },
+    { "path": "request.host", "type": "string", "phase": "request_line", "nullable": false, "description": "Validated hostname." },
+    { "path": "request.scheme", "type": "string", "phase": "request_line", "nullable": false, "description": "http or https." },
+    { "path": "request.headers", "type": "string_map", "phase": "request_headers", "nullable": false, "description": "Request headers. Case-insensitive lookup with request.headers[\"name\"]." },
+    { "path": "request.body", "type": "string", "phase": "request_body", "nullable": true, "description": "Bounded request body, subject to inspection limits." },
+    { "path": "client.ip", "type": "ip", "phase": "connection", "nullable": false, "description": "Trusted client IP, after trusted-proxy resolution." },
+    { "path": "client.country", "type": "string", "phase": "connection", "nullable": true, "description": "ISO 3166-1 alpha-2 country code." },
+    { "path": "client.asn", "type": "integer", "phase": "connection", "nullable": true, "description": "Autonomous system number." },
+    { "path": "client.ip.reputation", "type": "string", "phase": "connection", "nullable": true, "description": "Versioned reputation label, e.g. clean, suspicious, malicious." },
+    { "path": "tls.version", "type": "string", "phase": "connection", "nullable": true, "description": "Negotiated TLS version." },
+    { "path": "tls.ja4", "type": "string", "phase": "connection", "nullable": true, "description": "JA4 fingerprint, when available." },
+    { "path": "bot.score", "type": "number", "phase": "request_headers", "nullable": true, "description": "Bot likelihood in [0, 1]." },
+    { "path": "attack.sqli", "type": "boolean", "phase": "request_body", "nullable": true, "description": "SQL injection detector signal." },
+    { "path": "attack.xss", "type": "boolean", "phase": "request_body", "nullable": true, "description": "Cross-site scripting detector signal." },
+    { "path": "attack.path_traversal", "type": "boolean", "phase": "request_body", "nullable": true, "description": "Path traversal detector signal." }
+  ]
+}

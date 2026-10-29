@@ -1,56 +1,14 @@
-import NavigationTop from "@/components/elements/NavigationTop";
-import { AppSessionProvider } from "@/components/auth/AppSessionContext";
-import { auth } from "@/lib/auth";
-import { isBannedSessionUser } from "@/lib/user-status";
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import BelowScreenFooter from "@/components/elements/BelowScreenFooter";
-import { getLatestWhatsNew } from "@/actions/content";
-import dynamic from "next/dynamic";
+import { requireUser } from "@/lib/auth-guards";
 
-const WhatsNewPopup = dynamic(
-  () => import("@/components/elements/WhatsNewPopup"),
-  { loading: () => null }
-);
-
+/**
+ * Auth gate for the whole dashboard area. The visual shell lives in the
+ * team-scoped layout so it can receive the active team.
+ */
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect("/auth");
-  }
-
-  if (isBannedSessionUser(session)) {
-    redirect("/banned");
-  }
-
-  const sessionForClient = {
-    user: {
-      name: session.user.name ?? null,
-      email: session.user.email ?? null,
-      image: session.user.image ?? null,
-    },
-  };
-
-  const latestWhatsNew = await getLatestWhatsNew();
-
-  return (
-    <AppSessionProvider session={sessionForClient}>
-      <div
-        suppressHydrationWarning
-        className="min-h-svh w-full flex flex-col bg-neutral-50 dark:bg-neutral-950 text-foreground"
-      >
-        <WhatsNewPopup post={latestWhatsNew} />
-        <NavigationTop />
-        <main className="min-h-svh p-6">{children}</main>
-        <BelowScreenFooter />
-      </div>
-    </AppSessionProvider>
-  );
+  await requireUser();
+  return <div className="bg-background text-foreground min-h-svh">{children}</div>;
 }

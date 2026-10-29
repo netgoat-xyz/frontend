@@ -1,14 +1,6 @@
-import OtpForm from "@/components/interface/auth/OtpForm";
-import ShaderBackground from "@/components/interface/homescreen/shader-background";
+import { redirect } from "next/navigation";
 
-export default function OTPPage() {
-  return (
-    <ShaderBackground>
-      <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-        <div className="w-full max-w-sm md:max-w-4xl">
-          <OtpForm mode="login" />
-        </div>
-      </div>
-    </ShaderBackground>
-  );
+/** Legacy alias: the generic OTP route maps to the sign-in flow. */
+export default function OtpAliasPage() {
+  redirect("/auth/login/otp");
 }

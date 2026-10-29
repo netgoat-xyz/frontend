@@ -1,41 +1,35 @@
-import NavigationTop from "@/components/elements/NavigationTop";
-import { AppSessionProvider } from "@/components/auth/AppSessionContext";
-import { auth } from "@/lib/auth";
-import { isBannedSessionUser } from "@/lib/user-status";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
-export default async function DashboardLayout({
+import { AccountNav } from "@/components/account/account-nav";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { WorkspaceShell } from "@/components/dashboard/workspace-shell";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Account",
+    template: "%s | Account | NetGoat",
+  },
+};
+
+/**
+ * The account area keeps the dashboard chrome, so profile/security/billing
+ * feel like part of the workspace rather than a separate site.
+ */
+export default function AccountLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect("/auth");
-  }
-
-  if (isBannedSessionUser(session)) {
-    redirect("/banned");
-  }
-
-  const sessionForClient = {
-    user: {
-      name: session.user.name ?? null,
-      email: session.user.email ?? null,
-      image: session.user.image ?? null,
-    },
-  };
-
   return (
-    <AppSessionProvider session={sessionForClient}>
-      <>
-        <NavigationTop />
-        <main className="min-h-svh bg-neutral-950">{children}</main>
-      </>
-    </AppSessionProvider>
+    <WorkspaceShell contextLabel="Account">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+        <PageHeader
+          title="Account"
+          description="Your profile, security, sessions and billing across every team."
+        />
+        <AccountNav />
+        {children}
+      </div>
+    </WorkspaceShell>
   );
 }

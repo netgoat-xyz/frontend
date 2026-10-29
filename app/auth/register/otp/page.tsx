@@ -1,14 +1,16 @@
-import OtpForm from "@/components/interface/auth/OtpForm";
-import ShaderBackground from "@/components/interface/homescreen/shader-background";
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export default function RegisterOtpPage() {
-  return (
-    <ShaderBackground>
-      <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-        <div className="w-full max-w-sm md:max-w-4xl">
-          <OtpForm mode="register" />
-        </div>
-      </div>
-    </ShaderBackground>
-  );
+import { OtpForm } from "@/components/auth/otp-form";
+import { getSessionUser } from "@/lib/auth-guards";
+
+export const metadata: Metadata = {
+  title: "Sign up with a code",
+};
+
+export default async function RegisterOtpPage() {
+  const user = await getSessionUser();
+  if (user) redirect("/dashboard");
+
+  return <OtpForm mode="register" />;
 }

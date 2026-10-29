@@ -1,172 +1,122 @@
-import { NextRequest, NextResponse } from "next/server";
+/**
+ * Analytics ingestion for the self-hosted marketing/docs pages.
+ *
+ * Public by design — visitors are anonymous — so the endpoint is hardened
+ * instead: strict payload validation, a bounded per-IP rate window, a body
+ * size cap, and 204 responses even when the write is dropped so analytics can
+ * never break or slow a page render.
+ */
+
+import { type NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import dbConnect from "@/lib/mongoose";
-import Analytics from "@/models/Analytics";
+import Analytics, { type AnalyticsDevice } from "@/models/Analytics";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-type AnalyticsPayload = {
-  type: "pageview" | "web-vital";
-  path: string;
-  visitorId: string;
-  referrer?: string;
-  metricName?: string;
-  metricValue?: number;
-  metricRating?: string;
+const MAX_BODY_BYTES = 16 * 1024;
+const RATE_WINDOW_MS = 60_000;
+const RATE_LIMIT = 240;
+const TRACKER_CAPACITY = 10_000;
+
+const payloadSchema = z.object({
+  type: z.enum(["pageview", "web-vital"]),
+  path: z.string().min(1).max(1024),
+  visitorId: z.string().min(1).max(128),
+  sessionId: z.string().max(128).optional(),
+  referrer: z.string().max(1024).optional(),
+  metricName: z.string().max(64).optional(),
+  metricValue: z.number().finite().optional(),
+  metricRating: z.string().max(32).optional(),
+});
+
+type RateEntry = { count: number; resetAt: number };
+
+// In-memory window tracker: best effort by design (per-instance, resets on
+// deploy) and bounded in size so it can never grow without limit.
+const globalForRate = globalThis as typeof globalThis & {
+  __analyticsRate?: Map<string, RateEntry>;
 };
+const rateBuckets: Map<string, RateEntry> =
+  globalForRate.__analyticsRate ?? new Map();
+globalForRate.__analyticsRate = rateBuckets;
 
-type AnalyticsInsert = AnalyticsPayload & {
-  userAgent: string;
-  device: "desktop" | "mobile" | "tablet";
-  timestamp: Date;
-};
+function isRateLimited(key: string, now: number): boolean {
+  const entry = rateBuckets.get(key);
 
-const FLUSH_BATCH_SIZE = 100;
-const FLUSH_INTERVAL_MS = 750;
-const MAX_QUEUE_SIZE = 5000;
+  if (!entry || entry.resetAt <= now) {
+    if (rateBuckets.size >= TRACKER_CAPACITY) {
+      for (const [bucketKey, bucket] of rateBuckets) {
+        if (bucket.resetAt <= now) rateBuckets.delete(bucketKey);
+      }
+      if (rateBuckets.size >= TRACKER_CAPACITY) rateBuckets.clear();
+    }
+    rateBuckets.set(key, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
 
-type AnalyticsQueueState = {
-  queue: AnalyticsInsert[];
-  flushTimer: ReturnType<typeof setTimeout> | null;
-  isFlushing: boolean;
-  connectPromise: Promise<void> | null;
-};
-
-const globalAnalyticsState = globalThis as typeof globalThis & {
-  __analyticsQueueState?: AnalyticsQueueState;
-};
-
-const queueState: AnalyticsQueueState =
-  globalAnalyticsState.__analyticsQueueState ?? {
-    queue: [],
-    flushTimer: null,
-    isFlushing: false,
-    connectPromise: null,
-  };
-
-if (!globalAnalyticsState.__analyticsQueueState) {
-  globalAnalyticsState.__analyticsQueueState = queueState;
+  entry.count += 1;
+  return entry.count > RATE_LIMIT;
 }
 
-function detectDevice(ua: string): "desktop" | "mobile" | "tablet" {
-  if (/mobile/i.test(ua)) return "mobile";
-  if (/tablet|ipad/i.test(ua)) return "tablet";
+function detectDevice(userAgent: string): AnalyticsDevice {
+  if (/mobile/i.test(userAgent)) return "mobile";
+  if (/tablet|ipad/i.test(userAgent)) return "tablet";
   return "desktop";
 }
 
-function isValidPayload(data: unknown): data is AnalyticsPayload {
-  if (!data || typeof data !== "object") return false;
-  const payload = data as Partial<AnalyticsPayload>;
-
-  const validType = payload.type === "pageview" || payload.type === "web-vital";
-  const validPath = typeof payload.path === "string" && payload.path.length > 0 && payload.path.length <= 1024;
-  const validVisitorId =
-    typeof payload.visitorId === "string" && payload.visitorId.length > 0 && payload.visitorId.length <= 128;
-
-  return validType && validPath && validVisitorId;
+function clientKey(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const ip = forwarded?.split(",")[0]?.trim();
+  return ip || request.headers.get("x-real-ip") || "unknown";
 }
 
-async function ensureAnalyticsConnection() {
-  if (!queueState.connectPromise) {
-    queueState.connectPromise = dbConnect()
-      .then(() => undefined)
-      .catch((error) => {
-        queueState.connectPromise = null;
-        throw error;
-      });
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  // Cheapest possible rejection first: oversized bodies never get parsed.
+  const declaredLength = Number(request.headers.get("content-length") ?? "0");
+  if (declaredLength > MAX_BODY_BYTES) {
+    return new NextResponse(null, { status: 413 });
   }
 
-  return queueState.connectPromise;
-}
-
-async function flushQueue() {
-  if (queueState.isFlushing) {
-    return;
+  if (isRateLimited(clientKey(request), Date.now())) {
+    return new NextResponse(null, { status: 429 });
   }
 
-  queueState.isFlushing = true;
-
-  if (queueState.flushTimer) {
-    clearTimeout(queueState.flushTimer);
-    queueState.flushTimer = null;
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: "Invalid JSON body." },
+      { status: 400 },
+    );
   }
+
+  const parsed = payloadSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { ok: false, error: "Invalid payload." },
+      { status: 400 },
+    );
+  }
+
+  const userAgent = (request.headers.get("user-agent") ?? "").slice(0, 512);
 
   try {
-    await ensureAnalyticsConnection();
-
-    while (queueState.queue.length > 0) {
-      const batch = queueState.queue.splice(0, FLUSH_BATCH_SIZE);
-      await Analytics.collection.insertMany(batch, { ordered: false });
-    }
-  } catch (error) {
-    console.error("Analytics batch flush failed:", error);
-  } finally {
-    queueState.isFlushing = false;
-
-    if (queueState.queue.length > 0) {
-      scheduleFlush(true);
-    }
-  }
-}
-
-function scheduleFlush(immediate = false) {
-  if (immediate) {
-    queueMicrotask(() => {
-      void flushQueue();
-    });
-    return;
-  }
-
-  if (queueState.flushTimer) {
-    return;
-  }
-
-  queueState.flushTimer = setTimeout(() => {
-    queueState.flushTimer = null;
-    void flushQueue();
-  }, FLUSH_INTERVAL_MS);
-}
-
-function enqueueAnalytics(doc: AnalyticsInsert) {
-  if (queueState.queue.length >= MAX_QUEUE_SIZE) {
-    const overflow = queueState.queue.length - MAX_QUEUE_SIZE + 1;
-    queueState.queue.splice(0, overflow);
-  }
-
-  queueState.queue.push(doc);
-
-  if (queueState.queue.length >= FLUSH_BATCH_SIZE) {
-    scheduleFlush(true);
-    return;
-  }
-
-  scheduleFlush(false);
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    if (!isValidPayload(body)) {
-      return NextResponse.json({ success: false, error: "Invalid payload" }, { status: 400 });
-    }
-
-    const userAgent = request.headers.get("user-agent") || "";
-
-    enqueueAnalytics({
-      type: body.type,
-      path: body.path,
-      visitorId: body.visitorId,
-      referrer: body.referrer,
+    await dbConnect();
+    await Analytics.collection.insertOne({
+      ...parsed.data,
       userAgent,
       device: detectDevice(userAgent),
-      metricName: body.metricName,
-      metricValue: body.metricValue,
-      metricRating: body.metricRating,
       timestamp: new Date(),
+      createdAt: new Date(),
     });
-
-    return new NextResponse(null, { status: 204 });
-  } catch {
-    // Never block UX due to analytics ingestion failure.
-    return new NextResponse(null, { status: 202 });
+  } catch (error) {
+    // Ingestion failures are logged, never surfaced as an error to the page.
+    console.error("[analytics] insert failed:", error);
   }
+
+  return new NextResponse(null, { status: 204 });
 }

@@ -1,17 +1,27 @@
-import { getGlobalSettings } from "@/actions/adminValues";
-import AdminSettingsForm from "@/components/interface/admin/AdminSettingsForm";
+import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic"; // Ensure settings are fresh
+import { SettingsForm } from "@/components/admin/settings-form";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { getAdminSettings } from "@/lib/data/settings";
+
+export const metadata: Metadata = {
+  title: "Settings",
+};
+
+// Always read the live document: settings change rarely but must never be
+// served from a build-time snapshot.
+export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
-  let settings;
-  try {
-     settings = await getGlobalSettings();
-  } catch (error) {
-     // In case of error (likely auth), we might let the error boundary catch it
-     // But strictly speaking, getGlobalSettings throws "Unauthorized" if not admin.
-     throw error; 
-  }
+  const settings = await getAdminSettings();
 
-  return <AdminSettingsForm initialSettings={settings} />;
+  return (
+    <>
+      <PageHeader
+        title="Settings"
+        description="Platform-wide configuration. Every field is validated server-side before it is written to the settings document."
+      />
+      <SettingsForm initialSettings={settings} />
+    </>
+  );
 }

@@ -1,13 +1,28 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
 
-const SessionSchema = new mongoose.Schema({
-  userId: String,
-  expiresAt: Date,
-  token: String,
-  createdAt: Date,
-  updatedAt: Date,
-  ipAddress: String,
-  userAgent: String
-}, { collection: "session" }); 
+/**
+ * Better-Auth `session` collection. Kept compatible with the shared database.
+ */
+const SessionSchema = new Schema(
+  {
+    userId: { type: String, required: true },
+    token: { type: String, required: true },
+    expiresAt: { type: Date, required: true },
+    ipAddress: String,
+    userAgent: String,
+  },
+  { collection: "session", timestamps: true, versionKey: "__v" },
+);
 
-export default mongoose.models.Session || mongoose.model("Session", SessionSchema);
+SessionSchema.index({ userId: 1 });
+SessionSchema.index({ expiresAt: 1 });
+
+export type SessionDocument = InferSchemaType<typeof SessionSchema> & {
+  _id: mongoose.Types.ObjectId;
+};
+
+export const Session: Model<SessionDocument> =
+  (mongoose.models.Session as Model<SessionDocument>) ??
+  mongoose.model<SessionDocument>("Session", SessionSchema);
+
+export default Session;

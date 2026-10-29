@@ -1,189 +1,168 @@
-"use client";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Alert02Icon,
+  AlertDiamondIcon,
+  AnalyticsUpIcon,
+  ArrowRight01Icon,
+  CpuIcon,
+  File02Icon,
+  Globe02Icon,
+  Settings01Icon,
+  UserGroupIcon,
+  UserMultiple02Icon,
+} from "@hugeicons/core-free-icons";
+import type { Metadata } from "next";
+import Link from "next/link";
 
-import { useEffect, useState, useCallback } from "react";
-import {
-  ShieldCheck,
-  Users,
-  Server,
-  Activity,
-  RefreshCw,
-  BarChart3,
-  Settings,
-} from "lucide-react";
-import {
-  getAdminStats,
-} from "@/actions/adminValues";
-import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { StatCard } from "@/components/dashboard/stat-card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getAdminOverview, getSystemSpecs } from "@/lib/data/admin";
+import { formatDateTime, formatRelativeTime } from "@/lib/format";
 
-export default function AdminPage() {
-  const t = useTranslations("DashboardPages.admin.dashboard");
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeSessions: 0,
-    systemLoad: "...",
-    securityEvents: 0,
-  });
+export const metadata: Metadata = {
+  title: "Overview",
+};
 
-  const [loading, setLoading] = useState(true);
+const QUICK_LINKS = [
+  { href: "/admin/users", label: "Manage users", icon: UserGroupIcon },
+  { href: "/admin/content", label: "Publish content", icon: File02Icon },
+  { href: "/admin/settings", label: "Platform settings", icon: Settings01Icon },
+  { href: "/admin/system", label: "System details", icon: CpuIcon },
+] as const;
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const statsData = await getAdminStats();
-      setStats((prev) => ({ ...prev, ...statsData }));
-    } catch (error) {
-      console.error(error);
-      toast.error(t("toasts.fetchFailed"));
-    } finally {
-      setLoading(false);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+export default async function AdminOverviewPage() {
+  const [overview, specs] = await Promise.all([
+    getAdminOverview(),
+    Promise.resolve(getSystemSpecs()),
+  ]);
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground mt-1 text-sm md:text-base">
-            {t("subtitle")}
-          </p>
-        </div>
-        <Button onClick={fetchData} disabled={loading} variant="secondary" className="shadow-sm">
-          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          {loading ? t("actions.refreshing") : t("actions.refreshData")}
+    <>
+      <PageHeader
+        title="Admin overview"
+        description="Platform-wide counts and the newest accounts, straight from the database."
+      >
+        <Button size="sm" render={<Link href="/admin/analytics" />}>
+          <HugeiconsIcon icon={AnalyticsUpIcon} />
+          Open analytics
         </Button>
+      </PageHeader>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <StatCard
+          label="Users"
+          value={overview.users.toLocaleString()}
+          hint={`${overview.activeSessions.toLocaleString()} active session${overview.activeSessions === 1 ? "" : "s"}`}
+          icon={UserGroupIcon}
+        />
+        <StatCard
+          label="Teams"
+          value={overview.teams.toLocaleString()}
+          hint="Personal and organization workspaces"
+          icon={UserMultiple02Icon}
+        />
+        <StatCard
+          label="Active domains"
+          value={overview.activeDomains.toLocaleString()}
+          hint="Streaming to edge agents"
+          icon={Globe02Icon}
+        />
+        <StatCard
+          label="Active alerts"
+          value={overview.activeAlerts.toLocaleString()}
+          hint="Shown in the global banner feed"
+          icon={Alert02Icon}
+        />
+        <StatCard
+          label="Open incidents"
+          value={overview.openIncidents.toLocaleString()}
+          hint="Visible on the public status page"
+          icon={AlertDiamondIcon}
+        />
+        <StatCard
+          label="Node.js"
+          value={specs.nodeVersion}
+          hint={`${specs.cpuCount} CPU core${specs.cpuCount === 1 ? "" : "s"} · load ${specs.loadAverage[0].toFixed(2)}`}
+          icon={CpuIcon}
+        />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="space-y-1">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{t("cards.totalUsers.title")}</CardTitle>
-            </div>
-            <div className="p-2 bg-blue-500/10 rounded-full">
-              <Users className="h-5 w-5 text-blue-500" />
-            </div>
+      <div className="mt-8 grid gap-4 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+        <Card>
+          <CardHeader>
+            <CardTitle>Newest accounts</CardTitle>
+            <CardDescription>
+              The last five registrations across the platform.
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-24 mt-1" />
+          <CardContent className="divide-border flex flex-col divide-y">
+            {overview.recentUsers.length === 0 ? (
+              <p className="text-muted-foreground py-2 text-sm">
+                No accounts yet.
+              </p>
             ) : (
-              <div className="text-3xl font-bold tracking-tight mt-1">{stats.totalUsers.toLocaleString()}</div>
+              overview.recentUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className="flex flex-wrap items-center gap-3 py-3 first:pt-0 last:pb-0"
+                >
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate text-sm font-medium">
+                      {user.name}
+                    </span>
+                    <span className="text-muted-foreground truncate text-xs">
+                      {user.email}
+                    </span>
+                  </div>
+                  <Badge
+                    variant={user.role === "admin" ? "info" : "outline"}
+                    className="ms-auto"
+                  >
+                    {user.role}
+                  </Badge>
+                  {user.banned ? <Badge variant="error">Banned</Badge> : null}
+                  <span
+                    className="text-muted-foreground text-xs"
+                    title={formatDateTime(user.createdAt)}
+                  >
+                    {formatRelativeTime(user.createdAt)}
+                  </span>
+                </div>
+              ))
             )}
-            <p className="text-xs text-muted-foreground mt-2">
-              {t("cards.totalUsers.description")}
-            </p>
           </CardContent>
         </Card>
-        
-        <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="space-y-1">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{t("cards.activeSessions.title")}</CardTitle>
-            </div>
-            <div className="p-2 bg-emerald-500/10 rounded-full">
-              <Activity className="h-5 w-5 text-emerald-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-24 mt-1" />
-            ) : (
-              <div className="text-3xl font-bold tracking-tight mt-1">{stats.activeSessions.toLocaleString()}</div>
-            )}
-            <p className="text-xs text-muted-foreground mt-2">
-              {t("cards.activeSessions.description")}
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="space-y-1">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{t("cards.systemLoad.title")}</CardTitle>
-            </div>
-            <div className="p-2 bg-amber-500/10 rounded-full">
-              <Server className="h-5 w-5 text-amber-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-24 mt-1" />
-            ) : (
-              <div className="text-3xl font-bold tracking-tight mt-1">{stats.systemLoad}</div>
-            )}
-            <p className="text-xs text-muted-foreground mt-2">
-              {t("cards.systemLoad.description")}
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="space-y-1">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{t("cards.securityEvents.title")}</CardTitle>
-            </div>
-            <div className="p-2 bg-rose-500/10 rounded-full">
-              <ShieldCheck className="h-5 w-5 text-rose-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-24 mt-1" />
-            ) : (
-              <div className="text-3xl font-bold tracking-tight mt-1">{stats.securityEvents}</div>
-            )}
-            <p className="text-xs text-muted-foreground mt-2">
-              {t("cards.securityEvents.description")}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-8">
-        <Card className="col-span-1 lg:col-span-4 shadow-sm border-border/50">
+        <Card>
           <CardHeader>
-            <CardTitle>{t("activityMap.title")}</CardTitle>
-            <CardDescription>{t("activityMap.description")}</CardDescription>
+            <CardTitle>Quick actions</CardTitle>
+            <CardDescription>Jump straight into the console.</CardDescription>
           </CardHeader>
-          <CardContent className="min-h-75 flex items-center justify-center border-t border-border/50 mt-2 bg-muted/10 rounded-b-xl">
-            <div className="text-muted-foreground flex items-center flex-col gap-3">
-               <BarChart3 className="h-10 w-10 text-neutral-400" />
-               <span className="text-sm font-medium">{t("activityMap.pending")}</span>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="col-span-1 lg:col-span-3 shadow-sm border-border/50">
-          <CardHeader>
-            <CardTitle>{t("quickActions.title")}</CardTitle>
-            <CardDescription>{t("quickActions.description")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full justify-start h-12">
-              <Users className="mr-3 h-4 w-4 text-muted-foreground" />
-              {t("quickActions.manageUsers")}
-            </Button>
-            <Button variant="outline" className="w-full justify-start h-12">
-              <ShieldCheck className="mr-3 h-4 w-4 text-muted-foreground" />
-              {t("quickActions.securityLogs")}
-            </Button>
-            <Button variant="outline" className="w-full justify-start h-12">
-              <Settings className="mr-3 h-4 w-4 text-muted-foreground" />
-              {t("quickActions.systemSettings")}
-            </Button>
+          <CardContent className="grid gap-2">
+            {QUICK_LINKS.map((link) => (
+              <Button
+                key={link.href}
+                variant="ghost"
+                className="justify-start"
+                render={<Link href={link.href} />}
+              >
+                <HugeiconsIcon icon={link.icon} />
+                {link.label}
+                <HugeiconsIcon icon={ArrowRight01Icon} className="ms-auto" />
+              </Button>
+            ))}
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
   );
 }
-

@@ -1,0 +1,23 @@
+[
+ {
+  "RuleID": "private-key",
+  "Description": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.",
+  "StartLine": 68,
+  "EndLine": 72,
+  "StartColumn": 7,
+  "EndColumn": 31,
+  "Match": "REDACTED",
+  "Secret": "REDACTED",
+  "File": "e2e/domain-management.spec.ts",
+  "SymlinkFile": "",
+  "Commit": "e183ee22744ce526225fb4352e9d2adaf4330e37",
+  "Link": "https://github.com/netgoat-xyz/frontend/blob/e183ee22744ce526225fb4352e9d2adaf4330e37/e2e/domain-management.spec.ts#L68-L72",
+  "Entropy": 5.4446282,
+  "Author": "DuckeyDev",
+  "Email": "duckeydev@gmail.com",
+  "Date": "2026-08-01T05:56:30Z",
+  "Message": "stuff\n\nSigned-off-by: DuckeyDev \u003cduckeydev@gmail.com\u003e",
+  "Tags": [],
+  "Fingerprint": "e183ee22744ce526225fb4352e9d2adaf4330e37:e2e/domain-management.spec.ts:private-key:68"
+ }
+]

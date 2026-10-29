@@ -1,65 +1,53 @@
-import mongoose from 'mongoose';
-import { installLogHook } from './runtime-logs';
+import mongoose from "mongoose";
+import { serverEnv } from "@/lib/env";
 
-installLogHook();
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
 
-const MONGODB_URI = process.env.MONGODB_URI;
+// A global cache keeps a single connection across hot reloads in development
+// and across concurrent serverless invocations in production.
+const globalForMongoose = globalThis as typeof globalThis & {
+  __netgoatMongoose?: MongooseCache;
+};
 
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
-}
+const cache: MongooseCache = (globalForMongoose.__netgoatMongoose ??= {
+  conn: null,
+  promise: null,
+});
 
 /**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
+ * Connects to MongoDB (idempotent) and returns the shared mongoose instance.
  */
-// @ts-expect-error - NodeJS global type extension
-let cached = global.mongoose;
+export async function dbConnect(): Promise<typeof mongoose> {
+  if (cache.conn) return cache.conn;
 
-if (!cached) {
-  // @ts-expect-error - NodeJS global type extension
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function dbConnect() {
-  if (cached.conn) {
-    return cached.conn;
-  }
-
-  if (!cached.promise) {
-    const opts = {
+  if (!cache.promise) {
+    cache.promise = mongoose.connect(serverEnv().MONGODB_URI, {
       bufferCommands: false,
       maxPoolSize: 10,
       minPoolSize: 1,
-      serverSelectionTimeoutMS: 10000,
-      socketTimeoutMS: 45000,
+      serverSelectionTimeoutMS: 10_000,
+      socketTimeoutMS: 45_000,
       family: 4,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      return mongoose;
     });
   }
-  
+
   try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-
+    cache.conn = await cache.promise;
+  } catch (error) {
+    // Reset so the next call retries instead of reusing a rejected promise.
+    cache.promise = null;
     const message =
-      e instanceof Error ? e.message : 'Unknown database connection error';
-
-    // Log full details server-side, but throw a plain serializable error to UI boundaries.
-    console.error('MongoDB connection failed:', e);
+      error instanceof Error ? error.message : "Unknown database connection error";
+    console.error("MongoDB connection failed:", error);
     throw new Error(
-      `Database connection failed. Check MONGODB_URI, Atlas network access, and cluster status. Original error: ${message}`
+      `Database connection failed. Check MONGODB_URI and cluster availability. (${message})`,
     );
   }
 
-  return cached.conn;
+  return cache.conn;
 }
 
 export default dbConnect;

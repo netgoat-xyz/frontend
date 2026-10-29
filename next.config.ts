@@ -1,76 +1,26 @@
-import withBundleAnalyzer from "@next/bundle-analyzer";
-import createNextIntlPlugin from "next-intl/plugin";
-import createMDX from "@next/mdx";
-import { execSync } from "node:child_process";
+import path from "node:path";
 import type { NextConfig } from "next";
 
-const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
-
-const withMDX = createMDX({
-  extension: /\.mdx?$/,
-});
-
-const withAnalyzer = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-});
-
-let commitHash = "unknown";
-try {
-  commitHash = execSync("git rev-parse --short HEAD")
-    .toString()
-    .trim();
-} catch {}
-const projectRoot = process.cwd();
+// frontend-v2 can run either inside the NetGoat monorepo (bun workspaces, with
+// node_modules hoisted to the repository root) or as a standalone checkout of
+// netgoat-xyz/frontend. Next.js cannot infer a workspace root outside the app
+// directory, so it is only overridden when explicitly requested.
+const workspaceRoot = process.env.NEXT_TURBOPACK_ROOT
+  ? path.resolve(process.env.NEXT_TURBOPACK_ROOT)
+  : process.cwd();
 
 const nextConfig: NextConfig = {
-  env: {
-    NEXT_PUBLIC_COMMIT_HASH: commitHash,
-  },
-  pageExtensions: ["ts", "tsx"],
-  devIndicators: false,
-  allowedDevOrigins: ["demo.netgoat.xyz", "127.0.0.1", "192.168.50.35"],
+  // Emits .next/standalone for the container image in ./Dockerfile.
+  output: "standalone",
+  // WAFL ships TypeScript source from the local file dependency.
+  transpilePackages: ["@netgoat/wafl"],
   turbopack: {
-    root: projectRoot,
-  },
-  compiler: {
-    removeConsole:
-      process.env.NODE_ENV === "production"
-        ? { exclude: ["error", "warn"] }
-        : false,
+    root: workspaceRoot,
   },
   experimental: {
-    scrollRestoration: true,
+    // Enables forbidden()/unauthorized() route interrupts for auth gates.
     authInterrupts: true,
-  },
-  images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "tapback.co", pathname: "/api/avatar/**" },
-      {
-        protocol: "https",
-        hostname: "cdn.discordapp.com",
-        pathname: "/avatars/**",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.discordapp.com",
-        pathname: "/icons/**",
-      },
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "gitlab.com",
-        pathname: "/uploads/-/system/user/avatar/**",
-      },
-      { protocol: "https", hostname: "gitlab.com", pathname: "/avatar/**" },
-    ],
-  },
-  typescript: {
-    ignoreBuildErrors: true, 
   },
 };
 
-export default withAnalyzer(withMDX(withNextIntl(nextConfig)));
+export default nextConfig;

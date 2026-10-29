@@ -1,16 +1,33 @@
-import DomainsSection from "@/components/interface/dashboard/home/domainsCard";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-export default async function DomainsPage() {
+import { DomainsGrid } from "@/components/dashboard/domains-grid";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { getTeamContext } from "@/lib/auth-guards";
+import { listTeamDomainSummaries } from "@/lib/data/domains";
+
+export const metadata: Metadata = {
+  title: "Domains",
+};
+
+export default async function TeamDomainsPage({
+  params,
+}: {
+  params: Promise<{ teamName: string }>;
+}) {
+  const { teamName } = await params;
+  const { team } = await getTeamContext(teamName);
+  if (!team) notFound();
+
+  const domains = await listTeamDomainSummaries(String(team._id));
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-neutral-100">All domains</h1>
-        <p className="mt-2 text-sm text-neutral-400">
-          Every domain configured for this team, including items still waiting on verification.
-        </p>
-      </div>
-
-      <DomainsSection maxItems={null} />
-    </div>
+    <>
+      <PageHeader
+        title="Domains"
+        description={`${domains.length} of ${team.max_domains} domains on the ${team.plan} plan.`}
+      />
+      <DomainsGrid teamSlug={team.slug} domains={domains} />
+    </>
   );
 }

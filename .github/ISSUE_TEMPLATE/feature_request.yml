@@ -1,0 +1,44 @@
+name: Feature request
+description: Propose a capability or improvement for the NetGoat frontend
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the user need, not the implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Auth and accounts
+        - Domains and subdomains
+        - WAF rules
+        - Routes and load balancing
+        - TLS / SSL
+        - Access controls
+        - Analytics and logs
+        - Admin
+        - Marketing site
+        - Developer experience
+        - Other
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This is not a security vulnerability (those go through SECURITY.md)
+          required: true

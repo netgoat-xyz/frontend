@@ -1,114 +1,185 @@
-"use client";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Clock01Icon, CpuIcon, Database02Icon, ServerStack01Icon } from "@hugeicons/core-free-icons";
+import type { Metadata } from "next";
 
-import { useEffect, useState } from "react";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { Badge } from "@/components/ui/badge";
 import {
-  Power,
-} from "lucide-react";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
-  getSystemSpecs,
-  adminRestartSystem
-} from "@/actions/adminValues";
-import { toast } from "sonner";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getDatabaseStats, getSystemSpecs } from "@/lib/data/admin";
+import { formatBytes } from "@/lib/format";
 
-interface SystemSpecs {
-  os: string;
-  cpuModel: string;
-  cpuCount: number;
-  memoryTotal: string;
-  memoryFree: string;
-  uptime: string;
+export const metadata: Metadata = {
+  title: "System",
+};
+
+export const dynamic = "force-dynamic";
+
+function SpecRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 py-2">
+      <dt className="text-muted-foreground text-sm">{label}</dt>
+      <dd className="truncate font-mono text-sm">{value}</dd>
+    </div>
+  );
 }
 
-export default function AdminSystemPage() {
-  const t = useTranslations("DashboardPages.admin.system");
-  const [systemSpecs, setSystemSpecs] = useState<SystemSpecs | null>(null);
+export default async function AdminSystemPage() {
+  const specs = getSystemSpecs();
+  const database = await getDatabaseStats();
 
-  useEffect(() => {
-    const fetchSystemSpecs = async () => {
-        try {
-          const data = await getSystemSpecs();
-          setSystemSpecs(data);
-        } catch {
-          toast.error(t("toasts.fetchFailed"));
-        }
-      };
-    fetchSystemSpecs();
-  }, [t]);
-
-  const handleRestart = async () => {
-    if(!confirm(t("confirmRestart"))) return;
-    try {
-      await adminRestartSystem();
-      toast.success(t("toasts.restartSent"));
-    } catch (error) {
-      console.log(error)
-      toast.error(t("toasts.restartFailed"));
-    }
-  };
+  const usedMemory = specs.memoryTotalGb - specs.memoryFreeGb;
+  const usedPercent =
+    specs.memoryTotalGb > 0
+      ? Math.round((usedMemory / specs.memoryTotalGb) * 100)
+      : 0;
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground mt-1 text-sm md:text-base">
-            {t("subtitle")}
-          </p>
-        </div>
-        <Button variant="destructive" onClick={handleRestart} className="shadow-sm">
-            <Power className="mr-2 h-4 w-4"/> {t("actions.restartSystem")}
-        </Button>
+    <>
+      <PageHeader
+        title="System"
+        description="Live host and database readings. There is no restart button here — the old console's was a no-op; deployments restart through the process supervisor."
+      />
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HugeiconsIcon icon={ServerStack01Icon} className="size-4" />
+              Runtime
+            </CardTitle>
+            <CardDescription>The Node process serving this console.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <dl className="divide-border flex flex-col divide-y">
+              <SpecRow label="Node.js" value={specs.nodeVersion} />
+              <SpecRow label="PID" value={String(specs.pid)} />
+              <SpecRow
+                label="Load average (1/5/15m)"
+                value={specs.loadAverage.map((value) => value.toFixed(2)).join(" / ")}
+              />
+              <SpecRow label="Host uptime" value={`${specs.uptimeHours} hours`} />
+            </dl>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HugeiconsIcon icon={CpuIcon} className="size-4" />
+              Hardware
+            </CardTitle>
+            <CardDescription>CPU and operating system.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <dl className="divide-border flex flex-col divide-y">
+              <SpecRow label="OS" value={`${specs.os} (${specs.arch})`} />
+              <SpecRow label="Platform" value={specs.platform} />
+              <SpecRow label="CPU" value={specs.cpuModel} />
+              <SpecRow label="Cores" value={String(specs.cpuCount)} />
+            </dl>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HugeiconsIcon icon={Clock01Icon} className="size-4" />
+              Memory
+            </CardTitle>
+            <CardDescription>Host memory, sampled on request.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm font-medium">{usedPercent}% used</span>
+                <span className="text-muted-foreground font-mono text-xs">
+                  {usedMemory.toFixed(2)} / {specs.memoryTotalGb.toFixed(2)} GB
+                </span>
+              </div>
+              <div
+                role="meter"
+                aria-valuenow={usedPercent}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Memory used"
+                className="bg-muted h-2 w-full overflow-hidden rounded-full"
+              >
+                <div
+                  className="bg-primary h-full rounded-full"
+                  style={{ width: `${usedPercent}%` }}
+                />
+              </div>
+            </div>
+            <dl className="divide-border flex flex-col divide-y">
+              <SpecRow label="Total" value={`${specs.memoryTotalGb} GB`} />
+              <SpecRow label="Free" value={`${specs.memoryFreeGb} GB`} />
+            </dl>
+          </CardContent>
+        </Card>
       </div>
 
-    <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow">
-    <CardHeader>
-        <CardTitle>{t("hardware.title")}</CardTitle>
-        <CardDescription>{t("hardware.description")}</CardDescription>
-    </CardHeader>
-    <CardContent>
-        {systemSpecs ? (
-        <div className="grid gap-4 md:grid-cols-2">
-            <div className="flex justify-between border-b pb-2">
-                <span className="font-medium">{t("hardware.fields.os")}</span>
-                <span>{systemSpecs.os}</span>
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <HugeiconsIcon icon={Database02Icon} className="size-4" />
+            Database
+          </CardTitle>
+          <CardDescription>
+            {database.databaseName}
+            {database.sizeOnDiskMb !== null
+              ? ` · ${formatBytes(database.sizeOnDiskMb * 1024 * 1024)} of data`
+              : ""}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {database.collections.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              Collection statistics are unavailable right now.
+            </p>
+          ) : (
+            <div className="rounded-xl border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Collection</TableHead>
+                    <TableHead className="w-[140px] text-end">
+                      Documents
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {database.collections.map((collection) => (
+                    <TableRow key={collection.name}>
+                      <TableCell className="font-mono text-sm">
+                        {collection.name}
+                      </TableCell>
+                      <TableCell className="text-end">
+                        <Badge variant="outline">
+                          {collection.documents.toLocaleString()}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
-            <div className="flex justify-between border-b pb-2">
-                <span className="font-medium">{t("hardware.fields.cpuModel")}</span>
-                <span>{systemSpecs.cpuModel}</span>
-            </div>
-            <div className="flex justify-between border-b pb-2">
-                <span className="font-medium">{t("hardware.fields.cpuCores")}</span>
-                <span>{systemSpecs.cpuCount}</span>
-            </div>
-            <div className="flex justify-between border-b pb-2">
-                <span className="font-medium">{t("hardware.fields.memoryTotal")}</span>
-                <span>{systemSpecs.memoryTotal}</span>
-            </div>
-            <div className="flex justify-between border-b pb-2">
-                <span className="font-medium">{t("hardware.fields.memoryFree")}</span>
-                <span>{systemSpecs.memoryFree}</span>
-            </div>
-            <div className="flex justify-between border-b pb-2">
-                <span className="font-medium">{t("hardware.fields.uptime")}</span>
-                <span>{systemSpecs.uptime}</span>
-            </div>
-        </div>
-        ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-                {Array.from({length: 6}).map((_, i) => (
-                    <div key={i} className="flex justify-between border-b pb-2">
-                        <Skeleton className="h-5 w-25" />
-                        <Skeleton className="h-5 w-37.5" />
-                    </div>
-                ))}
-            </div>
-        )}
-    </CardContent>
-    </Card>
-    </div>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 }

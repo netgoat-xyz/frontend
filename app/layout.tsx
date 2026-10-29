@@ -1,92 +1,73 @@
-import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
-import "@/app/globals.css";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
-import "cal-sans";
+import type { Metadata, Viewport } from "next";
+import { Geist_Mono, Inter } from "next/font/google";
+import localFont from "next/font/local";
+
+import { AppProviders } from "@/app/providers";
 import { cn } from "@/lib/utils";
-import { Analytics } from "@vercel/analytics/next";
-import { cache } from "react";
-import { getPublicSettings as _getPublicSettings } from "@/actions/adminValues";
+import "./globals.css";
 
-// Deduplicate getPublicSettings calls within a single request
-const getPublicSettings = cache(_getPublicSettings);
-import GlobalBanner from "@/components/elements/GlobalBanner";
-import ExperimentsInjector from "@/components/elements/ExperimentsInjector";
-import SelfHostedAnalytics from "@/components/analytics/SelfHostedAnalytics";
-import KeyboardEasterEgg from "@/components/elements/KeyboardEasterEgg";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getPublicSettings();
-  const siteName = settings.siteName || "NetGoat";
+/**
+ * Headings are set in Cal Sans v2 (OFL, bundled in `app/fonts`). It is one
+ * variable font with optical sizing, so the browser swaps in the display
+ * drawing for headlines and the text drawing for small labels on its own.
+ */
+const calSans = localFont({
+  src: "./fonts/cal-sans-var.woff2",
+  variable: "--font-heading",
+  display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
+});
 
-  return {
-    metadataBase: new URL("https://netgoat.xyz"),
-    title: siteName,
-    description: "A secure, scalable, and easy-to-use networking solution.",
-    keywords: ["network", "security", "learning", siteName],
-    authors: [{ name: `${siteName} Team`, url: "https://netgoat.xyz" }],
-    openGraph: {
-      title: siteName,
-      description: "A secure, scalable, and easy-to-use networking solution.",
-      url: "https://netgoat.xyz",
-      siteName: siteName,
-      images: [
-        {
-          url: "/og.png",
-          width: 1200,
-          height: 630,
-          alt: `${siteName} Logo`,
-        },
-      ],
-      locale: "en_US",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: siteName,
-      description: "A secure, scalable, and easy-to-use networking solution.",
-      images: ["/og.png"],
-      creator: "@duckeydev",
-    },
-    icons: {
-      icon: "/favicon.ico",
-    },
-  };
-}
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3002";
 
-export default async function RootLayout({
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "NetGoat — Reverse proxy, DNS, SSL and WAF in one panel",
+    template: "%s | NetGoat",
+  },
+  description:
+    "Blazing-fast, self-hostable reverse proxy and traffic manager with Cloudflare-like features: DNS, SSL, WAF, analytics and more.",
+  applicationName: "NetGoat",
+  openGraph: {
+    type: "website",
+    siteName: "NetGoat",
+    images: ["/og.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/twitter_og.png"],
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+  ],
+};
+
+export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-  const settings = await getPublicSettings();
-
+}>) {
   return (
-    <html
-      lang={locale}
-      className={cn("dark", plusJakartaSans.variable)}
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
-        className={`${plusJakartaSans.className} min-h-svh overflow-x-hidden transition-all transform-gpu bg-neutral-950 text-white antialiased`}
+        className={cn(
+          inter.variable,
+          calSans.variable,
+          geistMono.variable,
+          "bg-background text-foreground font-sans antialiased trasntion-colors duration-300",
+        )}
       >
-        <Analytics />
-        <NextIntlClientProvider messages={messages}>
-          <SelfHostedAnalytics />
-          <ExperimentsInjector />
-          <GlobalBanner
-            settings={settings}
-            doNotShowBanner={["/blog", "/auth", "/", "/status"]}
-          />
-          <KeyboardEasterEgg />
-          <main className="min-h-svh w-full">{children}</main>
-        </NextIntlClientProvider>
-        <SpeedInsights />
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );
