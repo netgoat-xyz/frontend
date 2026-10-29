@@ -41,7 +41,6 @@ export function SectionHeading({
 }) {
   return (
     <div className={cn("max-w-2xl", className)}>
-      <Eyebrow>{eyebrow}</Eyebrow>
       <h2 className="mt-4 text-balance font-heading text-[clamp(1.75rem,3.5vw,2.5rem)] font-semibold leading-[1.08] tracking-[-0.03em]">
         {title}
       </h2>

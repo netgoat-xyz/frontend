@@ -15,14 +15,6 @@ export function Hero() {
 
       <div className="relative mx-auto w-full max-w-[75rem] px-5 pt-10 md:px-6 md:pt-20">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="hero-rise mx-auto flex w-fit items-center gap-2 rounded-full border bg-card/70 px-3 py-1 font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase sm:text-[11px]">
-            <span
-              aria-hidden
-              className="size-1.5 rounded-full bg-success shadow-[0_0_6px_1px] shadow-success/40"
-            />
-            Self-hosted · AGPL-3.0 · no telemetry
-          </p>
-
           <h1 className="hero-rise mt-5 text-balance font-heading text-[clamp(2.125rem,6vw,4.25rem)] font-semibold leading-[1.06] tracking-[-0.035em] sm:leading-[1.03]">
             Own the edge between your users and your origin.
           </h1>
@@ -52,13 +44,6 @@ export function Hero() {
               See what is in the panel
             </Button>
           </div>
-
-          <p
-            className="hero-rise mt-4 font-mono text-[11px] text-muted-foreground sm:text-xs"
-            style={{ animationDelay: "120ms" }}
-          >
-            Start on the free plan. No card, no cloud account.
-          </p>
         </div>
 
         <div

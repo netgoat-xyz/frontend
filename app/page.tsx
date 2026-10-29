@@ -47,7 +47,6 @@ export default function LandingPage() {
       <SiteHeader />
       <main>
         <Hero />
-        <SpecStrip />
         <FeatureGrid />
         <HowItWorks />
         <SelfHost />
