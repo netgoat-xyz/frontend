@@ -8,7 +8,6 @@ import { IntegrationWall } from "@/components/marketing/integration-wall";
 import { SelfHost } from "@/components/marketing/self-host";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
-import { SpecStrip } from "@/components/marketing/spec-strip";
 
 const TITLE =
   "NetGoat — reverse proxy, DNS, TLS and WAF in one panel you own";
