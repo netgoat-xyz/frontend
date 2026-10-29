@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1
 
-FROM oven/bun:1-alpine AS deps
+FROM oven/bun:1.4.0-alpine AS deps
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json bun.lock ./
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 
-FROM oven/bun:1-alpine AS builder
+FROM oven/bun:1.4.0-alpine AS builder
 WORKDIR /app
 # `lib/auth.ts` constructs the Better Auth instance at module scope, so the
 # env contract is validated during `next build`. These are build-time
