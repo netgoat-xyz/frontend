@@ -19,6 +19,7 @@ export default async function DomainDNSPage({
   const { teamName, domainName } = await params;
   const route = await getDomainRoute(teamName, domainName);
   if (!route) notFound();
+  if (route.domain.dns_enabled === false) notFound();
 
   const domain = toClientDomain(route.domain);
   const records = await listDomainDNSRecords(

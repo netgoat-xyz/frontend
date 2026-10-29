@@ -102,6 +102,7 @@ export default async function DomainLayout({
           <DomainNav
             teamSlug={teamSlug}
             domainName={encodedDomain}
+            dnsEnabled={route.domain.dns_enabled !== false}
           />
           <Link
             href={`/dashboard/${teamSlug}`}

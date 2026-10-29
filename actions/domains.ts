@@ -27,12 +27,14 @@ const createDomainSchema = z.object({
   teamSlug: z.string().min(1),
   domain: z.string().min(1, "Enter a domain name."),
   target_url: z.string().min(1, "Enter the origin this domain should serve."),
+  dns_enabled: z.boolean().default(true),
 });
 
 export async function createDomainAction(input: {
   teamSlug: string;
   domain: string;
   target_url: string;
+  dns_enabled?: boolean;
 }): Promise<
   ActionResult<{ domainId: string; domain: string; verification: DomainVerification | null }>
 > {
@@ -79,6 +81,7 @@ export async function createDomainAction(input: {
       domain: domainValidation.domain,
       target_url: originValidation.origin,
       active: true,
+      dns_enabled: parsed.dns_enabled,
       verified,
       verification_token: verificationToken,
       verification_attempts: 0,

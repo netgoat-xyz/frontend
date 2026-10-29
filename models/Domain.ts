@@ -106,6 +106,7 @@ const DomainSchema = new Schema(
     },
 
     active: { type: Boolean, default: true },
+    dns_enabled: { type: Boolean, default: true },
     verified: { type: Boolean, default: false },
     verification_token: String,
     last_verification_check: Date,
@@ -211,6 +212,7 @@ export type DomainDocument = {
   route_policy?: unknown;
   access_control?: DomainAccessControl;
   active: boolean;
+  dns_enabled: boolean;
   verified: boolean;
   verification_token?: string;
   last_verification_check?: Date;

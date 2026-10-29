@@ -40,10 +40,13 @@ async function requireDomainRecord(
   await dbConnect();
 
   const domain = await Domain.findOne({ _id: domainId, team_id: context.team._id })
-    .select("domain")
-    .lean<{ _id: unknown; domain: string }>();
+    .select("domain dns_enabled")
+    .lean<{ _id: unknown; domain: string; dns_enabled?: boolean }>();
 
   if (!domain) throw new DomainError("Domain not found.");
+  if (domain.dns_enabled === false) {
+    throw new DomainError("DNS is disabled for this domain.");
+  }
 
   return {
     teamId: String(context.team._id),

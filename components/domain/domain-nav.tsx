@@ -23,6 +23,7 @@ type DomainNavProps = {
   domainName: string;
   basePath?: string;
   compact?: boolean;
+  dnsEnabled?: boolean;
   /** Which section labels to render (defaults to every domain section). */
   sections?: string[];
 };
@@ -33,6 +34,7 @@ export function DomainNav({
   domainName,
   basePath,
   compact = false,
+  dnsEnabled = true,
   sections,
 }: DomainNavProps) {
   const pathname = usePathname();
@@ -54,13 +56,14 @@ export function DomainNav({
   const visible = sections
     ? links.filter((link) => sections.includes(link.label))
     : links;
+  const available = dnsEnabled ? visible : visible.filter((link) => link.label !== "DNS");
 
   return (
     <nav
       aria-label="Domain sections"
       className="scrollbar-none -mb-px flex items-center gap-1 overflow-x-auto"
     >
-      {visible.map((link) => {
+      {available.map((link) => {
         const active = link.exact
           ? pathname === link.href
           : pathname === link.href || pathname.startsWith(`${link.href}/`);

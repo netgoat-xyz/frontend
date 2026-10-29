@@ -46,6 +46,7 @@ export function NewDomainForm({ teamSlug }: { teamSlug: string }) {
   const router = useRouter();
   const [domain, setDomain] = useState("");
   const [origin, setOrigin] = useState("");
+  const [dnsEnabled, setDnsEnabled] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -62,6 +63,7 @@ export function NewDomainForm({ teamSlug }: { teamSlug: string }) {
       teamSlug,
       domain,
       target_url: origin,
+      dns_enabled: dnsEnabled,
     });
 
     setPending(false);
@@ -222,6 +224,47 @@ export function NewDomainForm({ teamSlug }: { teamSlug: string }) {
           <FieldDescription>
             The public hostname visitors will hit. Enter the apex domain —
             subdomains are added afterwards.
+          </FieldDescription>
+        </Field>
+
+        <Field>
+          <FieldLabel>Setup mode</FieldLabel>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="has-checked:border-primary has-checked:bg-accent/40 flex cursor-pointer gap-3 rounded-xl border p-4 transition-colors">
+              <input
+                type="radio"
+                name="domain-mode"
+                value="proxy-only"
+                checked={!dnsEnabled}
+                onChange={() => setDnsEnabled(false)}
+                className="accent-primary mt-1 size-4 shrink-0"
+              />
+              <span className="flex flex-col gap-1">
+                <span className="text-sm font-medium">Reverse Proxy only</span>
+                <span className="text-muted-foreground text-xs leading-relaxed">
+                  Route traffic to your origin. DNS management will be disabled.
+                </span>
+              </span>
+            </label>
+            <label className="has-checked:border-primary has-checked:bg-accent/40 flex cursor-pointer gap-3 rounded-xl border p-4 transition-colors">
+              <input
+                type="radio"
+                name="domain-mode"
+                value="dns-proxy"
+                checked={dnsEnabled}
+                onChange={() => setDnsEnabled(true)}
+                className="accent-primary mt-1 size-4 shrink-0"
+              />
+              <span className="flex flex-col gap-1">
+                <span className="text-sm font-medium">DNS &amp; Reverse Proxy</span>
+                <span className="text-muted-foreground text-xs leading-relaxed">
+                  Manage DNS records and route traffic through the proxy.
+                </span>
+              </span>
+            </label>
+          </div>
+          <FieldDescription>
+            DNS is available only when DNS &amp; Reverse Proxy is selected.
           </FieldDescription>
         </Field>
 
