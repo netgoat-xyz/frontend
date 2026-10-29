@@ -84,11 +84,7 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} NetGoat · built in the open, alpha and
-            proud of it
-          </p>
-          <p className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-            Your hardware · your data · your edge
+            © {new Date().getFullYear()} NetGoat · We build stuff.
           </p>
         </div>
       </div>

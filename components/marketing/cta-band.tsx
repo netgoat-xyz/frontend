@@ -18,7 +18,7 @@ export function CtaBand() {
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-balance font-heading text-[clamp(1.9rem,4.5vw,3rem)] font-semibold leading-[1.08] tracking-[-0.035em]">
-              Put the goat on the wire.
+              He protecc, He attacc.
             </h2>
             <p className="mx-auto mt-4 max-w-md text-pretty text-muted-foreground">
               Bring up the stack, add a domain and watch the first request land
