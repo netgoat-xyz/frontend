@@ -8,6 +8,7 @@ const DomainWAFRuleSchema = new Schema(
   {
     name: { type: String, required: true },
     expression: { type: String, required: true },
+    language: { type: String, enum: ["wafl", "wafscript"] },
     action: { type: String, enum: ["BLOCK", "ALLOW", "LOG"], default: "BLOCK" },
     priority: { type: Number, default: 0 },
     enabled: { type: Boolean, default: true },
@@ -22,6 +23,7 @@ const SubdomainWAFRuleSchema = new Schema(
   {
     name: { type: String, required: true },
     expression: { type: String, required: true },
+    language: { type: String, enum: ["wafl", "wafscript"] },
     action: { type: String, enum: ["BLOCK", "ALLOW", "LOG"], default: "BLOCK" },
     priority: { type: Number, default: 0 },
     enabled: { type: Boolean, default: true },
@@ -154,6 +156,7 @@ DomainSchema.index({ "subdomains.full_domain": 1 });
 export type WAFRule = {
   name: string;
   expression: string;
+  language?: "wafl" | "wafscript";
   action: "BLOCK" | "ALLOW" | "LOG";
   priority: number;
   enabled: boolean;

@@ -15,6 +15,7 @@ import type { ProxyConfigDocument } from "@/models/ProxyConfig";
 export type ClientWafRule = {
   name: string;
   expression: string;
+  language?: "wafl" | "wafscript";
   action: "BLOCK" | "ALLOW" | "LOG";
   priority: number;
   enabled: boolean;
@@ -97,6 +98,7 @@ function serializeWafRules(
   return (rules ?? []).map((rule) => ({
     name: rule.name,
     expression: rule.expression,
+    language: rule.language,
     action: rule.action,
     priority: rule.priority,
     enabled: rule.enabled,

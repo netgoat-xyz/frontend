@@ -29,7 +29,12 @@ const ADMIN_LINKS: Array<{
   icon: IconSvgElement;
   exact?: boolean;
 }> = [
-  { href: "/admin", label: "Overview", icon: DashboardSquare01Icon, exact: true },
+  {
+    href: "/admin",
+    label: "Overview",
+    icon: DashboardSquare01Icon,
+    exact: true,
+  },
   { href: "/admin/users", label: "Users", icon: UserGroupIcon },
   { href: "/admin/content", label: "Content", icon: File02Icon },
   { href: "/admin/alerts", label: "Alerts", icon: Alert02Icon },
@@ -49,22 +54,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="bg-background flex min-h-svh flex-col">
       <header className="bg-background/80 sticky top-0 z-20 border-b backdrop-blur-sm">
         <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 md:px-6">
-          <Link
-            href="/admin"
-            className="flex items-center gap-2"
-            aria-label="NetGoat admin home"
-          >
-            <NetgoatLogo className="size-6" />
-            <span className="font-heading hidden text-sm font-semibold tracking-tight sm:inline">
-              NetGoat
-            </span>
-          </Link>
-          <Badge variant="outline" className="uppercase">
-            Admin
-          </Badge>
+          <NetgoatLogo className="size-6" />
 
           <div className="ms-auto flex items-center gap-2">
-            <Button variant="ghost" size="sm" render={<Link href="/dashboard" />}>
+            <Button
+              variant="ghost"
+              size="sm"
+              render={<Link href="/dashboard" />}
+            >
               Dashboard
             </Button>
             <ThemeToggle />

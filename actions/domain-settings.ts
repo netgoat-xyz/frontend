@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { HydratedDocument } from "mongoose";
 import { z } from "zod";
+import { compileAgentExpression } from "@netgoat/wafl";
 
 import { DomainError, toActionResult, type ActionResult } from "@/lib/actions";
 import { assertTeamAccess, type TeamContext } from "@/lib/auth-guards";
@@ -276,6 +277,7 @@ const wafAddSchema = z.object({
   rule: z.object({
     name: z.string(),
     expression: z.string(),
+    language: z.enum(["wafl", "wafscript"]).default("wafl"),
     action: z.enum(["BLOCK", "ALLOW", "LOG"]).optional(),
     priority: z.number().int().min(0).max(100_000).optional(),
     enabled: z.boolean().optional(),
@@ -290,6 +292,7 @@ export async function addWafRuleAction(input: {
   rule: {
     name: string;
     expression: string;
+    language?: "wafl" | "wafscript";
     action?: "BLOCK" | "ALLOW" | "LOG";
     priority?: number;
     enabled?: boolean;
@@ -303,7 +306,12 @@ export async function addWafRuleAction(input: {
       parsed.domainId,
     );
 
-    const rule = normalizeWafRule(parsed.rule);
+    if (parsed.rule.language === "wafl") {
+      const compiled = compileAgentExpression(parsed.rule.expression);
+      const error = compiled.diagnostics.find((diagnostic) => diagnostic.severity === "error");
+      if (error) throw new DomainError(`${error.code}: ${error.message}`);
+    }
+    const rule = { ...normalizeWafRule(parsed.rule), language: parsed.rule.language };
 
     const collection = parsed.subdomain
       ? domain.subdomains.find((entry) => entry.subdomain === parsed.subdomain)

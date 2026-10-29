@@ -98,7 +98,7 @@ export default async function DomainLayout({
           />
         </div>
 
-        <div className="border-border flex flex-wrap items-center justify-between gap-3 border-b pb-px">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-px">
           <DomainNav
             teamSlug={teamSlug}
             domainName={encodedDomain}

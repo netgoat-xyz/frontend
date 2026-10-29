@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectItem,
@@ -89,6 +90,7 @@ export function WafManager({
       rule: {
         name,
         expression,
+        language: "wafl",
         action,
         priority: Number(priority) || 0,
       },
@@ -212,10 +214,7 @@ export function WafManager({
         <CardHeader>
           <CardTitle>Add a rule</CardTitle>
           <CardDescription>
-            Expressions match on method, path, headers and IP. Example:{" "}
-            <span className="font-mono text-xs">
-              method == &quot;POST&quot; &amp;&amp; path starts_with &quot;/admin&quot;
-            </span>
+            WAFL conditions are checked before saving and compiled for the edge agent.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -234,15 +233,19 @@ export function WafManager({
 
             <Field>
               <FieldLabel htmlFor="waf-expression">Expression</FieldLabel>
-              <Input
+              <Textarea
                 id="waf-expression"
                 required
                 maxLength={512}
                 spellCheck={false}
                 value={expression}
                 onChange={(event) => setExpression(event.target.value)}
-                placeholder='path starts_with "/admin"'
+                placeholder='request.path starts_with "/admin"'
+                rows={3}
               />
+              <FieldDescription>
+                Example: request.method == &quot;POST&quot; and request.path starts_with &quot;/api&quot;
+              </FieldDescription>
             </Field>
 
             <div className="grid gap-5 sm:grid-cols-2">

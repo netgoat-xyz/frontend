@@ -145,6 +145,7 @@ export type WafAction = (typeof WAF_ACTIONS)[number];
 export type NormalizedWafRule = {
   name: string;
   expression: string;
+  language: "wafl" | "wafscript";
   action: WafAction;
   priority: number;
   enabled: boolean;
@@ -164,6 +165,7 @@ const wafRuleSchema = z.object({
     .trim()
     .min(1, "Provide a match expression.")
     .max(512, "Expressions are limited to 512 characters."),
+  language: z.enum(["wafl", "wafscript"]).default("wafl"),
   action: z.enum(WAF_ACTIONS).default("BLOCK"),
   priority: z.number().int().min(0).max(100_000).default(0),
   enabled: z.boolean().default(true),

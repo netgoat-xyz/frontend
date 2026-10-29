@@ -23,7 +23,7 @@ export default function BannedPage() {
         <Button variant="outline" render={<Link href="/logout" />}>
           Sign out
         </Button>
-        <Button render={<Link href="mailto:support@netgoat.dev" />}>
+        <Button render={<Link href="mailto:duckeydev@gmail.com" />}>
           Contact support
         </Button>
       </div>

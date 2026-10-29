@@ -271,7 +271,7 @@ export function IntegrationsCatalog() {
                 <Button
                   render={
                     <a
-                      href={`mailto:support@netgoat.dev?subject=${encodeURIComponent(
+                      href={`mailto:duckeydev@gmail.com?subject=${encodeURIComponent(
                         `Integration access: ${detail.name}`,
                       )}`}
                     />

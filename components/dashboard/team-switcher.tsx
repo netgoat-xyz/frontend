@@ -73,7 +73,7 @@ export function TeamSwitcher({
         <span className="grid flex-1 text-start leading-tight group-data-[collapsible=icon]:hidden">
           <span className="truncate text-sm font-medium">{current.name}</span>
           <span className="text-muted-foreground truncate text-xs">
-            {current.slug}
+            {current.slug.toString().replace(/@me-.*/, '@me')}
           </span>
         </span>
         <HugeiconsIcon

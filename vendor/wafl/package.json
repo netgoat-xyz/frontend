@@ -1,0 +1,16 @@
+{
+  "name": "@netgoat/wafl",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "WAFL (WAF Language) 1.0 reference lexer, parser, type checker, and evaluator.",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "bun test",
+    "conformance": "bun run scripts/conformance.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4"
+  }
+}

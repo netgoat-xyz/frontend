@@ -64,7 +64,7 @@ export default function RootLayout({
           inter.variable,
           calSans.variable,
           geistMono.variable,
-          "bg-background text-foreground font-sans antialiased",
+          "bg-background text-foreground font-sans antialiased trasntion-colors duration-300",
         )}
       >
         <AppProviders>{children}</AppProviders>
