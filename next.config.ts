@@ -12,6 +12,8 @@ const workspaceRoot = process.env.NEXT_TURBOPACK_ROOT
 const nextConfig: NextConfig = {
   // Emits .next/standalone for the container image in ./Dockerfile.
   output: "standalone",
+  // WAFL ships TypeScript source from the local file dependency.
+  transpilePackages: ["@netgoat/wafl"],
   turbopack: {
     root: workspaceRoot,
   },

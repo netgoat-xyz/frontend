@@ -4,6 +4,7 @@ FROM oven/bun:1.4.0-alpine AS deps
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json bun.lock ./
+COPY vendor/wafl/package.json ./vendor/wafl/package.json
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 
